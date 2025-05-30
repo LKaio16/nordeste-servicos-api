@@ -20,4 +20,7 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Long
 
     // Métodos para busca com filtros combinados podem ser adicionados aqui
     // Ex: List<OrdemServico> findByTecnicoAtribuidoIdAndStatus(Long tecnicoId, StatusOS status);
+
+    // Busca a última Ordem de Serviço criada, ordenada pelo ID decrescente
+    OrdemServico findTopByOrderByIdDesc();
 }

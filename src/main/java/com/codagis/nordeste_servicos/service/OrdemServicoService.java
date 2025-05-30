@@ -37,30 +37,30 @@ public class OrdemServicoService {
     public List<OrdemServicoResponseDTO> findAllOrdensServico() {
         List<OrdemServico> ordens = ordemServicoRepository.findAll();
         return ordens.stream()
-                     .map(this::convertToDTO)
-                     .collect(Collectors.toList());
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-     public List<OrdemServicoResponseDTO> findOrdensServicoByTecnicoId(Long tecnicoId) {
-         List<OrdemServico> ordens = ordemServicoRepository.findByTecnicoAtribuidoId(tecnicoId);
-         return ordens.stream()
-                      .map(this::convertToDTO)
-                      .collect(Collectors.toList());
-     }
+    public List<OrdemServicoResponseDTO> findOrdensServicoByTecnicoId(Long tecnicoId) {
+        List<OrdemServico> ordens = ordemServicoRepository.findByTecnicoAtribuidoId(tecnicoId);
+        return ordens.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
-     public List<OrdemServicoResponseDTO> findOrdensServicoByClienteId(Long clienteId) {
-         List<OrdemServico> ordens = ordemServicoRepository.findByClienteId(clienteId);
-         return ordens.stream()
-                      .map(this::convertToDTO)
-                      .collect(Collectors.toList());
-     }
+    public List<OrdemServicoResponseDTO> findOrdensServicoByClienteId(Long clienteId) {
+        List<OrdemServico> ordens = ordemServicoRepository.findByClienteId(clienteId);
+        return ordens.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
-     public List<OrdemServicoResponseDTO> findOrdensServicoByStatus(StatusOS status) {
-         List<OrdemServico> ordens = ordemServicoRepository.findByStatus(status);
-         return ordens.stream()
-                      .map(this::convertToDTO)
-                      .collect(Collectors.toList());
-     }
+    public List<OrdemServicoResponseDTO> findOrdensServicoByStatus(StatusOS status) {
+        List<OrdemServico> ordens = ordemServicoRepository.findByStatus(status);
+        return ordens.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
 
     public OrdemServicoResponseDTO findOrdemServicoById(Long id) {
@@ -83,7 +83,7 @@ public class OrdemServicoService {
         if (ordemServicoRequestDTO.getTecnicoAtribuidoId() != null) {
             tecnicoAtribuido = usuarioRepository.findById(ordemServicoRequestDTO.getTecnicoAtribuidoId())
                     .orElseThrow(() -> new ResourceNotFoundException("Técnico não encontrado com ID: " + ordemServicoRequestDTO.getTecnicoAtribuidoId()));
-             // TODO: Adicionar validação para garantir que o usuário atribuído seja de fato um TÉCNICO
+            // TODO: Adicionar validação para garantir que o usuário atribuído seja de fato um TÉCNICO
         }
 
 
@@ -104,33 +104,33 @@ public class OrdemServicoService {
 
     // Método para atualizar uma OS (Pode ser usado por Admin ou Técnico para partes específicas)
     public OrdemServicoResponseDTO updateOrdemServico(Long id, OrdemServicoRequestDTO ordemServicoRequestDTO) {
-         OrdemServico existingOrdemServico = ordemServicoRepository.findById(id)
+        OrdemServico existingOrdemServico = ordemServicoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ordem de Serviço não encontrada com ID: " + id));
 
-         // Exemplo de como lidar com diferentes atualizações:
-         // Se o status está sendo atualizado:
-         if (ordemServicoRequestDTO.getStatus() != null && existingOrdemServico.getStatus() != ordemServicoRequestDTO.getStatus()) {
-             existingOrdemServico.setStatus(ordemServicoRequestDTO.getStatus());
-             if (ordemServicoRequestDTO.getStatus() == StatusOS.ENCERRADA) {
-                 existingOrdemServico.setDataFechamento(LocalDateTime.now());
-                 // TODO: Lógica adicional ao encerrar (ex: calcular total, marcar OS como finalizada para relatórios)
-             }
-              if (ordemServicoRequestDTO.getStatus() == StatusOS.CONCLUIDA) {
-                 // TODO: Lógica ao concluir (ex: permitir gerar orçamento)
-             }
-         }
+        // Exemplo de como lidar com diferentes atualizações:
+        // Se o status está sendo atualizado:
+        if (ordemServicoRequestDTO.getStatus() != null && existingOrdemServico.getStatus() != ordemServicoRequestDTO.getStatus()) {
+            existingOrdemServico.setStatus(ordemServicoRequestDTO.getStatus());
+            if (ordemServicoRequestDTO.getStatus() == StatusOS.ENCERRADA) {
+                existingOrdemServico.setDataFechamento(LocalDateTime.now());
+                // TODO: Lógica adicional ao encerrar (ex: calcular total, marcar OS como finalizada para relatórios)
+            }
+            if (ordemServicoRequestDTO.getStatus() == StatusOS.CONCLUIDA) {
+                // TODO: Lógica ao concluir (ex: permitir gerar orçamento)
+            }
+        }
 
-         // Se os campos de execução estão sendo atualizados (geralmente pelo técnico)
-         if (ordemServicoRequestDTO.getAnaliseFalha() != null) {
-             existingOrdemServico.setAnaliseFalha(ordemServicoRequestDTO.getAnaliseFalha());
-         }
-         if (ordemServicoRequestDTO.getSolucaoAplicada() != null) {
-             existingOrdemServico.setSolucaoAplicada(ordemServicoRequestDTO.getSolucaoAplicada());
-         }
+        // Se os campos de execução estão sendo atualizados (geralmente pelo técnico)
+        if (ordemServicoRequestDTO.getAnaliseFalha() != null) {
+            existingOrdemServico.setAnaliseFalha(ordemServicoRequestDTO.getAnaliseFalha());
+        }
+        if (ordemServicoRequestDTO.getSolucaoAplicada() != null) {
+            existingOrdemServico.setSolucaoAplicada(ordemServicoRequestDTO.getSolucaoAplicada());
+        }
 
-         // Lógica para atualizar outros campos da criação (se o Admin editar)
-         // TODO: Implementar lógica para permitir Admin atualizar cliente, equipamento, tecnico, problema etc.
-         // exigindo verificações de existência como na criação.
+        // Lógica para atualizar outros campos da criação (se o Admin editar)
+        // TODO: Implementar lógica para permitir Admin atualizar cliente, equipamento, tecnico, problema etc.
+        // exigindo verificações de existência como na criação.
 
         OrdemServico updatedOrdemServico = ordemServicoRepository.save(existingOrdemServico);
         return convertToDTO(updatedOrdemServico);
@@ -138,10 +138,10 @@ public class OrdemServicoService {
 
     public void deleteOrdemServico(Long id) {
         if (!ordemServicoRepository.existsById(id)) {
-             throw new ResourceNotFoundException("Ordem de Serviço não encontrada com ID: " + id);
+            throw new ResourceNotFoundException("Ordem de Serviço não encontrada com ID: " + id);
         }
-         // TODO: Implementar lógica para remover entidades relacionadas (registros de tempo, peças, fotos, etc.)
-         //  se não estiverem configuradas para remoção em cascata (CascadeType.ALL, orphanRemoval = true)
+        // TODO: Implementar lógica para remover entidades relacionadas (registros de tempo, peças, fotos, etc.)
+        //  se não estiverem configuradas para remoção em cascata (CascadeType.ALL, orphanRemoval = true)
         ordemServicoRepository.deleteById(id);
     }
 
@@ -163,7 +163,7 @@ public class OrdemServicoService {
         // dto.setDataHoraEmissao = não é um campo da entidade, é gerado na emissão do PDF
 
         dto.setClienteId(ordemServico.getCliente().getId());
-        dto.setNomeCliente(ordemServico.getCliente().getNomeRazaoSocial()); // Popula campo opcional
+        dto.setNomeCliente(ordemServico.getCliente().getNomeCompleto()); // Popula campo opcional
         dto.setEquipamentoId(ordemServico.getEquipamento().getId());
         dto.setDescricaoEquipamento(ordemServico.getEquipamento().getMarcaModelo() + " - " + ordemServico.getEquipamento().getNumeroSerieChassi()); // Popula campo opcional
         if (ordemServico.getTecnicoAtribuido() != null) {
@@ -189,5 +189,37 @@ public class OrdemServicoService {
         // status, numeroOS, datasAbertura/Fechamento/Emissao, analiseFalha, solucaoAplicada definidos no serviço ou execução
 
         return ordemServico;
+    }
+
+
+    // Método público para obter o próximo número de OS formatado
+    public String getNextOsNumber() {
+        // Busca a última OS criada (baseado no ID, assumindo que IDs são sequenciais)
+        // Uma alternativa seria buscar pelo maior numeroOS se ele for numérico ou tiver um padrão ordenável.
+        OrdemServico lastOs = ordemServicoRepository.findTopByOrderByIdDesc();
+
+        long nextNumber = 1; // Número inicial se não houver OS anterior
+        if (lastOs != null && lastOs.getNumeroOS() != null) {
+            try {
+                // Tenta extrair a parte numérica do último númeroOS
+                // Exemplo: Se numeroOS for "OS-2549" ou "#2549"
+                String lastNumStr = lastOs.getNumeroOS().replaceAll("[^0-9]", "");
+                if (!lastNumStr.isEmpty()) {
+                    long lastNum = Long.parseLong(lastNumStr);
+                    nextNumber = lastNum + 1;
+                }
+            } catch (NumberFormatException e) {
+                // Se não conseguir parsear, loga um aviso e usa o default 1
+                // Ou implementa uma lógica mais robusta baseada no seu padrão de numeroOS
+                System.err.println("WARN: Não foi possível parsear o último numeroOS: " + lastOs.getNumeroOS());
+                // Poderia tentar buscar o ID máximo como fallback?
+                // nextNumber = lastOs.getId() + 1; // Alternativa se numeroOS não for confiável
+            }
+        }
+
+        // Formata o próximo número (Ex: #2550)
+        // Ajuste a formatação conforme o padrão desejado no app Flutter
+        // return String.format("#%d", nextNumber);
+        return String.format(String.valueOf(nextNumber));
     }
 }

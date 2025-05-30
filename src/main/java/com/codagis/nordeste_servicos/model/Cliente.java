@@ -4,29 +4,57 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data // Lombok: Gera getters, setters, toString, equals, hashCode
+@NoArgsConstructor // Lombok: Gera construtor sem argumentos
+@AllArgsConstructor // Lombok: Gera construtor com todos os argumentos
+@Getter // Lombok: Garante getters (redundante com @Data, mas explícito)
+@Setter // Lombok: Garante setters (redundante com @Data, mas explícito)
 public class Cliente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nomeRazaoSocial;
+    @Enumerated(EnumType.STRING) // Mapeia o Enum como String no banco
+    @Column(nullable = false)
+    private TipoCliente tipoCliente;
 
-    private String endereco;
+    @Column(nullable = false)
+    private String nomeCompleto; // Substitui nomeRazaoSocial
 
-    private String telefone;
+    @Column(unique = true, nullable = false) // Garante que CNPJ/CPF seja único e não nulo
+    private String cpfCnpj; // Substitui cnpjCpf
 
+    @Column(nullable = false)
     private String email;
 
-    @Column(unique = true) // Garante que CNPJ/CPF seja único
-    private String cnpjCpf;
+    @Column(nullable = false)
+    private String telefonePrincipal; // Substitui telefone
 
-    // Relacionamentos (adicionaremos depois conforme avançamos nas outras entidades)
-    // Exemplo: @OneToMany(mappedBy = "cliente")
-    // private List<Equipamento> equipamentos;
+    private String telefoneAdicional; // Novo campo opcional
+
+    @Column(nullable = false)
+    private String cep;
+
+    @Column(nullable = false)
+    private String rua;
+
+    @Column(nullable = false)
+    private String numero;
+
+    private String complemento; // Novo campo opcional
+
+    @Column(nullable = false)
+    private String bairro;
+
+    @Column(nullable = false)
+    private String cidade;
+
+    @Column(nullable = false)
+    private String estado; // Ex: "CE", "SP"
+
+    // Relacionamentos podem ser adicionados aqui depois
+    // Exemplo: @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private List<Equipamento> equipamentos = new ArrayList<>();
 }
+

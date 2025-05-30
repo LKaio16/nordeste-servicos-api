@@ -154,7 +154,7 @@ public class OrcamentoService {
         dto.setStatus(orçamento.getStatus());
 
         dto.setClienteId(orçamento.getCliente().getId());
-        dto.setNomeCliente(orçamento.getCliente().getNomeRazaoSocial()); // Popula nome do cliente
+        dto.setNomeCliente(orçamento.getCliente().getNomeCompleto()); // Popula nome do cliente
         if (orçamento.getOrdemServicoOrigem() != null) {
              dto.setOrdemServicoOrigemId(orçamento.getOrdemServicoOrigem().getId());
         }

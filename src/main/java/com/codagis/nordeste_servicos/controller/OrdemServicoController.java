@@ -28,11 +28,11 @@ public class OrdemServicoController {
             List<OrdemServicoResponseDTO> ordens = ordemServicoService.findOrdensServicoByTecnicoId(tecnicoId);
             return ResponseEntity.ok(ordens);
         }
-         if (clienteId != null) {
+        if (clienteId != null) {
             List<OrdemServicoResponseDTO> ordens = ordemServicoService.findOrdensServicoByClienteId(clienteId);
             return ResponseEntity.ok(ordens);
         }
-         if (status != null) {
+        if (status != null) {
             List<OrdemServicoResponseDTO> ordens = ordemServicoService.findOrdensServicoByStatus(status);
             return ResponseEntity.ok(ordens);
         }
@@ -79,4 +79,19 @@ public class OrdemServicoController {
     // POST /api/ordens-servico/{id}/fotos
     // GET /api/ordens-servico/{id}/fotos
     // PUT /api/ordens-servico/{id}/assinatura (ou POST)
+
+    @GetMapping("/next-number")
+    public ResponseEntity<String> getNextOrdemServicoNumber() {
+        String nextNumber = ordemServicoService.getNextOsNumber(); // Método a ser criado no Service
+        if (nextNumber != null) {
+            return ResponseEntity.ok(nextNumber);
+        } else {
+            // Retorna um erro 500 se não conseguir gerar o número
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Não foi possível gerar o próximo número da OS.");
+        }
+    }
 }
+
+
+
+
