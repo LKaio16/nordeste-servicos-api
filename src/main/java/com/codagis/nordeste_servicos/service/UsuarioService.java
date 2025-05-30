@@ -6,6 +6,7 @@ import com.codagis.nordeste_servicos.exception.ResourceNotFoundException;
 import com.codagis.nordeste_servicos.model.Usuario;
 import com.codagis.nordeste_servicos.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +18,9 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<UsuarioResponseDTO> findAllUsuarios() {
         List<Usuario> usuarios = usuarioRepository.findAll();
@@ -32,11 +36,18 @@ public class UsuarioService {
     }
 
     public UsuarioResponseDTO createUsuario(UsuarioRequestDTO usuarioRequestDTO) {
-        Usuario usuario = convertToEntity(usuarioRequestDTO);
-        // TODO: Criptografar a senha antes de salvar
+        Usuario usuario = new Usuario();
+        usuario.setNome(usuarioRequestDTO.getNome());
+        usuario.setCracha(usuarioRequestDTO.getCracha());
+        usuario.setEmail(usuarioRequestDTO.getEmail());
+        // Criptografe a senha antes de definir no objeto usuário
+        usuario.setSenha(passwordEncoder.encode(usuarioRequestDTO.getSenha()));
+        usuario.setPerfil(usuarioRequestDTO.getPerfil());
+
         Usuario savedUsuario = usuarioRepository.save(usuario);
         return convertToDTO(savedUsuario);
     }
+
 
     public UsuarioResponseDTO updateUsuario(Long id, UsuarioRequestDTO usuarioRequestDTO) {
         Usuario existingUsuario = usuarioRepository.findById(id)
