@@ -93,6 +93,7 @@ public class OrdemServicoService {
         ordemServico.setDataAbertura(LocalDateTime.now());
         ordemServico.setDataAgendamento(ordemServicoRequestDTO.getDataAgendamento());
         ordemServico.setCliente(cliente);
+        ordemServico.setPrioridade(ordemServicoRequestDTO.getPrioridade());
         ordemServico.setEquipamento(equipamento);
         ordemServico.setTecnicoAtribuido(tecnicoAtribuido);
         ordemServico.setProblemaRelatado(ordemServicoRequestDTO.getProblemaRelatado());
@@ -160,6 +161,7 @@ public class OrdemServicoService {
         dto.setDataAbertura(ordemServico.getDataAbertura());
         dto.setDataAgendamento(ordemServico.getDataAgendamento());
         dto.setDataFechamento(ordemServico.getDataFechamento());
+        dto.setPrioridade(ordemServico.getPrioridade());
         // dto.setDataHoraEmissao = não é um campo da entidade, é gerado na emissão do PDF
 
         dto.setClienteId(ordemServico.getCliente().getId());
