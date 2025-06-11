@@ -4,8 +4,11 @@ import com.codagis.nordeste_servicos.dto.OrdemServicoRequestDTO;
 import com.codagis.nordeste_servicos.dto.OrdemServicoResponseDTO;
 import com.codagis.nordeste_servicos.model.StatusOS;
 import com.codagis.nordeste_servicos.service.OrdemServicoService;
+import com.codagis.nordeste_servicos.service.PdfGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +20,9 @@ public class OrdemServicoController {
 
     @Autowired
     private OrdemServicoService ordemServicoService;
+
+    @Autowired
+    private PdfGenerationService pdfGenerationService; // Injetar o serviço de PDF
 
     @GetMapping
     public ResponseEntity<List<OrdemServicoResponseDTO>> getAllOrdensServico(
@@ -88,6 +94,34 @@ public class OrdemServicoController {
         } else {
             // Retorna um erro 500 se não conseguir gerar o número
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Não foi possível gerar o próximo número da OS.");
+        }
+    }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> generateOsPdf(@PathVariable Long id) {
+        try {
+            // 1. Obter os dados da Ordem de Serviço
+            OrdemServicoResponseDTO osData = ordemServicoService.findOrdemServicoById(id);
+            if (osData == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // 2. Gerar o PDF usando o serviço
+            byte[] pdfBytes = pdfGenerationService.generateOsReportPdf(osData);
+
+            // 3. Configurar os cabeçalhos da resposta para download de PDF
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            // Define o nome do arquivo quando o usuário for baixar
+            headers.setContentDispositionFormData("filename", "relatorio_os_" + osData.getNumeroOS() + ".pdf");
+            headers.setContentLength(pdfBytes.length);
+
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+
+        } catch (Exception e) {
+            // Logar o erro para depuração
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }

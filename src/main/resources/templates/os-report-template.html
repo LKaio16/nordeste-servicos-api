@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Relatório de Assistência Técnica - DCDN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            font-size: 10pt;
+            color: #333;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .header .logo-section {
+            display: flex;
+            align-items: center;
+        }
+        .header .logo {
+            width: 70px;
+            height: auto;
+            margin-right: 15px;
+        }
+        .header .company-info {
+            font-size: 8pt;
+            color: #555;
+            line-height: 1.4;
+        }
+        .header .company-info p {
+            margin: 2px 0;
+        }
+        .header .os-info {
+            text-align: right;
+            font-size: 9pt;
+        }
+        .header .os-info h1 {
+            font-size: 16pt;
+            color: #003366;
+            margin: 0 0 5px 0;
+            font-weight: 700;
+            border-bottom: 1px solid #003366;
+            padding-bottom: 3px;
+        }
+        .header .os-info p {
+            margin: 3px 0;
+            color: #555;
+        }
+        .header .os-info .label {
+            font-weight: 500;
+            color: #003366;
+        }
+
+        .document-title {
+            text-align: center;
+            font-size: 14pt;
+            font-weight: 700;
+            color: #003366;
+            margin: 15px 0;
+            padding: 8px;
+            background-color: #f0f5ff;
+            border: 1px solid #d0e0f0;
+        }
+
+        .section-title {
+            background-color: #003366;
+            color: white;
+            padding: 6px 10px;
+            margin: 20px 0 10px 0;
+            font-weight: 500;
+            font-size: 10.5pt;
+            border-radius: 3px;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        .info-table th {
+            background-color: #f0f5ff;
+            border: 1px solid #d0e0f0;
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: 500;
+            font-size: 9pt;
+            width: 25%;
+        }
+        .info-table td {
+            border: 1px solid #d0e0f0;
+            padding: 8px 10px;
+            font-size: 9pt;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 20px 0;
+            font-size: 9pt;
+        }
+        .data-table th {
+            background-color: #003366;
+            color: white;
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: 500;
+        }
+        .data-table td {
+            border: 1px solid #d0e0f0;
+            padding: 8px 10px;
+        }
+        .data-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .text-block {
+            border: 1px solid #d0e0f0;
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin: 10px 0 20px 0;
+            border-radius: 3px;
+            font-size: 9.5pt;
+            line-height: 1.6;
+        }
+        .text-block-label {
+            font-weight: 500;
+            color: #003366;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .signature-area {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px dashed #999;
+            text-align: center;
+        }
+        .signature-line {
+            border-top: 1px solid #666;
+            width: 250px;
+            margin: 25px auto 5px auto;
+        }
+        .signature-area p {
+            margin: 5px 0;
+            font-size: 9pt;
+        }
+        .signature-area strong {
+            color: #003366;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #d0e0f0;
+            background-color: #f9f9f9;
+            border-radius: 3px;
+        }
+        .image-container img {
+            max-width: 90%;
+            height: auto;
+            border: 1px solid #ccc;
+            padding: 3px;
+            background-color: #fff;
+        }
+        .image-container p {
+            font-size: 8.5pt;
+            color: #666;
+            margin: 5px 0 0 0;
+        }
+
+        .footer {
+            font-size: 8pt;
+            color: #777;
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="logo-section">
+            <img class="logo" src="https://wallpapers.com/images/hd/snoopy-pictures-pl0xxh5fxjm8izmy.jpg" alt="DCDN Logo" />
+            <div class="company-info">
+                <p><strong>DCDN FORTALEZA</strong></p>
+                <p>RODOVIA BR.116, 10.001, KM 10, PARQUE SANTA MARIA</p>
+                <p>FORTALEZA - CEP: 60.873-155-CE</p>
+                <p>Tel: (85) 4011-6400</p>
+            </div>
+        </div>
+        <div class="os-info">
+            <h1>ORDEM DE SERVIÇO Nº <span th:text="${os.numeroOS ?: 'N/A'}">N/A</span></h1>
+            <p><span class="label">Status:</span> <span th:text="${os.status?.name() ?: 'N/A'}">N/A</span></p>
+            <p><span class="label">Prioridade:</span> <span th:text="${os.prioridade?.name() ?: 'N/A'}">N/A</span></p>
+            <p><span class="label">Abertura:</span> <span th:text="${os.dataAbertura != null ? #temporals.format(os.dataAbertura, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</span></p>
+            <p><span class="label">Agendamento:</span> <span th:text="${os.dataAgendamento != null ? #temporals.format(os.dataAgendamento, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</span></p>
+            <p><span class="label">Fechamento:</span> <span th:text="${os.dataFechamento != null ? #temporals.format(os.dataFechamento, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</span></p>
+            <p><span class="label">Emissão:</span> <span th:text="${os.dataHoraEmissao != null ? #temporals.format(os.dataHoraEmissao, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</span></p>
+        </div>
+    </div>
+
+    <div class="document-title">RELATÓRIO DE ASSISTÊNCIA TÉCNICA</div>
+
+    <div class="section-title">1. DADOS DO TÉCNICO</div>
+    <table class="info-table">
+        <tr>
+            <th>ID Técnico</th>
+            <td th:text="${os.tecnicoAtribuido?.id ?: 'N/A'}">N/A</td>
+            <th>Nome do Técnico</th>
+            <td th:text="${os.tecnicoAtribuido?.nome ?: 'Nenhum técnico atribuído'}">N/A</td>
+        </tr>
+    </table>
+
+    <div class="section-title">2. DADOS DO EQUIPAMENTO</div>
+    <table class="info-table">
+        <tr>
+            <th>ID Equipamento</th>
+            <td th:text="${os.equipamentoId ?: 'N/A'}">N/A</td>
+            <th>Descrição</th>
+            <td th:text="${os.descricaoEquipamento ?: 'Nenhum equipamento associado'}">N/A</td>
+        </tr>
+    </table>
+
+    <div class="section-title">3. DADOS DO CLIENTE</div>
+    <table class="info-table">
+        <tr>
+            <th>ID Cliente</th>
+            <td th:text="${os.clienteId ?: 'N/A'}">N/A</td>
+            <th>Nome do Cliente</th>
+            <td th:text="${os.nomeCliente ?: 'Nenhum cliente associado'}">N/A</td>
+        </tr>
+    </table>
+
+    <div class="section-title">4. DESCRIÇÃO DO SERVIÇO</div>
+    <div class="text-block">
+        <span class="text-block-label">Reclamação do Cliente:</span>
+        <div th:text="${os.problemaRelatado ?: 'Nenhuma descrição fornecida.'}">Nenhuma descrição fornecida.</div>
+    </div>
+
+    <div class="text-block">
+        <span class="text-block-label">Análise da Falha / Causa:</span>
+        <div th:text="${os.analiseFalha ?: 'Nenhuma análise da falha fornecida.'}">Nenhuma análise da falha fornecida.</div>
+    </div>
+
+    <div class="text-block">
+        <span class="text-block-label">Serviços Realizados / Solução:</span>
+        <div th:text="${os.solucaoAplicada ?: 'Nenhuma solução aplicada fornecida.'}">Nenhuma solução aplicada fornecida.</div>
+    </div>
+
+    <div class="section-title">5. REGISTRO DE TEMPO</div>
+    <table class="data-table" th:if="${os.registrosTempo != null and !os.registrosTempo.isEmpty()}">
+        <thead>
+        <tr>
+            <th>Data</th>
+            <th>Serviço</th>
+            <th>Técnico</th>
+            <th>Início</th>
+            <th>Término</th>
+            <th>Horas</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="rt : ${os.registrosTempo}">
+            <td th:text="${rt.data != null ? #temporals.format(rt.data, 'dd/MM/yyyy') : 'N/A'}">N/A</td>
+            <td th:text="${rt.descricaoTipoServico ?: 'N/A'}">N/A</td>
+            <td th:text="${rt.nomeTecnico ?: 'N/A'}">N/A</td>
+            <td th:text="${rt.horaInicio != null ? #temporals.format(rt.horaInicio, 'HH:mm') : 'N/A'}">N/A</td>
+            <td th:text="${rt.horaTermino != null ? #temporals.format(rt.horaTermino, 'HH:mm') : 'N/A'}">N/A</td>
+            <td th:text="${rt.horasTrabalhadas ?: 'N/A'}">N/A</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="text-block" th:if="${os.registrosTempo == null or os.registrosTempo.isEmpty()}">
+        Nenhum registro de tempo cadastrado.
+    </div>
+
+    <div class="page-break"></div>
+
+    <div class="section-title">6. REGISTRO DE DESLOCAMENTO</div>
+    <table class="data-table" th:if="${os.registrosDeslocamento != null and !os.registrosDeslocamento.isEmpty()}">
+        <thead>
+        <tr>
+            <th>Data</th>
+            <th>Placa</th>
+            <th>Saída De</th>
+            <th>Km Inicial</th>
+            <th>Chegada Em</th>
+            <th>Km Final</th>
+            <th>Total Km</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="rd : ${os.registrosDeslocamento}">
+            <td th:text="${rd.data != null ? #temporals.format(rd.data, 'dd/MM/yyyy') : 'N/A'}">N/A</td>
+            <td th:text="${rd.placaVeiculo ?: 'N/A'}">N/A</td>
+            <td th:text="${rd.saidaDe ?: 'N/A'}">N/A</td>
+            <td th:text="${rd.kmInicial ?: 'N/A'}">N/A</td>
+            <td th:text="${rd.chegadaEm ?: 'N/A'}">N/A</td>
+            <td th:text="${rd.kmFinal ?: 'N/A'}">N/A</td>
+            <td th:text="${rd.totalKm ?: 'N/A'}">N/A</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="text-block" th:if="${os.registrosDeslocamento == null or os.registrosDeslocamento.isEmpty()}">
+        Nenhum registro de deslocamento cadastrado.
+    </div>
+
+    <div class="section-title">7. MATERIAIS UTILIZADOS</div>
+    <table class="data-table" th:if="${os.itensUtilizados != null and !os.itensUtilizados.isEmpty()}">
+        <thead>
+        <tr>
+            <th>Código</th>
+            <th>Descrição</th>
+            <th>Qtd. Requisitada</th>
+            <th>Qtd. Utilizada</th>
+            <th>Qtd. Devolvida</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="iu : ${os.itensUtilizados}">
+            <td th:text="${iu.codigoPecaMaterial ?: 'N/A'}">N/A</td>
+            <td th:text="${iu.descricaoPecaMaterial ?: 'N/A'}">N/A</td>
+            <td th:text="${iu.quantidadeRequisitada ?: 'N/A'}">N/A</td>
+            <td th:text="${iu.quantidadeUtilizada ?: 'N/A'}">N/A</td>
+            <td th:text="${iu.quantidadeDevolvida ?: 'N/A'}">N/A</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="text-block" th:if="${os.itensUtilizados == null or os.itensUtilizados.isEmpty()}">
+        Nenhum material utilizado registrado.
+    </div>
+
+    <div class="section-title">8. OUTRAS DESPESAS</div>
+    <div class="text-block">
+        Nenhuma outra despesa registrada.
+    </div>
+
+    <div class="page-break"></div>
+
+    <div class="section-title">9. REGISTRO FOTOGRÁFICO</div>
+    <div th:if="${os.fotos != null and !os.fotos.isEmpty()}">
+        <div th:each="foto : ${os.fotos}" class="image-container">
+            <img th:src="${foto.urlAcesso}" alt="Foto da OS" />
+            <p th:text="${foto.nomeArquivoOriginal ?: 'Sem descrição'}"></p>
+        </div>
+    </div>
+    <div class="text-block" th:if="${os.fotos == null or os.fotos.isEmpty()}">
+        Nenhuma foto anexada ao serviço.
+    </div>
+
+    <div class="section-title">10. ASSINATURAS</div>
+    <div th:if="${os.assinatura != null}" class="signature-area">
+        <p><strong>CLIENTE</strong></p>
+        <div class="signature-line"></div>
+        <p><strong>Nome:</strong> <span th:text="${os.assinatura.nomeResponsavel ?: 'N/A'}">N/A</span></p>
+        <p><strong>Documento:</strong> <span th:text="${os.assinatura.documentoResponsavel ?: 'N/A'}">N/A</span></p>
+        <p><strong>Data/Hora:</strong> <span th:text="${os.assinatura.dataHora != null ? #temporals.format(os.assinatura.dataHora, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</span></p>
+
+        <p style="margin-top: 30px;"><strong>TÉCNICO RESPONSÁVEL</strong></p>
+        <div class="signature-line"></div>
+        <p><strong>Nome:</strong> <span th:text="${os.assinatura.nomeTecnico ?: 'N/A'}">N/A</span></p>
+    </div>
+    <div class="text-block" th:unless="${os.assinatura != null}">
+        Nenhuma assinatura registrada.
+    </div>
+
+    <div class="footer">
+        Relatório gerado em <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}">data/hora</span> |
+        DCDN Fortaleza - Todos os direitos reservados
+    </div>
+</div>
+
+</body>
+</html>
