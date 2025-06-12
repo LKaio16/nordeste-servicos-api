@@ -8,157 +8,170 @@
         body {
             font-family: 'Roboto', Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             font-size: 10pt;
             color: #333;
-            line-height: 1.5;
+            background-color: #f4f4f4;
         }
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            max-width: 8.5in;
+            min-height: 11in;
+            margin: 20px auto;
             background-color: #fff;
-            padding: 30px;
+            padding: 40px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
         }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #003366;
         }
         .header .logo-section {
             display: flex;
             align-items: center;
         }
         .header .logo {
-            width: 70px;
+            width: 80px;
             height: auto;
-            margin-right: 15px;
+            margin-right: 20px;
         }
         .header .company-info {
-            font-size: 8pt;
-            color: #555;
-            line-height: 1.4;
+            font-size: 9pt;
+            color: #444;
+        }
+        .header .company-info h2 {
+            margin: 0 0 5px 0;
+            color: #003366;
+            font-size: 14pt;
         }
         .header .company-info p {
-            margin: 2px 0;
+            margin: 3px 0;
         }
         .header .os-info {
             text-align: right;
             font-size: 9pt;
+            min-width: 280px;
         }
         .header .os-info h1 {
-            font-size: 16pt;
+            font-size: 18pt;
             color: #003366;
-            margin: 0 0 5px 0;
+            margin: 0 0 10px 0;
             font-weight: 700;
-            border-bottom: 1px solid #003366;
-            padding-bottom: 3px;
         }
         .header .os-info p {
-            margin: 3px 0;
+            margin: 4px 0;
             color: #555;
+            display: flex;
+            justify-content: space-between;
         }
         .header .os-info .label {
             font-weight: 500;
             color: #003366;
+            margin-right: 10px;
         }
 
         .document-title {
             text-align: center;
-            font-size: 14pt;
+            font-size: 16pt;
             font-weight: 700;
             color: #003366;
-            margin: 15px 0;
-            padding: 8px;
+            margin: 20px 0 30px 0;
+            padding: 10px;
             background-color: #f0f5ff;
-            border: 1px solid #d0e0f0;
+            border-left: 5px solid #003366;
         }
 
         .section-title {
             background-color: #003366;
             color: white;
-            padding: 6px 10px;
-            margin: 20px 0 10px 0;
+            padding: 8px 12px;
+            margin: 25px 0 15px 0;
             font-weight: 500;
-            font-size: 10.5pt;
-            border-radius: 3px;
+            font-size: 11pt;
+            border-radius: 4px;
         }
 
         .info-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .info-table th, .info-table td {
+            border: 1px solid #dce4f0;
+            padding: 9px 12px;
+            font-size: 9.5pt;
+            text-align: left;
         }
         .info-table th {
             background-color: #f0f5ff;
-            border: 1px solid #d0e0f0;
-            padding: 8px 10px;
-            text-align: left;
             font-weight: 500;
-            font-size: 9pt;
-            width: 25%;
+            width: 18%;
         }
         .info-table td {
-            border: 1px solid #d0e0f0;
-            padding: 8px 10px;
-            font-size: 9pt;
+            background-color: #fdfdff;
         }
 
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 10px 0 20px 0;
+            margin-bottom: 20px;
             font-size: 9pt;
         }
-        .data-table th {
+        .data-table thead th {
             background-color: #003366;
             color: white;
-            padding: 8px 10px;
+            padding: 10px;
             text-align: left;
             font-weight: 500;
         }
-        .data-table td {
-            border: 1px solid #d0e0f0;
-            padding: 8px 10px;
+        .data-table tbody td {
+            border: 1px solid #dce4f0;
+            padding: 9px 10px;
         }
-        .data-table tr:nth-child(even) {
-            background-color: #f9f9f9;
+        .data-table tbody tr:nth-child(even) {
+            background-color: #f9fafc;
         }
 
         .text-block {
-            border: 1px solid #d0e0f0;
-            background-color: #f9f9f9;
-            padding: 10px;
+            border: 1px solid #dce4f0;
+            background-color: #f9fafc;
+            padding: 15px;
             margin: 10px 0 20px 0;
-            border-radius: 3px;
+            border-radius: 4px;
             font-size: 9.5pt;
             line-height: 1.6;
         }
         .text-block-label {
-            font-weight: 500;
+            font-weight: 700;
             color: #003366;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             display: block;
+            font-size: 10pt;
         }
 
         .signature-area {
-            margin-top: 50px;
-            padding-top: 20px;
-            border-top: 1px dashed #999;
+            margin-top: 60px;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+        }
+        .signature-block {
             text-align: center;
+            width: 45%;
         }
         .signature-line {
-            border-top: 1px solid #666;
-            width: 250px;
-            margin: 25px auto 5px auto;
+            border-top: 1px solid #333;
+            margin-top: 50px;
+            margin-bottom: 8px;
         }
-        .signature-area p {
-            margin: 5px 0;
+        .signature-block p {
+            margin: 2px 0;
             font-size: 9pt;
         }
-        .signature-area strong {
+        .signature-block strong {
             color: #003366;
         }
 
@@ -169,31 +182,40 @@
         .image-container {
             text-align: center;
             margin: 20px 0;
-            padding: 10px;
-            border: 1px solid #d0e0f0;
-            background-color: #f9f9f9;
-            border-radius: 3px;
+            padding: 15px;
+            border: 1px solid #dce4f0;
+            background-color: #f9fafc;
+            border-radius: 4px;
         }
         .image-container img {
-            max-width: 90%;
+            max-width: 95%;
             height: auto;
             border: 1px solid #ccc;
-            padding: 3px;
+            padding: 5px;
             background-color: #fff;
         }
         .image-container p {
-            font-size: 8.5pt;
-            color: #666;
-            margin: 5px 0 0 0;
+            font-size: 9pt;
+            color: #555;
+            margin-top: 10px;
         }
 
         .footer {
-            font-size: 8pt;
-            color: #777;
+            font-size: 8.5pt;
+            color: #888;
             text-align: center;
-            margin-top: 30px;
-            padding-top: 10px;
-            border-top: 1px solid #eee;
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .empty-state {
+            padding: 20px;
+            text-align: center;
+            color: #777;
+            background-color: #f9fafc;
+            border: 1px dashed #dce4f0;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -204,14 +226,14 @@
         <div class="logo-section">
             <img class="logo" src="https://wallpapers.com/images/hd/snoopy-pictures-pl0xxh5fxjm8izmy.jpg" alt="DCDN Logo" />
             <div class="company-info">
-                <p><strong>DCDN FORTALEZA</strong></p>
+                <h2>DCDN FORTALEZA</h2>
                 <p>RODOVIA BR.116, 10.001, KM 10, PARQUE SANTA MARIA</p>
                 <p>FORTALEZA - CEP: 60.873-155-CE</p>
                 <p>Tel: (85) 4011-6400</p>
             </div>
         </div>
         <div class="os-info">
-            <h1>ORDEM DE SERVIÇO Nº <span th:text="${os.numeroOS ?: 'N/A'}">N/A</span></h1>
+            <h1>OS Nº <span th:text="${os.numeroOS ?: 'N/A'}">N/A</span></h1>
             <p><span class="label">Status:</span> <span th:text="${os.status?.name() ?: 'N/A'}">N/A</span></p>
             <p><span class="label">Prioridade:</span> <span th:text="${os.prioridade?.name() ?: 'N/A'}">N/A</span></p>
             <p><span class="label">Abertura:</span> <span th:text="${os.dataAbertura != null ? #temporals.format(os.dataAbertura, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</span></p>
@@ -223,171 +245,207 @@
 
     <div class="document-title">RELATÓRIO DE ASSISTÊNCIA TÉCNICA</div>
 
-    <div class="section-title">1. DADOS DO TÉCNICO</div>
-    <table class="info-table">
+    <div class="section-title">1. DADOS DO CLIENTE</div>
+    <table class="info-table" th:if="${os.cliente != null}">
         <tr>
-            <th>ID Técnico</th>
-            <td th:text="${os.tecnicoAtribuido?.id ?: 'N/A'}">N/A</td>
-            <th>Nome do Técnico</th>
-            <td th:text="${os.tecnicoAtribuido?.nome ?: 'Nenhum técnico atribuído'}">N/A</td>
+            <th>Cliente</th>
+            <td colspan="3" th:text="${os.cliente.nomeCompleto ?: 'N/A'}">N/A</td>
+        </tr>
+        <tr>
+            <th>CPF/CNPJ</th>
+            <td th:text="${os.cliente.cpfCnpj ?: 'N/A'}">N/A</td>
+            <th>Telefone</th>
+            <td th:text="${os.cliente.telefonePrincipal ?: 'N/A'}">N/A</td>
+        </tr>
+        <tr>
+            <th>Endereço</th>
+            <td colspan="3" th:text="${(os.cliente.rua ?: '') + ', ' + (os.cliente.numero ?: '') + (os.cliente.complemento != null ? ' - ' + os.cliente.complemento : '')}">N/A</td>
+        </tr>
+        <tr>
+            <th>Bairro</th>
+            <td th:text="${os.cliente.bairro ?: 'N/A'}">N/A</td>
+            <th>Cidade/UF</th>
+            <td th:text="${(os.cliente.cidade ?: '') + '/' + (os.cliente.estado ?: '')}">N/A</td>
         </tr>
     </table>
+    <div class="empty-state" th:if="${os.cliente == null}">Nenhum cliente associado.</div>
 
     <div class="section-title">2. DADOS DO EQUIPAMENTO</div>
-    <table class="info-table">
+    <table class="info-table" th:if="${os.equipamento != null}">
         <tr>
-            <th>ID Equipamento</th>
-            <td th:text="${os.equipamentoId ?: 'N/A'}">N/A</td>
-            <th>Descrição</th>
-            <td th:text="${os.descricaoEquipamento ?: 'Nenhum equipamento associado'}">N/A</td>
+            <th>Tipo</th>
+            <td th:text="${os.equipamento.tipo ?: 'N/A'}">N/A</td>
+            <th>Marca/Modelo</th>
+            <td th:text="${os.equipamento.marcaModelo ?: 'N/A'}">N/A</td>
+        </tr>
+        <tr>
+            <th>Nº de Série/Chassi</th>
+            <td th:text="${os.equipamento.numeroSerieChassi ?: 'N/A'}">N/A</td>
+            <th>Horímetro</th>
+            <td th:text="${os.equipamento.horimetro ?: 'N/A'}">N/A</td>
         </tr>
     </table>
+    <div class="empty-state" th:if="${os.equipamento == null}">Nenhum equipamento associado.</div>
 
-    <div class="section-title">3. DADOS DO CLIENTE</div>
-    <table class="info-table">
+    <div class="section-title">3. DADOS DO TÉCNICO</div>
+    <table class="info-table" th:if="${os.tecnicoAtribuido != null}">
         <tr>
-            <th>ID Cliente</th>
-            <td th:text="${os.clienteId ?: 'N/A'}">N/A</td>
-            <th>Nome do Cliente</th>
-            <td th:text="${os.nomeCliente ?: 'Nenhum cliente associado'}">N/A</td>
+            <th>Nome</th>
+            <td th:text="${os.tecnicoAtribuido.nome ?: 'N/A'}">N/A</td>
+            <th>Crachá</th>
+            <td th:text="${os.tecnicoAtribuido.cracha ?: 'N/A'}">N/A</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td colspan="3" th:text="${os.tecnicoAtribuido.email ?: 'N/A'}">N/A</td>
         </tr>
     </table>
+    <div class="empty-state" th:if="${os.tecnicoAtribuido == null}">Nenhum técnico atribuído.</div>
+
 
     <div class="section-title">4. DESCRIÇÃO DO SERVIÇO</div>
     <div class="text-block">
         <span class="text-block-label">Reclamação do Cliente:</span>
-        <div th:text="${os.problemaRelatado ?: 'Nenhuma descrição fornecida.'}">Nenhuma descrição fornecida.</div>
+        <div th:text="${os.problemaRelatado ?: 'Nenhuma reclamação fornecida.'}"></div>
     </div>
 
     <div class="text-block">
-        <span class="text-block-label">Análise da Falha / Causa:</span>
-        <div th:text="${os.analiseFalha ?: 'Nenhuma análise da falha fornecida.'}">Nenhuma análise da falha fornecida.</div>
+        <span class="text-block-label">Análise da Falha / Causa Provável:</span>
+        <div th:text="${os.analiseFalha ?: 'Nenhuma análise da falha fornecida.'}"></div>
     </div>
 
     <div class="text-block">
-        <span class="text-block-label">Serviços Realizados / Solução:</span>
-        <div th:text="${os.solucaoAplicada ?: 'Nenhuma solução aplicada fornecida.'}">Nenhuma solução aplicada fornecida.</div>
-    </div>
-
-    <div class="section-title">5. REGISTRO DE TEMPO</div>
-    <table class="data-table" th:if="${os.registrosTempo != null and !os.registrosTempo.isEmpty()}">
-        <thead>
-        <tr>
-            <th>Data</th>
-            <th>Serviço</th>
-            <th>Técnico</th>
-            <th>Início</th>
-            <th>Término</th>
-            <th>Horas</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="rt : ${os.registrosTempo}">
-            <td th:text="${rt.data != null ? #temporals.format(rt.data, 'dd/MM/yyyy') : 'N/A'}">N/A</td>
-            <td th:text="${rt.descricaoTipoServico ?: 'N/A'}">N/A</td>
-            <td th:text="${rt.nomeTecnico ?: 'N/A'}">N/A</td>
-            <td th:text="${rt.horaInicio != null ? #temporals.format(rt.horaInicio, 'HH:mm') : 'N/A'}">N/A</td>
-            <td th:text="${rt.horaTermino != null ? #temporals.format(rt.horaTermino, 'HH:mm') : 'N/A'}">N/A</td>
-            <td th:text="${rt.horasTrabalhadas ?: 'N/A'}">N/A</td>
-        </tr>
-        </tbody>
-    </table>
-    <div class="text-block" th:if="${os.registrosTempo == null or os.registrosTempo.isEmpty()}">
-        Nenhum registro de tempo cadastrado.
+        <span class="text-block-label">Serviços Realizados / Solução Aplicada:</span>
+        <div th:text="${os.solucaoAplicada ?: 'Nenhuma solução aplicada fornecida.'}"></div>
     </div>
 
     <div class="page-break"></div>
 
+    <div class="section-title">5. REGISTRO DE TEMPO</div>
+    <div th:if="${os.registrosTempo != null and !os.registrosTempo.isEmpty()}">
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Data</th>
+                <th>Serviço</th>
+                <th>Técnico</th>
+                <th>Início</th>
+                <th>Término</th>
+                <th>Total Horas</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="rt : ${os.registrosTempo}">
+                <td th:text="${rt.data != null ? #temporals.format(rt.data, 'dd/MM/yyyy') : 'N/A'}"></td>
+                <td th:text="${rt.descricaoTipoServico ?: 'N/A'}"></td>
+                <td th:text="${rt.nomeTecnico ?: 'N/A'}"></td>
+                <td th:text="${rt.horaInicio != null ? #temporals.format(rt.horaInicio, 'HH:mm') : 'N/A'}"></td>
+                <td th:text="${rt.horaTermino != null ? #temporals.format(rt.horaTermino, 'HH:mm') : 'N/A'}"></td>
+                <td th:text="${rt.horasTrabalhadas ?: 'N/A'}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="empty-state" th:if="${os.registrosTempo == null or os.registrosTempo.isEmpty()}">
+        Nenhum registro de tempo cadastrado.
+    </div>
+
     <div class="section-title">6. REGISTRO DE DESLOCAMENTO</div>
-    <table class="data-table" th:if="${os.registrosDeslocamento != null and !os.registrosDeslocamento.isEmpty()}">
-        <thead>
-        <tr>
-            <th>Data</th>
-            <th>Placa</th>
-            <th>Saída De</th>
-            <th>Km Inicial</th>
-            <th>Chegada Em</th>
-            <th>Km Final</th>
-            <th>Total Km</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="rd : ${os.registrosDeslocamento}">
-            <td th:text="${rd.data != null ? #temporals.format(rd.data, 'dd/MM/yyyy') : 'N/A'}">N/A</td>
-            <td th:text="${rd.placaVeiculo ?: 'N/A'}">N/A</td>
-            <td th:text="${rd.saidaDe ?: 'N/A'}">N/A</td>
-            <td th:text="${rd.kmInicial ?: 'N/A'}">N/A</td>
-            <td th:text="${rd.chegadaEm ?: 'N/A'}">N/A</td>
-            <td th:text="${rd.kmFinal ?: 'N/A'}">N/A</td>
-            <td th:text="${rd.totalKm ?: 'N/A'}">N/A</td>
-        </tr>
-        </tbody>
-    </table>
-    <div class="text-block" th:if="${os.registrosDeslocamento == null or os.registrosDeslocamento.isEmpty()}">
+    <div th:if="${os.registrosDeslocamento != null and !os.registrosDeslocamento.isEmpty()}">
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Data</th>
+                <th>Placa</th>
+                <th>Saída De</th>
+                <th>Km Inicial</th>
+                <th>Chegada Em</th>
+                <th>Km Final</th>
+                <th>Total Km</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="rd : ${os.registrosDeslocamento}">
+                <td th:text="${rd.data != null ? #temporals.format(rd.data, 'dd/MM/yyyy') : 'N/A'}"></td>
+                <td th:text="${rd.placaVeiculo ?: 'N/A'}"></td>
+                <td th:text="${rd.saidaDe ?: 'N/A'}"></td>
+                <td th:text="${rd.kmInicial ?: 'N/A'}"></td>
+                <td th:text="${rd.chegadaEm ?: 'N/A'}"></td>
+                <td th:text="${rd.kmFinal ?: 'N/A'}"></td>
+                <td th:text="${rd.totalKm ?: 'N/A'}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="empty-state" th:if="${os.registrosDeslocamento == null or os.registrosDeslocamento.isEmpty()}">
         Nenhum registro de deslocamento cadastrado.
     </div>
 
     <div class="section-title">7. MATERIAIS UTILIZADOS</div>
-    <table class="data-table" th:if="${os.itensUtilizados != null and !os.itensUtilizados.isEmpty()}">
-        <thead>
-        <tr>
-            <th>Código</th>
-            <th>Descrição</th>
-            <th>Qtd. Requisitada</th>
-            <th>Qtd. Utilizada</th>
-            <th>Qtd. Devolvida</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="iu : ${os.itensUtilizados}">
-            <td th:text="${iu.codigoPecaMaterial ?: 'N/A'}">N/A</td>
-            <td th:text="${iu.descricaoPecaMaterial ?: 'N/A'}">N/A</td>
-            <td th:text="${iu.quantidadeRequisitada ?: 'N/A'}">N/A</td>
-            <td th:text="${iu.quantidadeUtilizada ?: 'N/A'}">N/A</td>
-            <td th:text="${iu.quantidadeDevolvida ?: 'N/A'}">N/A</td>
-        </tr>
-        </tbody>
-    </table>
-    <div class="text-block" th:if="${os.itensUtilizados == null or os.itensUtilizados.isEmpty()}">
-        Nenhum material utilizado registrado.
+    <div th:if="${os.itensUtilizados != null and !os.itensUtilizados.isEmpty()}">
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Código</th>
+                <th>Descrição</th>
+                <th>Qtd. Requisitada</th>
+                <th>Qtd. Utilizada</th>
+                <th>Qtd. Devolvida</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="iu : ${os.itensUtilizados}">
+                <td th:text="${iu.codigoPecaMaterial ?: 'N/A'}"></td>
+                <td th:text="${iu.descricaoPecaMaterial ?: 'N/A'}"></td>
+                <td th:text="${iu.quantidadeRequisitada ?: 'N/A'}"></td>
+                <td th:text="${iu.quantidadeUtilizada ?: 'N/A'}"></td>
+                <td th:text="${iu.quantidadeDevolvida ?: 'N/A'}"></td>
+            </tr>
+            </tbody>
+        </table>
     </div>
-
-    <div class="section-title">8. OUTRAS DESPESAS</div>
-    <div class="text-block">
-        Nenhuma outra despesa registrada.
+    <div class="empty-state" th:if="${os.itensUtilizados == null or os.itensUtilizados.isEmpty()}">
+        Nenhum material utilizado registrado.
     </div>
 
     <div class="page-break"></div>
 
-    <div class="section-title">9. REGISTRO FOTOGRÁFICO</div>
+    <div class="section-title">8. REGISTRO FOTOGRÁFICO</div>
     <div th:if="${os.fotos != null and !os.fotos.isEmpty()}">
         <div th:each="foto : ${os.fotos}" class="image-container">
             <img th:src="${foto.urlAcesso}" alt="Foto da OS" />
             <p th:text="${foto.nomeArquivoOriginal ?: 'Sem descrição'}"></p>
         </div>
     </div>
-    <div class="text-block" th:if="${os.fotos == null or os.fotos.isEmpty()}">
+    <div class="empty-state" th:if="${os.fotos == null or os.fotos.isEmpty()}">
         Nenhuma foto anexada ao serviço.
     </div>
 
-    <div class="section-title">10. ASSINATURAS</div>
-    <div th:if="${os.assinatura != null}" class="signature-area">
-        <p><strong>CLIENTE</strong></p>
-        <div class="signature-line"></div>
-        <p><strong>Nome:</strong> <span th:text="${os.assinatura.nomeResponsavel ?: 'N/A'}">N/A</span></p>
-        <p><strong>Documento:</strong> <span th:text="${os.assinatura.documentoResponsavel ?: 'N/A'}">N/A</span></p>
-        <p><strong>Data/Hora:</strong> <span th:text="${os.assinatura.dataHora != null ? #temporals.format(os.assinatura.dataHora, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</span></p>
 
-        <p style="margin-top: 30px;"><strong>TÉCNICO RESPONSÁVEL</strong></p>
-        <div class="signature-line"></div>
-        <p><strong>Nome:</strong> <span th:text="${os.assinatura.nomeTecnico ?: 'N/A'}">N/A</span></p>
+    <div class="section-title">9. ASSINATURAS</div>
+    <div th:if="${os.assinatura != null}">
+        <div class="signature-area">
+            <div class="signature-block">
+                <p><strong>CLIENTE</strong></p>
+                <div class="signature-line"></div>
+                <p><strong>Nome:</strong> <span th:text="${os.assinatura.nomeResponsavel ?: 'N/A'}"></span></p>
+                <p><strong>Documento:</strong> <span th:text="${os.assinatura.documentoResponsavel ?: 'N/A'}"></span></p>
+                <p><strong>Data/Hora:</strong> <span th:text="${os.assinatura.dataHora != null ? #temporals.format(os.assinatura.dataHora, 'dd/MM/yyyy HH:mm') : 'N/A'}"></span></p>
+            </div>
+            <div class="signature-block">
+                <p><strong>TÉCNICO RESPONSÁVEL</strong></p>
+                <div class="signature-line"></div>
+                <p><strong>Nome:</strong> <span th:text="${os.tecnicoAtribuido?.nome ?: 'N/A'}"></span></p>
+            </div>
+        </div>
     </div>
-    <div class="text-block" th:unless="${os.assinatura != null}">
+    <div class="empty-state" th:if="${os.assinatura == null}">
         Nenhuma assinatura registrada.
     </div>
 
+
     <div class="footer">
-        Relatório gerado em <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}">data/hora</span> |
+        Relatório gerado em <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span> |
         DCDN Fortaleza - Todos os direitos reservados
     </div>
 </div>

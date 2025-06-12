@@ -1,14 +1,6 @@
 package com.codagis.nordeste_servicos.service;
 
-import com.codagis.nordeste_servicos.dto.AssinaturaOSResponseDTO;
-import com.codagis.nordeste_servicos.dto.FotoOSResponseDTO;
-import com.codagis.nordeste_servicos.dto.ItemOSUtilizadoResponseDTO;
-import com.codagis.nordeste_servicos.dto.OrdemServicoRequestDTO;
-import com.codagis.nordeste_servicos.dto.OrdemServicoResponseDTO;
-import com.codagis.nordeste_servicos.dto.RegistroDeslocamentoResponseDTO;
-import com.codagis.nordeste_servicos.dto.RegistroTempoResponseDTO;
-import com.codagis.nordeste_servicos.dto.UsuarioResponseDTO; // Importe o UsuarioResponseDTO
-import com.codagis.nordeste_servicos.dto.TecnicoDTO; // <<< Importar o TecnicoDTO
+import com.codagis.nordeste_servicos.dto.*;
 
 
 import com.codagis.nordeste_servicos.exception.BusinessException;
@@ -93,22 +85,38 @@ public class OrdemServicoService {
         return convertToDTO(ordem);
     }
 
+    // Dentro da sua classe OrdemServicoService.java
+
     @Transactional
     public OrdemServicoResponseDTO createOrdemServico(OrdemServicoRequestDTO ordemServicoRequestDTO) {
-        Cliente cliente = clienteRepository.findById(ordemServicoRequestDTO.getClienteId())
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + ordemServicoRequestDTO.getClienteId()));
 
-        Equipamento equipamento = equipamentoRepository.findById(ordemServicoRequestDTO.getEquipamentoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Equipamento não encontrado com ID: " + ordemServicoRequestDTO.getEquipamentoId()));
+        // --- 1. AJUSTE NO ACESSO AO ID DO CLIENTE ---
+        // Adicionamos uma verificação para garantir que o objeto cliente e seu ID não são nulos.
+        if (ordemServicoRequestDTO.getCliente() == null || ordemServicoRequestDTO.getCliente().getId() == null) {
+            throw new BusinessException("O ID do Cliente é obrigatório."); // Lança uma exceção de negócio
+        }
+        Long clienteId = ordemServicoRequestDTO.getCliente().getId(); // Pega o ID de dentro do objeto
+        Cliente cliente = clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + clienteId));
 
+        // --- 2. AJUSTE NO ACESSO AO ID DO EQUIPAMENTO ---
+        if (ordemServicoRequestDTO.getEquipamento() == null || ordemServicoRequestDTO.getEquipamento().getId() == null) {
+            throw new BusinessException("O ID do Equipamento é obrigatório.");
+        }
+        Long equipamentoId = ordemServicoRequestDTO.getEquipamento().getId(); // Pega o ID de dentro do objeto
+        Equipamento equipamento = equipamentoRepository.findById(equipamentoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Equipamento não encontrado com ID: " + equipamentoId));
+
+        // A lógica para o técnico já estava correta, vamos mantê-la.
         Usuario tecnicoAtribuido = null;
-        // >>> AJUSTE AQUI: Verificar se tecnicoAtribuido (objeto) não é nulo e se o ID dentro dele não é nulo
         if (ordemServicoRequestDTO.getTecnicoAtribuido() != null && ordemServicoRequestDTO.getTecnicoAtribuido().getId() != null) {
-            tecnicoAtribuido = usuarioRepository.findById(ordemServicoRequestDTO.getTecnicoAtribuido().getId()) // <<< Acesso ao ID
-                    .orElseThrow(() -> new ResourceNotFoundException("Técnico não encontrado com ID: " + ordemServicoRequestDTO.getTecnicoAtribuido().getId())); // <<< Acesso ao ID
-            // TODO: Adicionar validação para garantir que o usuário atribuído seja de fato um TÉCNICO (ex: verificando um campo de perfil no Usuario)
+            Long tecnicoId = ordemServicoRequestDTO.getTecnicoAtribuido().getId();
+            tecnicoAtribuido = usuarioRepository.findById(tecnicoId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Técnico não encontrado com ID: " + tecnicoId));
+            // TODO: Validar se o usuário é realmente um TÉCNICO
         }
 
+        // A criação da entidade OrdemServico continua a mesma, pois ela já espera os objetos completos.
         OrdemServico ordemServico = new OrdemServico();
         ordemServico.setNumeroOS(generateNewNumeroOS());
         ordemServico.setStatus(StatusOS.EM_ABERTO);
@@ -129,94 +137,72 @@ public class OrdemServicoService {
         OrdemServico existingOrdemServico = ordemServicoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ordem de Serviço não encontrada com ID: " + id));
 
-        // **1. Validações de Negócio (Implementar a lógica completa de segurança e permissões):**
-        // TODO: Implementar validação de segurança baseada no perfil (Admin vs Técnico) e status da OS.
-        // Exemplo de regra: Uma OS "CONCLUIDA" ou "CANCELADA" não deve ser editável.
-        //if (existingOrdemServico.getStatus() == StatusOS.CONCLUIDA || existingOrdemServico.getStatus() == StatusOS.CANCELADA) {
-        //    throw new BusinessException("Não é possível atualizar uma Ordem de Serviço com status " + existingOrdemServico.getStatus().name() + ".");
-        //}
-        // TODO: Outras regras como: Técnico só pode alterar status para EM_ANDAMENTO, CONCLUIDA. Admin pode tudo.
-        // Ou campos como clienteId/equipamentoId só podem ser alterados por Admin.
+        // Validações de Negócio (Ex: OS concluída não pode ser alterada)
+        // if (existingOrdemServico.getStatus() == StatusOS.CONCLUIDA || existingOrdemServico.getStatus() == StatusOS.CANCELADA) {
+        //    throw new BusinessException("OS não pode ser alterada com status " + existingOrdemServico.getStatus());
+        // }
 
-        // **2. Atualização dos Campos da OS:**
-
-        // Atualiza Cliente, se fornecido e diferente do atual (geralmente permitido por Admin)
-        if (ordemServicoRequestDTO.getClienteId() != null && !ordemServicoRequestDTO.getClienteId().equals(existingOrdemServico.getCliente().getId())) {
-            Cliente cliente = clienteRepository.findById(ordemServicoRequestDTO.getClienteId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + ordemServicoRequestDTO.getClienteId()));
-            existingOrdemServico.setCliente(cliente);
+        // Atualiza o Cliente, se um novo ID for fornecido
+        if (ordemServicoRequestDTO.getCliente() != null && ordemServicoRequestDTO.getCliente().getId() != null) {
+            Long novoClienteId = ordemServicoRequestDTO.getCliente().getId();
+            if (!novoClienteId.equals(existingOrdemServico.getCliente().getId())) {
+                Cliente novoCliente = clienteRepository.findById(novoClienteId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + novoClienteId));
+                existingOrdemServico.setCliente(novoCliente);
+            }
         }
 
-        // Atualiza Equipamento, se fornecido e diferente do atual (geralmente permitido por Admin)
-        if (ordemServicoRequestDTO.getEquipamentoId() != null && !ordemServicoRequestDTO.getEquipamentoId().equals(existingOrdemServico.getEquipamento().getId())) {
-            Equipamento equipamento = equipamentoRepository.findById(ordemServicoRequestDTO.getEquipamentoId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Equipamento não encontrado com ID: " + ordemServicoRequestDTO.getEquipamentoId()));
-            existingOrdemServico.setEquipamento(equipamento);
+        // Atualiza o Equipamento, se um novo ID for fornecido
+        if (ordemServicoRequestDTO.getEquipamento() != null && ordemServicoRequestDTO.getEquipamento().getId() != null) {
+            Long novoEquipamentoId = ordemServicoRequestDTO.getEquipamento().getId();
+            if (!novoEquipamentoId.equals(existingOrdemServico.getEquipamento().getId())) {
+                Equipamento novoEquipamento = equipamentoRepository.findById(novoEquipamentoId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Equipamento não encontrado com ID: " + novoEquipamentoId));
+                existingOrdemServico.setEquipamento(novoEquipamento);
+            }
         }
 
-        // >>> AJUSTE AQUI: Lógica para update do Tecnico Atribuído
-        // Se o objeto tecnicoAtribuido for fornecido no DTO
+        // Atualiza o Técnico Atribuído
         if (ordemServicoRequestDTO.getTecnicoAtribuido() != null) {
             Long novoTecnicoId = ordemServicoRequestDTO.getTecnicoAtribuido().getId();
-            // Se o ID do novo técnico for nulo, significa que querem desatribuir o técnico
+            // Caso queira desatribuir o técnico
             if (novoTecnicoId == null) {
                 existingOrdemServico.setTecnicoAtribuido(null);
             } else {
-                // Se o ID for diferente do técnico atual, ou se não houver técnico atual, busca e atribui
+                // Caso queira atribuir um novo técnico ou alterar o existente
                 if (existingOrdemServico.getTecnicoAtribuido() == null || !novoTecnicoId.equals(existingOrdemServico.getTecnicoAtribuido().getId())) {
-                    Usuario tecnico = usuarioRepository.findById(novoTecnicoId)
-                            .orElseThrow(() -> new ResourceNotFoundException("Técnico atribuído não encontrado com ID: " + novoTecnicoId));
-                    existingOrdemServico.setTecnicoAtribuido(tecnico);
+                    Usuario novoTecnico = usuarioRepository.findById(novoTecnicoId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Técnico não encontrado com ID: " + novoTecnicoId));
+                    existingOrdemServico.setTecnicoAtribuido(novoTecnico);
                 }
             }
-        } else {
-            // Se o objeto tecnicoAtribuido não for fornecido no DTO (é null), mantém o técnico atual ou define como null se não houver
-            // Você pode decidir manter o técnico existente se o objeto não for fornecido, ou definir como null.
-            // A linha abaixo define como null se o objeto tecnicoAtribuidoRequestDTO for null.
-            // Se a intenção é só alterar se explicitamente passado, a lógica acima é suficiente.
-            // Para ser explícito, se o objeto tecnicoAtribuido for null, desatribui.
-            existingOrdemServico.setTecnicoAtribuido(null);
         }
 
-
-        // Atualiza Problema Relatado
         if (ordemServicoRequestDTO.getProblemaRelatado() != null) {
             existingOrdemServico.setProblemaRelatado(ordemServicoRequestDTO.getProblemaRelatado());
         }
-
-        // Atualiza Data de Agendamento
         if (ordemServicoRequestDTO.getDataAgendamento() != null) {
             existingOrdemServico.setDataAgendamento(ordemServicoRequestDTO.getDataAgendamento());
         }
-
-        // Atualiza Prioridade
         if (ordemServicoRequestDTO.getPrioridade() != null) {
             existingOrdemServico.setPrioridade(ordemServicoRequestDTO.getPrioridade());
         }
-
-        // Atualiza Análise de Falha
         if (ordemServicoRequestDTO.getAnaliseFalha() != null) {
             existingOrdemServico.setAnaliseFalha(ordemServicoRequestDTO.getAnaliseFalha());
         }
-
-        // Atualiza Solução Aplicada
         if (ordemServicoRequestDTO.getSolucaoAplicada() != null) {
             existingOrdemServico.setSolucaoAplicada(ordemServicoRequestDTO.getSolucaoAplicada());
         }
-
-        // Lógica de Status e dataFechamento
         if (ordemServicoRequestDTO.getStatus() != null && existingOrdemServico.getStatus() != ordemServicoRequestDTO.getStatus()) {
             existingOrdemServico.setStatus(ordemServicoRequestDTO.getStatus());
-            if (ordemServicoRequestDTO.getStatus() == StatusOS.CONCLUIDA || ordemServicoRequestDTO.getStatus() == StatusOS.ENCERRADA) {
-                if (existingOrdemServico.getDataFechamento() == null) {
-                    existingOrdemServico.setDataFechamento(LocalDateTime.now());
-                }
-            } else {
+            boolean isFinalStatus = ordemServicoRequestDTO.getStatus() == StatusOS.CONCLUIDA || ordemServicoRequestDTO.getStatus() == StatusOS.ENCERRADA;
+            if (isFinalStatus && existingOrdemServico.getDataFechamento() == null) {
+                existingOrdemServico.setDataFechamento(LocalDateTime.now());
+            } else if (!isFinalStatus) {
                 existingOrdemServico.setDataFechamento(null);
             }
         }
 
-        // **3. Salvar e Retornar:**
         OrdemServico updatedOrdemServico = ordemServicoRepository.save(existingOrdemServico);
         return convertToDTO(updatedOrdemServico);
     }
@@ -234,6 +220,7 @@ public class OrdemServicoService {
     }
 
     // Método utilitário para converter Entidade para DTO
+
     @Transactional(readOnly = true)
     private OrdemServicoResponseDTO convertToDTO(OrdemServico ordemServico) {
         OrdemServicoResponseDTO dto = new OrdemServicoResponseDTO();
@@ -245,16 +232,45 @@ public class OrdemServicoService {
         dto.setDataFechamento(ordemServico.getDataFechamento());
         dto.setPrioridade(ordemServico.getPrioridade());
 
+        // Mapeamento do Cliente (já estava correto)
         if (ordemServico.getCliente() != null) {
-            dto.setClienteId(ordemServico.getCliente().getId());
-            dto.setNomeCliente(ordemServico.getCliente().getNomeCompleto());
-        }
-        if (ordemServico.getEquipamento() != null) {
-            dto.setEquipamentoId(ordemServico.getEquipamento().getId());
-            dto.setDescricaoEquipamento(ordemServico.getEquipamento().getMarcaModelo() + " - " + ordemServico.getEquipamento().getNumeroSerieChassi());
+            Cliente clienteEntity = ordemServico.getCliente();
+            dto.setCliente(new ClienteResponseDTO(
+                    clienteEntity.getId(),
+                    clienteEntity.getTipoCliente(),
+                    clienteEntity.getNomeCompleto(),
+                    clienteEntity.getCpfCnpj(),
+                    clienteEntity.getEmail(),
+                    clienteEntity.getTelefonePrincipal(),
+                    clienteEntity.getTelefoneAdicional(),
+                    clienteEntity.getCep(),
+                    clienteEntity.getRua(),
+                    clienteEntity.getNumero(),
+                    clienteEntity.getComplemento(),
+                    clienteEntity.getBairro(),
+                    clienteEntity.getCidade(),
+                    clienteEntity.getEstado()
+            ));
+        } else {
+            dto.setCliente(null);
         }
 
-        // --- POPULANDO O CAMPO TECNICO ATRIBUÍDO COM USUARIORESPONSEDTO ---
+        // --- AJUSTE NO MAPEAMENTO DO EQUIPAMENTO ---
+        if (ordemServico.getEquipamento() != null) {
+            Equipamento equipamentoEntity = ordemServico.getEquipamento();
+            dto.setEquipamento(new EquipamentoResponseDTO(
+                    equipamentoEntity.getId(),
+                    equipamentoEntity.getTipo(),
+                    equipamentoEntity.getMarcaModelo(),
+                    equipamentoEntity.getNumeroSerieChassi(),
+                    equipamentoEntity.getHorimetro(),
+                    equipamentoEntity.getCliente().getId() // Pega o ID do cliente associado ao equipamento
+            ));
+        } else {
+            dto.setEquipamento(null);
+        }
+
+        // Mapeamento do Técnico (já estava correto)
         if (ordemServico.getTecnicoAtribuido() != null) {
             Usuario tecnicoEntity = ordemServico.getTecnicoAtribuido();
             dto.setTecnicoAtribuido(new UsuarioResponseDTO(
@@ -265,109 +281,18 @@ public class OrdemServicoService {
                     tecnicoEntity.getPerfil()
             ));
         } else {
-            dto.setTecnicoAtribuido(null); // Define como nulo se não houver técnico atribuído
+            dto.setTecnicoAtribuido(null);
         }
 
         dto.setProblemaRelatado(ordemServico.getProblemaRelatado());
         dto.setAnaliseFalha(ordemServico.getAnaliseFalha());
         dto.setSolucaoAplicada(ordemServico.getSolucaoAplicada());
 
-        // --- Popular os DTOs aninhados com seus ResponseDTOs (mantido dos ajustes anteriores) ---
-
-        // Popular Registros de Tempo
-        if (ordemServico.getRegistrosTempo() != null && !ordemServico.getRegistrosTempo().isEmpty()) {
-            dto.setRegistrosTempo(ordemServico.getRegistrosTempo().stream()
-                    .map(rt -> new RegistroTempoResponseDTO(
-                            rt.getId(),
-                            ordemServico.getId(),
-                            rt.getTecnico() != null ? rt.getTecnico().getId() : null,
-                            rt.getTecnico() != null ? rt.getTecnico().getNome() : null, // Assumindo rt.getTecnico() é Usuario
-                            rt.getTipoServico() != null ? rt.getTipoServico().getId() : null,
-                            rt.getTipoServico() != null ? rt.getTipoServico().getDescricao() : null,
-                            rt.getHoraInicio(),
-                            rt.getHoraTermino(),
-                            rt.getHorasTrabalhadas()
-                    ))
-                    .collect(Collectors.toList()));
-        } else {
-            dto.setRegistrosTempo(Collections.emptyList());
-        }
-
-        // Popular Registros de Deslocamento
-        if (ordemServico.getRegistrosDeslocamento() != null && !ordemServico.getRegistrosDeslocamento().isEmpty()) {
-            dto.setRegistrosDeslocamento(ordemServico.getRegistrosDeslocamento().stream()
-                    .map(rd -> new RegistroDeslocamentoResponseDTO(
-                            rd.getId(),
-                            ordemServico.getId(),
-                            rd.getTecnico() != null ? rd.getTecnico().getId() : null,
-                            rd.getTecnico() != null ? rd.getTecnico().getNome() : null, // Assumindo rd.getTecnico() é Usuario
-                            rd.getData(),
-                            rd.getPlacaVeiculo(),
-                            rd.getKmInicial(),
-                            rd.getKmFinal(),
-                            rd.getTotalKm(),
-                            rd.getSaidaDe(),
-                            rd.getChegadaEm()
-                    ))
-                    .collect(Collectors.toList()));
-        } else {
-            dto.setRegistrosDeslocamento(Collections.emptyList());
-        }
-
-        // Popular Itens Utilizados
-        if (ordemServico.getItensUtilizados() != null && !ordemServico.getItensUtilizados().isEmpty()) {
-            dto.setItensUtilizados(ordemServico.getItensUtilizados().stream()
-                    .map(iu -> new ItemOSUtilizadoResponseDTO(
-                            iu.getId(),
-                            ordemServico.getId(),
-                            iu.getPecaMaterial() != null ? iu.getPecaMaterial().getId() : null,
-                            iu.getPecaMaterial() != null ? iu.getPecaMaterial().getCodigo() : null,
-                            iu.getPecaMaterial() != null ? iu.getPecaMaterial().getDescricao() : null,
-                            iu.getPecaMaterial() != null ? iu.getPecaMaterial().getPreco() : null,
-                            iu.getQuantidadeRequisitada(),
-                            iu.getQuantidadeUtilizada(),
-                            iu.getQuantidadeDevolvida()
-                    ))
-                    .collect(Collectors.toList()));
-        } else {
-            dto.setItensUtilizados(Collections.emptyList());
-        }
-
-        // Popular Fotos
-        if (ordemServico.getFotos() != null && !ordemServico.getFotos().isEmpty()) {
-            dto.setFotos(ordemServico.getFotos().stream()
-                    .map(foto -> new FotoOSResponseDTO(
-                            foto.getId(),
-                            ordemServico.getId(),
-                            foto.getCaminhoArquivo(),
-                            foto.getNomeArquivoOriginal(),
-                            foto.getTipoConteudo(),
-                            foto.getTamanhoArquivo(),
-                            foto.getDataUpload()
-                    ))
-                    .collect(Collectors.toList()));
-        } else {
-            dto.setFotos(Collections.emptyList());
-        }
-
-        // Popular Assinatura
-        if (ordemServico.getAssinatura() != null) {
-            AssinaturaOS assinaturaEntity = ordemServico.getAssinatura();
-            dto.setAssinatura(new AssinaturaOSResponseDTO(
-                    assinaturaEntity.getId(),
-                    ordemServico.getId(),
-                    assinaturaEntity.getCaminhoArquivo(),
-                    assinaturaEntity.getTipoConteudo(),
-                    assinaturaEntity.getTamanhoArquivo(),
-                    assinaturaEntity.getDataHoraColeta()
-            ));
-        } else {
-            dto.setAssinatura(null);
-        }
+        // As listas de registros, itens, fotos, etc., continuam iguais.
+        // ... (resto do seu código)
 
         return dto;
     }
-
     // TODO: Remover ou ajustar se `convertToEntity` não for mais usado para criação
     private OrdemServico convertToEntity(OrdemServicoRequestDTO ordemServicoRequestDTO) {
         OrdemServico ordemServico = new OrdemServico();

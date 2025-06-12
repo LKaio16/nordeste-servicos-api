@@ -22,16 +22,13 @@ public class OrdemServicoResponseDTO {
     private LocalDateTime dataFechamento;
     private LocalDateTime dataHoraEmissao;
 
-    // Manter ClienteId e NomeCliente ou aninhar ClienteResponseDTO se necessário mais detalhes
-    private Long clienteId;
-    private String nomeCliente;
+    // --- CAMPO DO CLIENTE AGORA É UM OBJETO ANINHADO ---
+    private ClienteResponseDTO cliente;
 
-    // Manter EquipamentoId e DescricaoEquipamento ou aninhar EquipamentoResponseDTO
-    private Long equipamentoId;
-    private String descricaoEquipamento;
+    private EquipamentoResponseDTO equipamento;
 
     // --- CAMPO DO TÉCNICO ATRIBUÍDO AGORA É UM USUARIORESPONSEDTO ---
-    private UsuarioResponseDTO tecnicoAtribuido; // Usando o DTO que você já tem
+    private UsuarioResponseDTO tecnicoAtribuido;
 
     private String problemaRelatado;
     private String analiseFalha;

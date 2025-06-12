@@ -2,7 +2,6 @@ package com.codagis.nordeste_servicos.dto;
 
 import com.codagis.nordeste_servicos.model.PrioridadeOS;
 import com.codagis.nordeste_servicos.model.StatusOS;
-import com.codagis.nordeste_servicos.model.Usuario;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,14 +12,19 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class OrdemServicoRequestDTO {
 
-    // Campos de criação (Admin)
-    private Long clienteId;
-    private Long equipamentoId;
+    // --- CAMPOS AJUSTADOS PARA RECEBER OBJETOS ANINHADOS ---
 
-    // CAMPO ALTERADO AQUI:
-    // Era: private Long tecnicoAtribuidoId;
-    // Agora:
-    private TecnicoDTO tecnicoAtribuido; // <<< MUDE PARA RECEBER O OBJETO ANINHADO
+    // Antes: private Long clienteId;
+    private EntidadeIdDTO cliente; // <<< AJUSTADO
+
+    // Antes: private Long equipamentoId;
+    private EntidadeIdDTO equipamento; // <<< AJUSTADO
+
+    // O seu campo de técnico já estava como um DTO, o que é ótimo.
+    // Para consistência, você pode usar EntidadeIdDTO aqui também
+    // se o TecnicoDTO só tiver o ID. Se tiver mais campos, mantenha TecnicoDTO.
+    private EntidadeIdDTO tecnicoAtribuido; // <<< AJUSTADO PARA CONSISTÊNCIA
+
 
     private String problemaRelatado;
     private LocalDateTime dataAgendamento; // Opcional
