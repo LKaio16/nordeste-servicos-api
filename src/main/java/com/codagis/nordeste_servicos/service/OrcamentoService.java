@@ -2,17 +2,15 @@ package com.codagis.nordeste_servicos.service;
 
 import com.codagis.nordeste_servicos.dto.OrcamentoRequestDTO;
 import com.codagis.nordeste_servicos.dto.OrcamentoResponseDTO;
-import com.codagis.nordeste_servicos.exception.BusinessException;
 import com.codagis.nordeste_servicos.exception.ResourceNotFoundException;
-import com.codagis.nordeste_servicos.model.Cliente;
-import com.codagis.nordeste_servicos.model.Orcamento;
-import com.codagis.nordeste_servicos.model.OrdemServico;
-import com.codagis.nordeste_servicos.model.StatusOrcamento;
+import com.codagis.nordeste_servicos.model.*;
 import com.codagis.nordeste_servicos.repository.ClienteRepository;
+import com.codagis.nordeste_servicos.repository.ItemOrcamentoRepository; // IMPORT ADICIONADO
 import com.codagis.nordeste_servicos.repository.OrcamentoRepository;
 import com.codagis.nordeste_servicos.repository.OrdemServicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // IMPORT ADICIONADO
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,7 +21,7 @@ import java.util.stream.Collectors;
 public class OrcamentoService {
 
     @Autowired
-    private OrcamentoRepository orçamentoRepository;
+    private OrcamentoRepository orcamentoRepository;
 
     @Autowired
     private ClienteRepository clienteRepository;
@@ -31,119 +29,130 @@ public class OrcamentoService {
     @Autowired
     private OrdemServicoRepository ordemServicoRepository;
 
-    // TODO: Precisaremos de um serviço para ItemOrcamento para calcular o total
+    // INJEÇÃO DE DEPENDÊNCIA ADICIONADA
+    @Autowired
+    private ItemOrcamentoRepository itemOrcamentoRepository;
 
+    @Transactional(readOnly = true)
     public List<OrcamentoResponseDTO> findAllOrcamentos() {
-        List<Orcamento> orçamentos = orçamentoRepository.findAll();
+        List<Orcamento> orçamentos = orcamentoRepository.findAll();
         return orçamentos.stream()
-                          .map(this::convertToDTO)
-                          .collect(Collectors.toList());
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<OrcamentoResponseDTO> findOrcamentosByClienteId(Long clienteId) {
-        List<Orcamento> orçamentos = orçamentoRepository.findByClienteId(clienteId);
+        List<Orcamento> orçamentos = orcamentoRepository.findByClienteId(clienteId);
         return orçamentos.stream()
-                          .map(this::convertToDTO)
-                          .collect(Collectors.toList());
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<OrcamentoResponseDTO> findOrcamentosByStatus(StatusOrcamento status) {
-        List<Orcamento> orçamentos = orçamentoRepository.findByStatus(status);
+        List<Orcamento> orçamentos = orcamentoRepository.findByStatus(status);
         return orçamentos.stream()
-                          .map(this::convertToDTO)
-                          .collect(Collectors.toList());
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public Optional<OrcamentoResponseDTO> findOrcamentoByOrdemServicoId(Long ordemServicoId) {
-        Optional<Orcamento> orçamento = orçamentoRepository.findByOrdemServicoOrigemId(ordemServicoId);
+        Optional<Orcamento> orçamento = orcamentoRepository.findByOrdemServicoOrigemId(ordemServicoId);
         return orçamento.map(this::convertToDTO);
     }
 
-
+    /**
+     * MÉTODO MODIFICADO
+     * Agora, ele recalcula o valor total ANTES de retornar os dados.
+     */
+    @Transactional
     public OrcamentoResponseDTO findOrcamentoById(Long id) {
-        Orcamento orçamento = orçamentoRepository.findById(id)
+        // 1. Recalcula e salva o valor total no banco de dados.
+        recalcularEAtualizarValorTotal(id);
+
+        // 2. Busca o orçamento (agora com o valor atualizado) para retornar.
+        Orcamento orçamento = orcamentoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Orçamento não encontrado com ID: " + id));
+
         return convertToDTO(orçamento);
     }
 
-    // Método para criar um novo orçamento
     public OrcamentoResponseDTO createOrcamento(OrcamentoRequestDTO orçamentoRequestDTO) {
         Cliente cliente = clienteRepository.findById(orçamentoRequestDTO.getClienteId())
-                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + orçamentoRequestDTO.getClienteId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + orçamentoRequestDTO.getClienteId()));
 
         OrdemServico ordemServicoOrigem = null;
         if (orçamentoRequestDTO.getOrdemServicoOrigemId() != null) {
             ordemServicoOrigem = ordemServicoRepository.findById(orçamentoRequestDTO.getOrdemServicoOrigemId())
                     .orElseThrow(() -> new ResourceNotFoundException("Ordem de Serviço de origem não encontrada com ID: " + orçamentoRequestDTO.getOrdemServicoOrigemId()));
-            // TODO: Opcional: Validar se já existe orçamento para esta OS
         }
 
         Orcamento orçamento = convertToEntity(orçamentoRequestDTO);
-        orçamento.setNumeroOrcamento(generateNumeroOrcamento()); // TODO: Implementar lógica de geração de número único
+        orçamento.setNumeroOrcamento(generateNumeroOrcamento());
         orçamento.setDataCriacao(LocalDate.now());
         orçamento.setCliente(cliente);
         orçamento.setOrdemServicoOrigem(ordemServicoOrigem);
-        // status, observacoesCondicoes, dataValidade já vêm do DTO
-        // valorTotal será calculado ao adicionar itens
+        orçamento.setValorTotal(0.0); // O valor inicial é 0.0
 
-        Orcamento savedOrcamento = orçamentoRepository.save(orçamento);
+        Orcamento savedOrcamento = orcamentoRepository.save(orçamento);
         return convertToDTO(savedOrcamento);
     }
 
-     // Método para atualizar um orçamento existente
     public OrcamentoResponseDTO updateOrcamento(Long id, OrcamentoRequestDTO orçamentoRequestDTO) {
-         Orcamento existingOrcamento = orçamentoRepository.findById(id)
+        Orcamento existingOrcamento = orcamentoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Orçamento não encontrado com ID: " + id));
 
-         Cliente cliente = clienteRepository.findById(orçamentoRequestDTO.getClienteId())
-                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + orçamentoRequestDTO.getClienteId()));
+        Cliente cliente = clienteRepository.findById(orçamentoRequestDTO.getClienteId())
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + orçamentoRequestDTO.getClienteId()));
 
-         OrdemServico ordemServicoOrigem = null;
+        OrdemServico ordemServicoOrigem = null;
         if (orçamentoRequestDTO.getOrdemServicoOrigemId() != null) {
             ordemServicoOrigem = ordemServicoRepository.findById(orçamentoRequestDTO.getOrdemServicoOrigemId())
                     .orElseThrow(() -> new ResourceNotFoundException("Ordem de Serviço de origem não encontrada com ID: " + orçamentoRequestDTO.getOrdemServicoOrigemId()));
-             // TODO: Opcional: Validar se já existe orçamento para esta OS (se o ID da OS mudou)
         }
 
+        existingOrcamento.setCliente(cliente);
+        existingOrcamento.setOrdemServicoOrigem(ordemServicoOrigem);
+        existingOrcamento.setDataValidade(orçamentoRequestDTO.getDataValidade());
+        existingOrcamento.setObservacoesCondicoes(orçamentoRequestDTO.getObservacoesCondicoes());
+        existingOrcamento.setStatus(orçamentoRequestDTO.getStatus());
 
-         existingOrcamento.setCliente(cliente);
-         existingOrcamento.setOrdemServicoOrigem(ordemServicoOrigem);
-         existingOrcamento.setDataValidade(orçamentoRequestDTO.getDataValidade());
-         existingOrcamento.setObservacoesCondicoes(orçamentoRequestDTO.getObservacoesCondicoes());
-         existingOrcamento.setStatus(orçamentoRequestDTO.getStatus());
-         // TODO: Recalcular valorTotal se os itens forem atualizados (gerenciado pelo ItemOrcamentoService)
-
-
-         Orcamento updatedOrcamento = orçamentoRepository.save(existingOrcamento);
-         return convertToDTO(updatedOrcamento);
+        Orcamento updatedOrcamento = orcamentoRepository.save(existingOrcamento);
+        return convertToDTO(updatedOrcamento);
     }
-
 
     public void deleteOrcamento(Long id) {
-        if (!orçamentoRepository.existsById(id)) {
-             throw new ResourceNotFoundException("Orçamento não encontrado com ID: " + id);
+        if (!orcamentoRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Orçamento não encontrado com ID: " + id);
         }
-         // TODO: Implementar lógica para remover ItemOrcamento relacionados
-        orçamentoRepository.deleteById(id);
+        orcamentoRepository.deleteById(id);
     }
 
-     // TODO: Implementar lógica para geração de número de Orçamento único
+    /**
+     * NOVO MÉTODO ADICIONADO
+     * Responsável por recalcular o valor total de um orçamento.
+     */
+    @Transactional
+    public void recalcularEAtualizarValorTotal(Long orcamentoId) {
+        Orcamento orcamento = orcamentoRepository.findById(orcamentoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Tentativa de recalcular um orçamento inexistente. ID: " + orcamentoId));
+
+        List<ItemOrcamento> itens = itemOrcamentoRepository.findByOrcamentoId(orcamentoId);
+
+        double novoTotal = itens.stream()
+                .mapToDouble(item -> item.getSubtotal() != null ? item.getSubtotal() : 0.0)
+                .sum();
+
+        orcamento.setValorTotal(novoTotal);
+
+        orcamentoRepository.saveAndFlush(orcamento);
+    }
+
     private String generateNumeroOrcamento() {
-        return "ORC-" + System.currentTimeMillis(); // Exemplo simples baseado em timestamp
+        return "ORC-" + System.currentTimeMillis();
     }
-
-     // Método para calcular e atualizar o valor total do orçamento (chamado pelo ItemOrcamentoService)
-    public void recalcularValorTotal(Long orcamentoId) {
-        Orcamento orçamento = orçamentoRepository.findById(orcamentoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Orçamento não encontrado com ID: " + orcamentoId));
-
-        // TODO: Chamar o ItemOrcamentoService para somar os subtotais dos itens
-        // double total = itemOrcamentoService.calcularTotalItens(orcamentoId);
-        double total = 0.0; // Placeholder
-        orçamento.setValorTotal(total);
-        orçamentoRepository.save(orçamento);
-    }
-
 
     private OrcamentoResponseDTO convertToDTO(Orcamento orçamento) {
         OrcamentoResponseDTO dto = new OrcamentoResponseDTO();
@@ -152,27 +161,21 @@ public class OrcamentoService {
         dto.setDataCriacao(orçamento.getDataCriacao());
         dto.setDataValidade(orçamento.getDataValidade());
         dto.setStatus(orçamento.getStatus());
-
         dto.setClienteId(orçamento.getCliente().getId());
-        dto.setNomeCliente(orçamento.getCliente().getNomeCompleto()); // Popula nome do cliente
+        dto.setNomeCliente(orçamento.getCliente().getNomeCompleto());
         if (orçamento.getOrdemServicoOrigem() != null) {
-             dto.setOrdemServicoOrigemId(orçamento.getOrdemServicoOrigem().getId());
+            dto.setOrdemServicoOrigemId(orçamento.getOrdemServicoOrigem().getId());
         }
-
         dto.setObservacoesCondicoes(orçamento.getObservacoesCondicoes());
         dto.setValorTotal(orçamento.getValorTotal());
-
         return dto;
     }
 
-    // Método para converter DTO para Entidade (usado na criação/atualização)
     private Orcamento convertToEntity(OrcamentoRequestDTO orçamentoRequestDTO) {
         Orcamento orçamento = new Orcamento();
-         // Numero, dataCriacao, cliente, ordemServicoOrigem definidos no serviço
-         orçamento.setDataValidade(orçamentoRequestDTO.getDataValidade());
-         orçamento.setObservacoesCondicoes(orçamentoRequestDTO.getObservacoesCondicoes());
-         orçamento.setStatus(orçamentoRequestDTO.getStatus());
-        // valorTotal definido no serviço
+        orçamento.setDataValidade(orçamentoRequestDTO.getDataValidade());
+        orçamento.setObservacoesCondicoes(orçamentoRequestDTO.getObservacoesCondicoes());
+        orçamento.setStatus(orçamentoRequestDTO.getStatus());
         return orçamento;
     }
 }

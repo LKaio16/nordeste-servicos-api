@@ -4,8 +4,11 @@ import com.codagis.nordeste_servicos.dto.OrcamentoRequestDTO;
 import com.codagis.nordeste_servicos.dto.OrcamentoResponseDTO;
 import com.codagis.nordeste_servicos.model.StatusOrcamento;
 import com.codagis.nordeste_servicos.service.OrcamentoService;
+import com.codagis.nordeste_servicos.service.PdfGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +22,12 @@ public class OrcamentoController {
 
     @Autowired
     private OrcamentoService orçamentoService;
+
+    @Autowired
+    private OrcamentoService orcamentoService;
+
+    @Autowired
+    private PdfGenerationService pdfGenerationService;
 
     @GetMapping
     public ResponseEntity<List<OrcamentoResponseDTO>> getAllOrcamentos(
@@ -71,6 +80,32 @@ public class OrcamentoController {
         // TODO: Implementar validação de segurança (quem pode deletar orçamento?)
         orçamentoService.deleteOrcamento(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> generateOrcamentoPdf(@PathVariable Long id) {
+        try {
+            // 1. Obter os dados do Orçamento
+            OrcamentoResponseDTO orcamentoData = orcamentoService.findOrcamentoById(id);
+            if (orcamentoData == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // 2. Gerar o PDF usando o serviço
+            byte[] pdfBytes = pdfGenerationService.generateOrcamentoReportPdf(orcamentoData);
+
+            // 3. Configurar os cabeçalhos da resposta para download de PDF
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("filename", "Orçamento_" + orcamentoData.getNumeroOrcamento() + ".pdf");
+            headers.setContentLength(pdfBytes.length);
+
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     // TODO: Adicionar endpoints específicos para gerenciar os ItemOrcamento relacionados

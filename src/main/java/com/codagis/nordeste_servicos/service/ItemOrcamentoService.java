@@ -16,176 +16,166 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class ItemOrcamentoService {
 
-    private final ItemOrcamentoRepository itemOrcamentoRepository;
-    private final OrcamentoRepository orcamentoRepository;
-    private final PecaMaterialRepository pecaMaterialRepository;
-    private final TipoServicoRepository tipoServicoRepository;
-    private final OrcamentoService orcamentoService; // Injeção para chamar o método de recalcularTotal
-
+    @Autowired
+    private ItemOrcamentoRepository itemOrcamentoRepository;
 
     @Autowired
-    public ItemOrcamentoService(ItemOrcamentoRepository itemOrcamentoRepository,
-                                 OrcamentoRepository orcamentoRepository,
-                                 PecaMaterialRepository pecaMaterialRepository,
-                                 TipoServicoRepository tipoServicoRepository,
-                                 OrcamentoService orcamentoService) {
-        this.itemOrcamentoRepository = itemOrcamentoRepository;
-        this.orcamentoRepository = orcamentoRepository;
-        this.pecaMaterialRepository = pecaMaterialRepository;
-        this.tipoServicoRepository = tipoServicoRepository;
-        this.orcamentoService = orcamentoService;
-    }
+    private OrcamentoRepository orcamentoRepository;
 
+    @Autowired
+    private PecaMaterialRepository pecaMaterialRepository;
 
-    // Método para listar itens de um orçamento específico
+    @Autowired
+    private TipoServicoRepository tipoServicoRepository;
+
     public List<ItemOrcamentoResponseDTO> findItensByOrcamentoId(Long orcamentoId) {
         List<ItemOrcamento> itens = itemOrcamentoRepository.findByOrcamentoId(orcamentoId);
         return itens.stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-     public ItemOrcamentoResponseDTO findItemOrcamentoById(Long id) {
-         ItemOrcamento item = itemOrcamentoRepository.findById(id)
+    public ItemOrcamentoResponseDTO findItemOrcamentoById(Long id) {
+        ItemOrcamento item = itemOrcamentoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item do Orçamento não encontrado com ID: " + id));
-         return convertToDTO(item);
-     }
+        return convertToDTO(item);
+    }
 
-
-    // Método para adicionar um novo item ao orçamento
-    @Transactional // Garante que as operações de salvar o item e recalcular o total sejam atômicas
+    @Transactional
     public ItemOrcamentoResponseDTO createItemOrcamento(ItemOrcamentoRequestDTO itemOrcamentoRequestDTO) {
+        System.out.println("[LOG] 1. createItemOrcamento - Iniciando criação do item.");
         Orcamento orcamento = orcamentoRepository.findById(itemOrcamentoRequestDTO.getOrcamentoId())
-                 .orElseThrow(() -> new ResourceNotFoundException("Orçamento não encontrado com ID: " + itemOrcamentoRequestDTO.getOrcamentoId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Orçamento não encontrado com ID: " + itemOrcamentoRequestDTO.getOrcamentoId()));
 
         PecaMaterial pecaMaterial = null;
         if (itemOrcamentoRequestDTO.getPecaMaterialId() != null) {
-             pecaMaterial = pecaMaterialRepository.findById(itemOrcamentoRequestDTO.getPecaMaterialId())
-                 .orElseThrow(() -> new ResourceNotFoundException("Peça/Material não encontrado com ID: " + itemOrcamentoRequestDTO.getPecaMaterialId()));
+            pecaMaterial = pecaMaterialRepository.findById(itemOrcamentoRequestDTO.getPecaMaterialId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Peça/Material não encontrado com ID: " + itemOrcamentoRequestDTO.getPecaMaterialId()));
         }
 
         TipoServico tipoServico = null;
         if (itemOrcamentoRequestDTO.getTipoServicoId() != null) {
-             tipoServico = tipoServicoRepository.findById(itemOrcamentoRequestDTO.getTipoServicoId())
-                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de Serviço não encontrado com ID: " + itemOrcamentoRequestDTO.getTipoServicoId()));
+            tipoServico = tipoServicoRepository.findById(itemOrcamentoRequestDTO.getTipoServicoId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Tipo de Serviço não encontrado com ID: " + itemOrcamentoRequestDTO.getTipoServicoId()));
         }
 
-        // Validações de negócio
         if (pecaMaterial == null && tipoServico == null && (itemOrcamentoRequestDTO.getDescricao() == null || itemOrcamentoRequestDTO.getDescricao().trim().isEmpty())) {
-             throw new BusinessException("É necessário informar a descrição ou associar a uma peça/material ou tipo de serviço.");
+            throw new BusinessException("É necessário informar a descrição ou associar a uma peça/material ou tipo de serviço.");
         }
         if (itemOrcamentoRequestDTO.getQuantidade() == null || itemOrcamentoRequestDTO.getQuantidade() <= 0) {
-             throw new BusinessException("A quantidade deve ser maior que zero.");
+            throw new BusinessException("A quantidade deve ser maior que zero.");
         }
-         if (itemOrcamentoRequestDTO.getValorUnitario() == null || itemOrcamentoRequestDTO.getValorUnitario() < 0) {
-             throw new BusinessException("O valor unitário não pode ser negativo.");
+        if (itemOrcamentoRequestDTO.getValorUnitario() == null || itemOrcamentoRequestDTO.getValorUnitario() < 0) {
+            throw new BusinessException("O valor unitário não pode ser negativo.");
         }
-
 
         ItemOrcamento novoItem = convertToEntity(itemOrcamentoRequestDTO);
         novoItem.setOrcamento(orcamento);
         novoItem.setPecaMaterial(pecaMaterial);
         novoItem.setTipoServico(tipoServico);
-        novoItem.setSubtotal(novoItem.getQuantidade() * novoItem.getValorUnitario()); // Calcula o subtotal
+        novoItem.setSubtotal(novoItem.getQuantidade() * novoItem.getValorUnitario());
 
-        ItemOrcamento savedItem = itemOrcamentoRepository.save(novoItem);
+        ItemOrcamento savedItem = itemOrcamentoRepository.saveAndFlush(novoItem);
+        System.out.println("[LOG] 2. createItemOrcamento - Item salvo no banco com ID: " + savedItem.getId());
 
-        // Recalcula o valor total do orçamento pai
-        orcamentoService.recalcularValorTotal(orcamento.getId());
-
+        recalcularESalvarTotalOrcamento(orcamento.getId());
 
         return convertToDTO(savedItem);
     }
 
-     // Método para atualizar um item no orçamento
-    @Transactional // Garante que as operações sejam atômicas
+    @Transactional
     public ItemOrcamentoResponseDTO updateItemOrcamento(Long id, ItemOrcamentoRequestDTO itemOrcamentoRequestDTO) {
-         ItemOrcamento existingItem = itemOrcamentoRepository.findById(id)
+        System.out.println("[LOG] 1. updateItemOrcamento - Iniciando atualização do item ID: " + id);
+        ItemOrcamento existingItem = itemOrcamentoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item do Orçamento não encontrado com ID: " + id));
 
-         Long orcamentoOriginalId = existingItem.getOrcamento().getId(); // Guarda o ID do orçamento original
+        Long orcamentoOriginalId = existingItem.getOrcamento().getId();
 
-         Orcamento orcamento = orcamentoRepository.findById(itemOrcamentoRequestDTO.getOrcamentoId())
-                 .orElseThrow(() -> new ResourceNotFoundException("Orçamento não encontrado com ID: " + itemOrcamentoRequestDTO.getOrcamentoId()));
+        Orcamento orcamento = orcamentoRepository.findById(itemOrcamentoRequestDTO.getOrcamentoId())
+                .orElseThrow(() -> new ResourceNotFoundException("Orçamento não encontrado com ID: " + itemOrcamentoRequestDTO.getOrcamentoId()));
 
         PecaMaterial pecaMaterial = null;
         if (itemOrcamentoRequestDTO.getPecaMaterialId() != null) {
-             pecaMaterial = pecaMaterialRepository.findById(itemOrcamentoRequestDTO.getPecaMaterialId())
-                 .orElseThrow(() -> new ResourceNotFoundException("Peça/Material não encontrado com ID: " + itemOrcamentoRequestDTO.getPecaMaterialId()));
+            pecaMaterial = pecaMaterialRepository.findById(itemOrcamentoRequestDTO.getPecaMaterialId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Peça/Material não encontrado com ID: " + itemOrcamentoRequestDTO.getPecaMaterialId()));
         }
 
         TipoServico tipoServico = null;
         if (itemOrcamentoRequestDTO.getTipoServicoId() != null) {
-             tipoServico = tipoServicoRepository.findById(itemOrcamentoRequestDTO.getTipoServicoId())
-                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de Serviço não encontrado com ID: " + itemOrcamentoRequestDTO.getTipoServicoId()));
+            tipoServico = tipoServicoRepository.findById(itemOrcamentoRequestDTO.getTipoServicoId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Tipo de Serviço não encontrado com ID: " + itemOrcamentoRequestDTO.getTipoServicoId()));
         }
 
-        // Validações de negócio (semelhantes à criação)
-         if (pecaMaterial == null && tipoServico == null && (itemOrcamentoRequestDTO.getDescricao() == null || itemOrcamentoRequestDTO.getDescricao().trim().isEmpty())) {
-             throw new BusinessException("É necessário informar a descrição ou associar a uma peça/material ou tipo de serviço.");
+        existingItem.setOrcamento(orcamento);
+        existingItem.setPecaMaterial(pecaMaterial);
+        existingItem.setTipoServico(tipoServico);
+        existingItem.setDescricao(itemOrcamentoRequestDTO.getDescricao());
+        existingItem.setQuantidade(itemOrcamentoRequestDTO.getQuantidade());
+        existingItem.setValorUnitario(itemOrcamentoRequestDTO.getValorUnitario());
+        existingItem.setSubtotal(existingItem.getQuantidade() * existingItem.getValorUnitario());
+
+        ItemOrcamento updatedItem = itemOrcamentoRepository.saveAndFlush(existingItem);
+        System.out.println("[LOG] 2. updateItemOrcamento - Item ID " + id + " atualizado.");
+
+        recalcularESalvarTotalOrcamento(updatedItem.getOrcamento().getId());
+
+        if (!orcamentoOriginalId.equals(updatedItem.getOrcamento().getId())) {
+            recalcularESalvarTotalOrcamento(orcamentoOriginalId);
         }
-        if (itemOrcamentoRequestDTO.getQuantidade() == null || itemOrcamentoRequestDTO.getQuantidade() <= 0) {
-             throw new BusinessException("A quantidade deve ser maior que zero.");
-        }
-         if (itemOrcamentoRequestDTO.getValorUnitario() == null || itemOrcamentoRequestDTO.getValorUnitario() < 0) {
-             throw new BusinessException("O valor unitário não pode ser negativo.");
-        }
-
-
-         existingItem.setOrcamento(orcamento); // Permite mover o item para outro orçamento
-         existingItem.setPecaMaterial(pecaMaterial);
-         existingItem.setTipoServico(tipoServico);
-         existingItem.setDescricao(itemOrcamentoRequestDTO.getDescricao());
-         existingItem.setQuantidade(itemOrcamentoRequestDTO.getQuantidade());
-         existingItem.setValorUnitario(itemOrcamentoRequestDTO.getValorUnitario());
-         existingItem.setSubtotal(existingItem.getQuantidade() * existingItem.getValorUnitario()); // Recalcula o subtotal
-
-
-         ItemOrcamento updatedItem = itemOrcamentoRepository.save(existingItem);
-
-         // Recalcula o valor total do orçamento pai NOVO
-         orcamentoService.recalcularValorTotal(updatedItem.getOrcamento().getId());
-
-         // Se o orçamento pai ORIGINAL for diferente do NOVO, recalcula o total do ORIGINAL também
-         if (!orcamentoOriginalId.equals(updatedItem.getOrcamento().getId())) {
-             orcamentoService.recalcularValorTotal(orcamentoOriginalId);
-         }
-
 
         return convertToDTO(updatedItem);
     }
 
-
-    // Método para deletar um item do orçamento
-     @Transactional // Garante que as operações sejam atômicas
+    @Transactional
     public void deleteItemOrcamento(Long id) {
         ItemOrcamento item = itemOrcamentoRepository.findById(id)
-             .orElseThrow(() -> new ResourceNotFoundException("Item do Orçamento não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Item do Orçamento não encontrado com ID: " + id));
 
-        Long orcamentoIdAfetado = item.getOrcamento().getId(); // Guarda o ID do orçamento pai
-
+        Long orcamentoIdAfetado = item.getOrcamento().getId();
         itemOrcamentoRepository.delete(item);
 
-        // Recalcula o valor total do orçamento pai afetado
-        orcamentoService.recalcularValorTotal(orcamentoIdAfetado);
-
+        recalcularESalvarTotalOrcamento(orcamentoIdAfetado);
     }
 
-     // Método para calcular o total dos itens para um orçamento específico (chamado pelo OrcamentoService)
-     public double calcularTotalItens(Long orcamentoId) {
-         List<ItemOrcamento> itens = itemOrcamentoRepository.findByOrcamentoId(orcamentoId);
-         return itens.stream()
-                     .mapToDouble(ItemOrcamento::getSubtotal)
-                     .sum();
-     }
+    private void recalcularESalvarTotalOrcamento(Long orcamentoId) {
+        // Log inicial para garantir que o método foi chamado
+        System.out.println("[LOG PASSO 1/5] Iniciando recalculo para Orçamento ID: " + orcamentoId);
+
+        // Busca os itens do orçamento no banco de dados
+        List<ItemOrcamento> itens = itemOrcamentoRepository.findByOrcamentoId(orcamentoId);
+        System.out.println("[LOG PASSO 2/5] Encontrados " + itens.size() + " itens para o orçamento.");
+
+        // Calcula o novo valor total somando os subtotais de cada item
+        double total = 0.0;
+        for(ItemOrcamento item : itens) {
+            // Garante que subtotais nulos não quebrem o cálculo
+            double subtotal = item.getSubtotal() != null ? item.getSubtotal() : 0.0;
+            total += subtotal;
+            System.out.println("    -> Somando subtotal do Item ID " + item.getId() + ": " + subtotal + " (Total parcial: " + total + ")");
+        }
+        System.out.println("[LOG PASSO 3/5] Valor total calculado: " + total);
+
+        // Busca a entidade Orçamento que será atualizada
+        Orcamento orcamentoParaAtualizar = orcamentoRepository.findById(orcamentoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Falha no recalculo: Orçamento com ID " + orcamentoId + " não encontrado."));
+
+        // Atribui o novo valor
+        orcamentoParaAtualizar.setValorTotal(total);
+
+        // Salva e força a sincronização com o banco de dados (IMPORTANTE!)
+        orcamentoRepository.saveAndFlush(orcamentoParaAtualizar);
+        System.out.println("[LOG PASSO 4/5] Orçamento salvo no banco com o novo valor total.");
+
+        // Opcional: Verifica o valor buscando o orçamento novamente para confirmar
+        Orcamento orcamentoVerificacao = orcamentoRepository.findById(orcamentoId).get();
+        System.out.println("[LOG PASSO 5/5] Verificação final. Valor no banco (pós-flush): " + orcamentoVerificacao.getValorTotal());
+    }
 
 
     private ItemOrcamentoResponseDTO convertToDTO(ItemOrcamento itemOrcamento) {
@@ -204,14 +194,11 @@ public class ItemOrcamentoService {
         return dto;
     }
 
-    // Método para converter DTO para Entidade
     private ItemOrcamento convertToEntity(ItemOrcamentoRequestDTO itemOrcamentoRequestDTO) {
         ItemOrcamento item = new ItemOrcamento();
-        // orcamento, pecaMaterial, tipoServico definidos no service
         item.setDescricao(itemOrcamentoRequestDTO.getDescricao());
         item.setQuantidade(itemOrcamentoRequestDTO.getQuantidade());
         item.setValorUnitario(itemOrcamentoRequestDTO.getValorUnitario());
-        // subtotal calculado no service
         return item;
     }
 }
