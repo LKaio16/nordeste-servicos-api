@@ -46,6 +46,9 @@ public class OrdemServicoService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private RegistroTempoService registroTempoService;
+
     @Transactional(readOnly = true)
     public List<OrdemServicoResponseDTO> findAllOrdensServico() {
         List<OrdemServico> ordens = ordemServicoRepository.findAll();
@@ -255,7 +258,7 @@ public class OrdemServicoService {
             dto.setCliente(null);
         }
 
-        // --- AJUSTE NO MAPEAMENTO DO EQUIPAMENTO ---
+
         if (ordemServico.getEquipamento() != null) {
             Equipamento equipamentoEntity = ordemServico.getEquipamento();
             dto.setEquipamento(new EquipamentoResponseDTO(
@@ -264,13 +267,13 @@ public class OrdemServicoService {
                     equipamentoEntity.getMarcaModelo(),
                     equipamentoEntity.getNumeroSerieChassi(),
                     equipamentoEntity.getHorimetro(),
-                    equipamentoEntity.getCliente().getId() // Pega o ID do cliente associado ao equipamento
+                    equipamentoEntity.getCliente().getId()
             ));
         } else {
             dto.setEquipamento(null);
         }
 
-        // Mapeamento do Técnico (já estava correto)
+
         if (ordemServico.getTecnicoAtribuido() != null) {
             Usuario tecnicoEntity = ordemServico.getTecnicoAtribuido();
             dto.setTecnicoAtribuido(new UsuarioResponseDTO(
@@ -278,11 +281,21 @@ public class OrdemServicoService {
                     tecnicoEntity.getNome(),
                     tecnicoEntity.getCracha(),
                     tecnicoEntity.getEmail(),
-                    tecnicoEntity.getPerfil()
+                    tecnicoEntity.getPerfil(),
+                    tecnicoEntity.getFotoPerfil()
             ));
         } else {
             dto.setTecnicoAtribuido(null);
         }
+
+        if (ordemServico.getRegistrosTempo() != null && !ordemServico.getRegistrosTempo().isEmpty()) {
+            dto.setRegistrosTempo(
+                    ordemServico.getRegistrosTempo().stream()
+                            .map(this::convertRegistroTempoToDTO) // Usa um novo método auxiliar
+                            .collect(Collectors.toList())
+            );
+        }
+
 
         dto.setProblemaRelatado(ordemServico.getProblemaRelatado());
         dto.setAnaliseFalha(ordemServico.getAnaliseFalha());
@@ -293,7 +306,7 @@ public class OrdemServicoService {
 
         return dto;
     }
-    // TODO: Remover ou ajustar se `convertToEntity` não for mais usado para criação
+
     private OrdemServico convertToEntity(OrdemServicoRequestDTO ordemServicoRequestDTO) {
         OrdemServico ordemServico = new OrdemServico();
         ordemServico.setProblemaRelatado(ordemServicoRequestDTO.getProblemaRelatado());
@@ -317,5 +330,40 @@ public class OrdemServicoService {
             }
         }
         return String.valueOf(nextNumber);
+    }
+
+    private String formatarHorasDecimais(Double horasDecimais) {
+        if (horasDecimais == null || horasDecimais < 0) {
+            return "N/A";
+        }
+        int horas = horasDecimais.intValue();
+        int minutos = (int) Math.round((horasDecimais - horas) * 60);
+        return String.format("%dh %02dm", horas, minutos);
+    }
+
+    private RegistroTempoResponseDTO convertRegistroTempoToDTO(RegistroTempo registro) {
+        if (registro == null) {
+            return null;
+        }
+
+        // 1. Cria um DTO vazio usando o construtor padrão (garantido pelo @NoArgsConstructor)
+        RegistroTempoResponseDTO dto = new RegistroTempoResponseDTO();
+
+        // 2. Popula o DTO usando os métodos "set" (garantidos pelo @Data)
+        dto.setId(registro.getId());
+        dto.setOrdemServicoId(registro.getOrdemServico().getId());
+        dto.setTecnicoId(registro.getTecnico().getId());
+        dto.setNomeTecnico(registro.getTecnico().getNome());
+        dto.setTipoServicoId(registro.getTipoServico().getId());
+        dto.setDescricaoTipoServico(registro.getTipoServico().getDescricao());
+        dto.setHoraInicio(registro.getHoraInicio());
+        dto.setHoraTermino(registro.getHoraTermino());
+        dto.setHorasTrabalhadas(registro.getHorasTrabalhadas());
+
+        // 3. Define o campo formatado
+        dto.setTempoFormatado(formatarHorasDecimais(registro.getHorasTrabalhadas()));
+
+        // 4. Retorna o DTO completo
+        return dto;
     }
 }

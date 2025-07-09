@@ -1,18 +1,16 @@
 package com.codagis.nordeste_servicos.dto;
 
-import lombok.*;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssinaturaOSResponseDTO {
-    private Long id;
-    private Long ordemServicoId;
+public class AssinaturaOSRequestDTO {
     private String assinaturaClienteBase64;
     private String nomeClienteResponsavel;
     private String documentoClienteResponsavel;
     private String assinaturaTecnicoBase64;
     private String nomeTecnicoResponsavel;
-    private LocalDateTime dataHoraColeta;
 }

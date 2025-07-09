@@ -15,4 +15,5 @@ public class UsuarioResponseDTO {
     private String cracha;
     private String email;
     private PerfilUsuario perfil;
+    private String fotoPerfil;
 }

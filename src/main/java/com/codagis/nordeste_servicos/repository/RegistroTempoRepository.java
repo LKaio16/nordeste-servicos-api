@@ -11,6 +11,5 @@ import java.util.Optional;
 public interface RegistroTempoRepository extends JpaRepository<RegistroTempo, Long> {
     List<RegistroTempo> findByOrdemServicoId(Long ordemServicoId);
 
-    // Método para encontrar um registro de tempo "ativo" (sem hora de término) para um técnico em uma OS
     Optional<RegistroTempo> findByOrdemServicoIdAndTecnicoIdAndHoraTerminoIsNull(Long ordemServicoId, Long tecnicoId);
 }

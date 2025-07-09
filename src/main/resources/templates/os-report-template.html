@@ -89,7 +89,7 @@
             padding: 5px 6px;
             border-color: #a9d6ff;
         }
-        .info-grid td {
+          .info-grid td {
             font-size: 8.5pt;
         }
         .service-content td {
@@ -110,15 +110,18 @@
             width: 33.33%;
             vertical-align: top;
             padding: 5px;
+            border: none;
         }
         .photo-grid img {
             max-width: 100%;
+            height: auto;
             border: 1px solid #999;
             margin-bottom: 4px;
         }
         .photo-grid p {
             font-size: 7.5pt;
             margin: 0;
+            word-wrap: break-word;
         }
     </style>
 </head>
@@ -233,122 +236,79 @@
     <div>
         <table class="data-table">
             <thead>
-            <tr class="section-header"><th colspan="6">HORAS TRABALHADAS TÉCNICOS</th></tr>
+            <tr class="section-header"><th colspan="4">REGISTRO DE TEMPO</th></tr>
             <tr>
                 <th>Data</th>
-                <th>Serviço</th>
-                <th>Técnico</th>
                 <th>Início do Trabalho</th>
                 <th>Término do Trabalho</th>
-                <th>Horas Trabalhadas</th>
+                <th>Tempo Total</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="rt : ${os.registrosTempo}">
-                <td th:text="${rt.data != null ? #temporals.format(rt.data, 'dd/MM/yyyy') : 'N/A'}">12/06/2025</td>
-                <td th:text="${rt.descricaoTipoServico ?: 'N/A'}">Diagnóstico</td>
-                <td th:text="${rt.nomeTecnico ?: 'N/A'}">Kaio</td>
-                <td th:text="${rt.horaInicio != null ? #temporals.format(rt.horaInicio, 'HH:mm:ss') : 'N/A'}">09:00:00</td>
-                <td th:text="${rt.horaTermino != null ? #temporals.format(rt.horaTermino, 'HH:mm:ss') : 'N/A'}">11:30:00</td>
-                <td th:text="${rt.horasTrabalhadas ?: 'N/A'}">2.5</td>
+                <td th:text="${rt.horaInicio != null ? #temporals.format(rt.horaInicio, 'dd/MM/yyyy') : 'N/A'}"></td>
+                <td th:text="${rt.horaInicio != null ? #temporals.format(rt.horaInicio, 'HH:mm:ss') : 'N/A'}"></td>
+                <td th:text="${rt.horaTermino != null ? #temporals.format(rt.horaTermino, 'HH:mm:ss') : 'N/A'}"></td>
+
+                <td th:text="${rt.tempoFormatado}">2h 30m</td>
             </tr>
             </tbody>
+            <tfoot>
+            <tr class="total-row">
+                <td colspan="3" style="text-align: right; font-weight: bold;">TEMPO TOTAL EM SERVIÇO:</td>
+
+                <td style="font-weight: bold;" th:text="${tempoTotalFormatado}">10h 00m</td>
+            </tr>
+            </tfoot>
         </table>
     </div>
 
-    <div>
-        <table class="data-table">
-            <thead>
-            <tr class="section-header"><th colspan="7">DESLOCAMENTO</th></tr>
-            <tr>
-                <th>Data</th>
-                <th>Placa</th>
-                <th>Saída De</th>
-                <th>Km Inicial</th>
-                <th>Chegada Em</th>
-                <th>Km Final</th>
-                <th>Total de Km</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="rd : ${os.registrosDeslocamento}">
-                <td th:text="${rd.data != null ? #temporals.format(rd.data, 'dd/MM/yyyy') : 'N/A'}">12/06/2025</td>
-                <td th:text="${rd.placaVeiculo ?: 'N/A'}">ABC-1234</td>
-                <td th:text="${rd.saidaDe ?: 'N/A'}">Sede da Empresa</td>
-                <td th:text="${rd.kmInicial ?: 'N/A'}">15000</td>
-                <td th:text="${rd.chegadaEm ?: 'N/A'}">Local do Cliente</td>
-                <td th:text="${rd.kmFinal ?: 'N/A'}">15025</td>
-                <td th:text="${rd.totalKm ?: 'N/A'}">25</td>
-            </tr>
-            </tbody>
-        </table>
+
+    <div class="assinaturas-container">
+        <div class="assinatura">
+            <div th:if="${urlAssinaturaCliente}">
+                <img th:src="${urlAssinaturaCliente}" alt="Assinatura do Cliente" style="width: 200px; height: auto;"/>
+            </div>
+
+            <p th:text="${os.assinatura?.nomeClienteResponsavel}">Nome do Cliente</p>
+            <p style="font-size: 10px; color: #555;" th:if="${os.assinatura?.dataHoraColeta}"
+               th:text="'Assinado em: ' + ${#temporals.format(os.assinatura.dataHoraColeta, 'dd/MM/yyyy HH:mm:ss')}">
+            </p>
+        </div>
+
+        <div class="assinatura">
+            <div th:if="${urlAssinaturaTecnico}">
+                <img th:src="${urlAssinaturaTecnico}" alt="Assinatura do Técnico" style="width: 200px; height: auto;"/>
+            </div>
+            <p th:text="${os.assinatura?.nomeTecnicoResponsavel}">Nome do Técnico</p>
+            <p style="font-size: 10px; color: #555;" th:if="${os.assinatura?.dataHoraColeta}"
+               th:text="'Assinado em: ' + ${#temporals.format(os.assinatura.dataHoraColeta, 'dd/MM/yyyy HH:mm:ss')}">
+            </p>
+        </div>
     </div>
 
-    <div>
-        <table class="data-table">
-            <thead>
-            <tr class="section-header"><th colspan="5">PEÇAS</th></tr>
-            <tr>
-                <th>Código</th>
-                <th>Descrição</th>
-                <th>Requisitada</th>
-                <th>Utilizada</th>
-                <th>Devolvida</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="iu : ${os.itensUtilizados}">
-                <td th:text="${iu.codigoPecaMaterial ?: 'N/A'}">FIL-001</td>
-                <td th:text="${iu.descricaoPecaMaterial ?: 'N/A'}">Filtro de Óleo</td>
-                <td th:text="${iu.quantidadeRequisitada ?: 'N/A'}">1</td>
-                <td th:text="${iu.quantidadeUtilizada ?: 'N/A'}">1</td>
-                <td th:text="${iu.quantidadeDevolvida ?: 'N/A'}">0</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+    <div th:if="${os.fotos != null and not #lists.isEmpty(os.fotos)}" style="margin-top: 15px; page-break-inside: avoid;">
 
-    <div>
-        <table>
-            <tr class="section-header"><td colspan="4">ASSINATURA</td></tr>
-            <tr>
-                <td><span class="label">Responsável Acomp. Serviço:</span></td>
-                <td th:text="${os.assinatura?.nomeResponsavel ?: 'N/A'}"></td>
-                <td><span class="label">Técnico:</span></td>
-                <td th:text="${os.tecnicoAtribuido?.nome ?: 'N/A'}"></td>
-            </tr>
-            <tr>
-                <td><span class="label">Documento:</span></td>
-                <td th:text="${os.assinatura?.documentoResponsavel ?: 'N/A'}"></td>
-                <td><span class="label">Data/Hora:</span></td>
-                <td th:text="${os.assinatura?.dataHora != null ? #temporals.format(os.assinatura.dataHora, 'dd/MM/yyyy HH:mm:ss') : 'N/A'}"></td>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 5px;">
+            <tr class="section-header">
+                <th style="text-align: center; padding: 8px;">FOTOS DO ATENDIMENTO</th>
             </tr>
         </table>
-    </div>
 
-    <div>
-        <table>
-            <tr class="section-header"><td colspan="3">FOTOS</td></tr>
-            <tbody>
-            <tr class="photo-grid" th:each="i : ${#numbers.sequence(0, (os.fotos != null ? os.fotos.size() : 0) - 1, 3)}">
-                <td th:if="${os.fotos != null and i < os.fotos.size()}">
-                    <img th:src="${os.fotos[i].urlAcesso}" />
-                    <p th:text="${os.fotos[i].nomeArquivoOriginal ?: 'Sem descrição'}"></p>
-                </td>
-                <td th:unless="${os.fotos != null and i < os.fotos.size()}"></td>
-                <td th:if="${os.fotos != null and i + 1 < os.fotos.size()}">
-                    <img th:src="${os.fotos[i+1].urlAcesso}" />
-                    <p th:text="${os.fotos[i+1].nomeArquivoOriginal ?: 'Sem descrição'}"></p>
-                </td>
-                <td th:unless="${os.fotos != null and i + 1 < os.fotos.size()}"></td>
-                <td th:if="${os.fotos != null and i + 2 < os.fotos.size()}">
-                    <img th:src="${os.fotos[i+2].urlAcesso}" />
-                    <p th:text="${os.fotos[i+2].nomeArquivoOriginal ?: 'Sem descrição'}"></p>
-                </td>
-                <td th:unless="${os.fotos != null and i + 2 < os.fotos.size()}"></td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="photo-container" style="width: 100%;">
+
+            <div th:each="foto : ${os.fotos}"
+                 style="width: 32%; float: left; margin-left: 0.6%; margin-right: 0.6%; box-sizing: border-box; text-align: center; margin-bottom: 10px;">
+
+                <img th:if="${foto.caminhoTemporario != null}"
+                     th:src="${foto.caminhoTemporario}"
+                     style="max-width: 100%; height: auto; border: 1px solid #ccc;"/>
+
+                <p th:text="${foto.descricao ?: 'Sem descrição'}" style="font-size: 11px; margin-top: 4px;"></p>
+            </div>
+
+            <div style="clear: both;"></div>
+        </div>
     </div>
 
 </div>

@@ -17,20 +17,20 @@ public class FotoOS {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ordem_servico_id", nullable = false)
     private OrdemServico ordemServico;
 
-    private String caminhoArquivo; // Caminho local no servidor ou URL para storage em nuvem
+    @Lob // Indica que é um Large Object
+    @Column(columnDefinition = "TEXT", nullable = false) // Mapeia para um tipo de texto longo no banco
+    private String fotoBase64; // Armazena a imagem como string Base64
 
-    private String nomeArquivoOriginal; // Nome do arquivo no upload
-    private String tipoConteudo; // MIME type (ex: image/jpeg)
-    private Long tamanhoArquivo; // Em bytes
+    private String descricao; // Descrição da foto
+
+    private String nomeArquivoOriginal;
+    private String tipoConteudo;
+    private Long tamanhoArquivo;
 
     private LocalDateTime dataUpload;
-
-    // Opcional: Descrição da foto
-    // private String descricao;
-
-    // O Lombok cuida de Getters e Setters, etc.
+    private String caminhoTemporario;
 }

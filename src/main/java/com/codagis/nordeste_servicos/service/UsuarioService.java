@@ -8,6 +8,7 @@ import com.codagis.nordeste_servicos.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // Import adicionado
 
 import java.util.List;
 import java.util.Optional;
@@ -25,8 +26,8 @@ public class UsuarioService {
     public List<UsuarioResponseDTO> findAllUsuarios() {
         List<Usuario> usuarios = usuarioRepository.findAll();
         return usuarios.stream()
-                       .map(this::convertToDTO)
-                       .collect(Collectors.toList());
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     public UsuarioResponseDTO findUsuarioById(Long id) {
@@ -40,9 +41,9 @@ public class UsuarioService {
         usuario.setNome(usuarioRequestDTO.getNome());
         usuario.setCracha(usuarioRequestDTO.getCracha());
         usuario.setEmail(usuarioRequestDTO.getEmail());
-        // Criptografe a senha antes de definir no objeto usuário
         usuario.setSenha(passwordEncoder.encode(usuarioRequestDTO.getSenha()));
         usuario.setPerfil(usuarioRequestDTO.getPerfil());
+        usuario.setFotoPerfil(usuarioRequestDTO.getFotoPerfil());
 
         Usuario savedUsuario = usuarioRepository.save(usuario);
         return convertToDTO(savedUsuario);
@@ -56,8 +57,8 @@ public class UsuarioService {
         existingUsuario.setNome(usuarioRequestDTO.getNome());
         existingUsuario.setCracha(usuarioRequestDTO.getCracha());
         existingUsuario.setEmail(usuarioRequestDTO.getEmail());
-        // TODO: Implementar lógica para atualização de senha (pode exigir senha antiga ou ser um endpoint separado)
         existingUsuario.setPerfil(usuarioRequestDTO.getPerfil());
+        existingUsuario.setFotoPerfil(usuarioRequestDTO.getFotoPerfil());
 
         Usuario updatedUsuario = usuarioRepository.save(existingUsuario);
         return convertToDTO(updatedUsuario);
@@ -65,12 +66,13 @@ public class UsuarioService {
 
     public void deleteUsuario(Long id) {
         if (!usuarioRepository.existsById(id)) {
-             throw new ResourceNotFoundException("Usuário não encontrado com ID: " + id);
+            throw new ResourceNotFoundException("Usuário não encontrado com ID: " + id);
         }
         usuarioRepository.deleteById(id);
     }
 
     // Método para encontrar usuário por email (útil para login)
+    @Transactional(readOnly = true) // <-- ADICIONADO AQUI
     public Optional<Usuario> findByEmail(String email) {
         return usuarioRepository.findByEmail(email);
     }
@@ -82,6 +84,7 @@ public class UsuarioService {
         dto.setCracha(usuario.getCracha());
         dto.setEmail(usuario.getEmail());
         dto.setPerfil(usuario.getPerfil());
+        dto.setFotoPerfil(usuario.getFotoPerfil());
         return dto;
     }
 
@@ -92,6 +95,7 @@ public class UsuarioService {
         usuario.setEmail(usuarioRequestDTO.getEmail());
         usuario.setSenha(usuarioRequestDTO.getSenha());
         usuario.setPerfil(usuarioRequestDTO.getPerfil());
+        usuario.setFotoPerfil(usuarioRequestDTO.getFotoPerfil());
         return usuario;
     }
 }

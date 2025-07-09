@@ -12,10 +12,11 @@ public class FotoOSResponseDTO {
 
     private Long id;
     private Long ordemServicoId;
-    private String urlAcesso; // URL para baixar/visualizar a foto
+    private String fotoBase64; // Enviará a imagem de volta para o app
+    private String descricao; // E a descrição
     private String nomeArquivoOriginal;
     private String tipoConteudo;
     private Long tamanhoArquivo;
     private LocalDateTime dataUpload;
-    // Opcional: String descricao;
+    private String caminhoTemporario;
 }

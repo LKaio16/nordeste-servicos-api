@@ -19,4 +19,5 @@ public class RegistroTempoResponseDTO {
     private LocalDateTime horaInicio;
     private LocalDateTime horaTermino;
     private Double horasTrabalhadas;
+    private String tempoFormatado;
 }

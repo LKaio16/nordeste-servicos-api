@@ -27,5 +27,8 @@ public class Usuario {
     @Enumerated(EnumType.STRING) // Armazena o enum como String no banco
     private PerfilUsuario perfil; // Enum para ADMIN, TECNICO
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String fotoPerfil;
     // O Lombok cuida de Getters e Setters, etc.
 }

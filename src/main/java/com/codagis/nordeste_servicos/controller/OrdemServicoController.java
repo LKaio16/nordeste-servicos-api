@@ -1,8 +1,12 @@
 package com.codagis.nordeste_servicos.controller;
 
+import com.codagis.nordeste_servicos.dto.AssinaturaOSResponseDTO;
+import com.codagis.nordeste_servicos.dto.FotoOSResponseDTO;
 import com.codagis.nordeste_servicos.dto.OrdemServicoRequestDTO;
 import com.codagis.nordeste_servicos.dto.OrdemServicoResponseDTO;
 import com.codagis.nordeste_servicos.model.StatusOS;
+import com.codagis.nordeste_servicos.service.AssinaturaOSService;
+import com.codagis.nordeste_servicos.service.FotoOSService;
 import com.codagis.nordeste_servicos.service.OrdemServicoService;
 import com.codagis.nordeste_servicos.service.PdfGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/ordens-servico")
@@ -23,6 +28,13 @@ public class OrdemServicoController {
 
     @Autowired
     private PdfGenerationService pdfGenerationService; // Injetar o serviço de PDF
+
+    @Autowired
+    private FotoOSService fotoOSService;
+
+    @Autowired
+    private AssinaturaOSService assinaturaOSService;
+
 
     @GetMapping
     public ResponseEntity<List<OrdemServicoResponseDTO>> getAllOrdensServico(
@@ -76,16 +88,6 @@ public class OrdemServicoController {
         return ResponseEntity.noContent().build();
     }
 
-    // TODO: Adicionar endpoints específicos para gerenciar entidades relacionadas da OS
-    // Ex:
-    // POST /api/ordens-servico/{id}/registros-tempo
-    // GET /api/ordens-servico/{id}/registros-tempo
-    // POST /api/ordens-servico/{id}/pecas-utilizadas
-    // GET /api/ordens-servico/{id}/pecas-utilizadas
-    // POST /api/ordens-servico/{id}/fotos
-    // GET /api/ordens-servico/{id}/fotos
-    // PUT /api/ordens-servico/{id}/assinatura (ou POST)
-
     @GetMapping("/next-number")
     public ResponseEntity<String> getNextOrdemServicoNumber() {
         String nextNumber = ordemServicoService.getNextOsNumber(); // Método a ser criado no Service
@@ -100,26 +102,35 @@ public class OrdemServicoController {
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> generateOsPdf(@PathVariable Long id) {
         try {
-            // 1. Obter os dados da Ordem de Serviço
+            // 1. Obter os dados da Ordem de Serviço (sem as fotos, como antes)
             OrdemServicoResponseDTO osData = ordemServicoService.findOrdemServicoById(id);
             if (osData == null) {
                 return ResponseEntity.notFound().build();
             }
 
-            // 2. Gerar o PDF usando o serviço
+
+            // 2. Buscar as fotos separadamente usando o FotoOSService
+            List<FotoOSResponseDTO> fotos = fotoOSService.findFotosByOrdemServicoId(id);
+
+            osData.setFotos(fotos);
+
+            // 3. (NOVO) Buscar a assinatura associada à OS
+            Optional<AssinaturaOSResponseDTO> assinatura = assinaturaOSService.findAssinaturaByOrdemServicoId(id);
+            assinatura.ifPresent(osData::setAssinatura); // Adiciona a assinatura ao DTO principal se ela existir
+
+
+            // 4. Gerar o PDF usando o serviço com os dados agora completos
             byte[] pdfBytes = pdfGenerationService.generateOsReportPdf(osData);
 
-            // 3. Configurar os cabeçalhos da resposta para download de PDF
+            // 5. Configurar os cabeçalhos da resposta para download de PDF
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
-            // Define o nome do arquivo quando o usuário for baixar
             headers.setContentDispositionFormData("filename", "relatorio_os_" + osData.getNumeroOS() + ".pdf");
             headers.setContentLength(pdfBytes.length);
 
             return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
 
         } catch (Exception e) {
-            // Logar o erro para depuração
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }

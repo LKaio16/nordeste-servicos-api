@@ -14,21 +14,25 @@ import java.time.LocalDateTime;
 public class AssinaturaOS {
 
     @Id
-    // Usamos GenerationType.IDENTITY ou similar se a chave for independente
-    // Se a chave primária for a mesma da OS, podemos usar @Id @MapsId
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne // Uma Assinatura para Uma Ordem de Serviço
-    @JoinColumn(name = "ordem_servico_id", nullable = false) // Coluna na tabela AssinaturaOS
+    @OneToOne
+    @JoinColumn(name = "ordem_servico_id", nullable = false, unique = true)
     private OrdemServico ordemServico;
 
-    private String caminhoArquivo; // Caminho ou URL para a imagem da assinatura
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String assinaturaClienteBase64;
 
-    private String tipoConteudo; // MIME type (ex: image/png)
-    private Long tamanhoArquivo; // Em bytes
+    private String nomeClienteResponsavel;
+    private String documentoClienteResponsavel;
 
-    private LocalDateTime dataHoraColeta; // Quando a assinatura foi coletada
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String assinaturaTecnicoBase64;
 
-    // O Lombok cuida de Getters e Setters, etc.
+    private String nomeTecnicoResponsavel;
+
+    private LocalDateTime dataHoraColeta;
 }
