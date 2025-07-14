@@ -1,14 +1,18 @@
 package com.codagis.nordeste_servicos.service;
 
+import com.codagis.nordeste_servicos.dto.DesempenhoTecnicoDTO;
 import com.codagis.nordeste_servicos.dto.UsuarioRequestDTO;
 import com.codagis.nordeste_servicos.dto.UsuarioResponseDTO;
 import com.codagis.nordeste_servicos.exception.ResourceNotFoundException;
+import com.codagis.nordeste_servicos.model.PerfilUsuario;
+import com.codagis.nordeste_servicos.model.StatusOS; // Importar StatusOS
 import com.codagis.nordeste_servicos.model.Usuario;
+import com.codagis.nordeste_servicos.repository.OrdemServicoRepository;
 import com.codagis.nordeste_servicos.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // Import adicionado
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +23,9 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private OrdemServicoRepository ordemServicoRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -71,10 +78,38 @@ public class UsuarioService {
         usuarioRepository.deleteById(id);
     }
 
-    // Método para encontrar usuário por email (útil para login)
-    @Transactional(readOnly = true) // <-- ADICIONADO AQUI
+    @Transactional(readOnly = true)
     public Optional<Usuario> findByEmail(String email) {
         return usuarioRepository.findByEmail(email);
+    }
+
+    @Transactional(readOnly = true)
+    public List<DesempenhoTecnicoDTO> getDesempenhoTecnicos() {
+        List<Usuario> tecnicos = usuarioRepository.findByPerfil(PerfilUsuario.TECNICO);
+
+        return tecnicos.stream()
+                .map(this::convertToDesempenhoDTO)
+                .collect(Collectors.toList());
+    }
+
+    private DesempenhoTecnicoDTO convertToDesempenhoDTO(Usuario tecnico) {
+        // LÓGICA ALTERADA: Conta o total de OS atribuídas ao técnico.
+        int totalOS = ordemServicoRepository.countByTecnicoAtribuidoId(tecnico.getId());
+
+        // Conta apenas as Ordens de Serviço com status CONCLUIDA.
+        int osConcluidas = ordemServicoRepository.countByTecnicoAtribuidoIdAndStatus(tecnico.getId(), StatusOS.CONCLUIDA);
+
+        // A métrica de desempenho agora é a razão entre OS concluídas e o total de OS atribuídas.
+        // Se o técnico não tiver nenhuma OS, seu desempenho é 0.
+        double desempenho = (totalOS > 0) ? ((double) osConcluidas / totalOS) : 0.0;
+
+        return new DesempenhoTecnicoDTO(
+                tecnico.getId(),
+                tecnico.getNome(),
+                tecnico.getFotoPerfil(),
+                totalOS, // O total agora reflete todas as OS atribuídas
+                desempenho
+        );
     }
 
     private UsuarioResponseDTO convertToDTO(Usuario usuario) {

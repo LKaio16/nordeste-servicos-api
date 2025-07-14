@@ -2,11 +2,14 @@ package com.codagis.nordeste_servicos.service;
 
 import com.codagis.nordeste_servicos.dto.PecaMaterialRequestDTO;
 import com.codagis.nordeste_servicos.dto.PecaMaterialResponseDTO;
+import com.codagis.nordeste_servicos.exception.BusinessException;
 import com.codagis.nordeste_servicos.exception.ResourceNotFoundException;
 import com.codagis.nordeste_servicos.model.PecaMaterial;
 import com.codagis.nordeste_servicos.repository.PecaMaterialRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -62,12 +65,17 @@ public class PecaMaterialService {
         return convertToDTO(updatedPecaMaterial);
     }
 
+    @Transactional
     public void deletePecaMaterial(Long id) {
         if (!pecaMaterialRepository.existsById(id)) {
-             throw new ResourceNotFoundException("Peça/Material não encontrado com ID: " + id);
+            throw new ResourceNotFoundException("Peça/Material não encontrado com ID: " + id);
         }
-        // TODO: Considerar se a peça/material está sendo usada em alguma OS ou Orçamento antes de deletar
-        pecaMaterialRepository.deleteById(id);
+        try {
+            pecaMaterialRepository.deleteById(id);
+            pecaMaterialRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException("Não é possível excluir esta Peça/Material, pois está em uso em um Orçamento ou Ordem de Serviço.");
+        }
     }
 
     private PecaMaterialResponseDTO convertToDTO(PecaMaterial pecaMaterial) {

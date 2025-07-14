@@ -2,11 +2,14 @@ package com.codagis.nordeste_servicos.service;
 
 import com.codagis.nordeste_servicos.dto.TipoServicoRequestDTO;
 import com.codagis.nordeste_servicos.dto.TipoServicoResponseDTO;
+import com.codagis.nordeste_servicos.exception.BusinessException;
 import com.codagis.nordeste_servicos.exception.ResourceNotFoundException;
 import com.codagis.nordeste_servicos.model.TipoServico;
 import com.codagis.nordeste_servicos.repository.TipoServicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,12 +61,18 @@ public class TipoServicoService {
         return convertToDTO(updatedTipoServico);
     }
 
+    @Transactional
     public void deleteTipoServico(Long id) {
-        if (!tipoServicoRepository.existsById(id)) {
-             throw new ResourceNotFoundException("Tipo de Serviço não encontrado com ID: " + id);
+        // Busca a entidade primeiro para garantir que ela existe
+        TipoServico tipoServico = tipoServicoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de Serviço não encontrado com ID: " + id));
+        try {
+            tipoServicoRepository.delete(tipoServico);
+            tipoServicoRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            // Captura a exceção de violação de integridade e lança uma exceção de negócio
+            throw new BusinessException("Não é possível excluir este Tipo de Serviço, pois ele já está em uso em um Orçamento ou Ordem de Serviço.");
         }
-         // TODO: Considerar se o tipo de serviço está sendo usado em algum RegistroTempo ou ItemOrcamento
-        tipoServicoRepository.deleteById(id);
     }
 
     private TipoServicoResponseDTO convertToDTO(TipoServico tipoServico) {

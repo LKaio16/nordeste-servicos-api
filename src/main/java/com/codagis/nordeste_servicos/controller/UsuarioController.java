@@ -1,5 +1,6 @@
 package com.codagis.nordeste_servicos.controller;
 
+import com.codagis.nordeste_servicos.dto.DesempenhoTecnicoDTO;
 import com.codagis.nordeste_servicos.dto.UsuarioRequestDTO;
 import com.codagis.nordeste_servicos.dto.UsuarioResponseDTO;
 import com.codagis.nordeste_servicos.service.UsuarioService;
@@ -45,5 +46,11 @@ public class UsuarioController {
     public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
         usuarioService.deleteUsuario(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/desempenho")
+    public ResponseEntity<List<DesempenhoTecnicoDTO>> getDesempenhoDosTecnicos() {
+        List<DesempenhoTecnicoDTO> desempenho = usuarioService.getDesempenhoTecnicos();
+        return ResponseEntity.ok(desempenho);
     }
 }

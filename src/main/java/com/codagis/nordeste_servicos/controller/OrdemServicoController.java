@@ -10,12 +10,14 @@ import com.codagis.nordeste_servicos.service.FotoOSService;
 import com.codagis.nordeste_servicos.service.OrdemServicoService;
 import com.codagis.nordeste_servicos.service.PdfGenerationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +42,8 @@ public class OrdemServicoController {
     public ResponseEntity<List<OrdemServicoResponseDTO>> getAllOrdensServico(
             @RequestParam(required = false) Long tecnicoId,
             @RequestParam(required = false) Long clienteId,
-            @RequestParam(required = false) StatusOS status) {
+            @RequestParam(required = false) StatusOS status,
+            @RequestParam(required = false) String searchTerm) { // Parâmetro adicionado
 
         if (tecnicoId != null) {
             List<OrdemServicoResponseDTO> ordens = ordemServicoService.findOrdensServicoByTecnicoId(tecnicoId);
@@ -55,7 +58,8 @@ public class OrdemServicoController {
             return ResponseEntity.ok(ordens);
         }
 
-        List<OrdemServicoResponseDTO> ordens = ordemServicoService.findAllOrdensServico();
+        // Lógica de busca agora é chamada no serviço
+        List<OrdemServicoResponseDTO> ordens = ordemServicoService.findAllOrdensServico(searchTerm);
         return ResponseEntity.ok(ordens);
     }
 

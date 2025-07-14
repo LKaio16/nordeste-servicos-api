@@ -2,13 +2,16 @@ package com.codagis.nordeste_servicos.service;
 
 import com.codagis.nordeste_servicos.dto.EquipamentoRequestDTO;
 import com.codagis.nordeste_servicos.dto.EquipamentoResponseDTO;
+import com.codagis.nordeste_servicos.exception.BusinessException;
 import com.codagis.nordeste_servicos.exception.ResourceNotFoundException;
 import com.codagis.nordeste_servicos.model.Cliente;
 import com.codagis.nordeste_servicos.model.Equipamento;
 import com.codagis.nordeste_servicos.repository.ClienteRepository;
 import com.codagis.nordeste_servicos.repository.EquipamentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,11 +81,17 @@ public class EquipamentoService {
         return convertToDTO(updatedEquipamento);
     }
 
+    @Transactional
     public void deleteEquipamento(Long id) {
         if (!equipamentoRepository.existsById(id)) {
-             throw new ResourceNotFoundException("Equipamento não encontrado com ID: " + id);
+            throw new ResourceNotFoundException("Equipamento não encontrado com ID: " + id);
         }
-        equipamentoRepository.deleteById(id);
+        try {
+            equipamentoRepository.deleteById(id);
+            equipamentoRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException("Não é possível excluir este Equipamento, pois ele está vinculado a uma Ordem de Serviço existente.");
+        }
     }
 
     // Método utilitário para converter Entidade para DTO

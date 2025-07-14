@@ -136,15 +136,19 @@
                 </div>
                 <div class="company-info">
                     <p><strong>NORDESTE SERVIÇOS</strong></p>
-                    <p>RODOVIA BR.116, 10.001, KM 50, ENDEREÇO</p>
-                    <p>FORTALEZA - CEP: 601.843-325-CE</p>
-                    <p>Tel: (85) 99600-9422</p>
+                    <p>Rua C, 357 - Loteamento Expedicionários 01</p>
+                    <p>Parque Dois Irmãos - CEP: 60.745-540</p>
+                    <p>Fortaleza - CE</p>
+                    <p>Tel: (85) 99995-1508 | (85) 3493-7414</p>
+                    <p>CNPJ: 45.829.063/0001-93</p>
+                    <p>Insc. Municipal: 276.843-7</p>
+                    <p>E-mail: nordesteservicos@manutencao.com.br</p>
                 </div>
             </td>
             <td style="width: 50%;">
                 <div class="os-title-block">
                     <h1>ORDEM DE SERVIÇOS</h1>
-                    <p th:text="${os.numeroOS ?: 'N/A'}">OS-1</p>
+                    <p th:text="'OS-' + ${os.id}">OS-1</p>
                 </div>
                 <table class="os-details-table">
                     <tr><td><span class="label">Status OS:</span></td> <td th:text="${os.status?.name() ?: 'N/A'}">EM_ABERTO</td></tr>
@@ -264,28 +268,32 @@
     </div>
 
 
-    <div class="assinaturas-container">
-        <div class="assinatura">
-            <div th:if="${urlAssinaturaCliente}">
-                <img th:src="${urlAssinaturaCliente}" alt="Assinatura do Cliente" style="width: 200px; height: auto;"/>
-            </div>
-
-            <p th:text="${os.assinatura?.nomeClienteResponsavel}">Nome do Cliente</p>
-            <p style="font-size: 10px; color: #555;" th:if="${os.assinatura?.dataHoraColeta}"
-               th:text="'Assinado em: ' + ${#temporals.format(os.assinatura.dataHoraColeta, 'dd/MM/yyyy HH:mm:ss')}">
-            </p>
-        </div>
-
-        <div class="assinatura">
-            <div th:if="${urlAssinaturaTecnico}">
-                <img th:src="${urlAssinaturaTecnico}" alt="Assinatura do Técnico" style="width: 200px; height: auto;"/>
-            </div>
-            <p th:text="${os.assinatura?.nomeTecnicoResponsavel}">Nome do Técnico</p>
-            <p style="font-size: 10px; color: #555;" th:if="${os.assinatura?.dataHoraColeta}"
-               th:text="'Assinado em: ' + ${#temporals.format(os.assinatura.dataHoraColeta, 'dd/MM/yyyy HH:mm:ss')}">
-            </p>
-        </div>
-    </div>
+    <table class="no-border" style="width: 100%; margin-top: 20px;">
+        <tr>
+            <td style="width: 50%; text-align: center; vertical-align: top;">
+                <div th:if="${urlAssinaturaCliente}" style="height: 80px; display: flex; align-items: center; justify-content: center;">
+                    <img th:src="${urlAssinaturaCliente}" alt="Assinatura do Cliente" style="max-width: 100%; max-height: 100%; object-fit: contain;"/>
+                </div>
+                <div style="border-top: 1px solid #000; padding-top: 5px; margin-top: 10px;">
+                    <p th:text="${os.assinatura?.nomeClienteResponsavel}" style="margin: 0; font-weight: bold;">Nome do Cliente</p>
+                    <p style="font-size: 7pt; color: #555; margin: 2px 0 0 0;" th:if="${os.assinatura?.dataHoraColeta}"
+                       th:text="'Assinado em: ' + ${#temporals.format(os.assinatura.dataHoraColeta, 'dd/MM/yyyy HH:mm:ss')}">
+                    </p>
+                </div>
+            </td>
+            <td style="width: 50%; text-align: center; vertical-align: top;">
+                <div th:if="${urlAssinaturaTecnico}" style="height: 80px; display: flex; align-items: center; justify-content: center;">
+                    <img th:src="${urlAssinaturaTecnico}" alt="Assinatura do Técnico" style="max-width: 100%; max-height: 100%; object-fit: contain;"/>
+                </div>
+                <div style="border-top: 1px solid #000; padding-top: 5px; margin-top: 10px;">
+                    <p th:text="${os.assinatura?.nomeTecnicoResponsavel}" style="margin: 0; font-weight: bold;">Nome do Técnico</p>
+                    <p style="font-size: 7pt; color: #555; margin: 2px 0 0 0;" th:if="${os.assinatura?.dataHoraColeta}"
+                       th:text="'Assinado em: ' + ${#temporals.format(os.assinatura.dataHoraColeta, 'dd/MM/yyyy HH:mm:ss')}">
+                    </p>
+                </div>
+            </td>
+        </tr>
+    </table>
 
     <div th:if="${os.fotos != null and not #lists.isEmpty(os.fotos)}" style="margin-top: 15px; page-break-inside: avoid;">
 

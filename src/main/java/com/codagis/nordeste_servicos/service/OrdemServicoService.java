@@ -23,6 +23,7 @@ import com.codagis.nordeste_servicos.repository.OrdemServicoRepository;
 import com.codagis.nordeste_servicos.repository.UsuarioRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,8 +51,13 @@ public class OrdemServicoService {
     private RegistroTempoService registroTempoService;
 
     @Transactional(readOnly = true)
-    public List<OrdemServicoResponseDTO> findAllOrdensServico() {
-        List<OrdemServico> ordens = ordemServicoRepository.findAll();
+    public List<OrdemServicoResponseDTO> findAllOrdensServico(String searchTerm) {
+        List<OrdemServico> ordens;
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            ordens = ordemServicoRepository.searchByTerm(searchTerm);
+        } else {
+            ordens = ordemServicoRepository.findAll();
+        }
         return ordens.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -215,14 +221,17 @@ public class OrdemServicoService {
         if (!ordemServicoRepository.existsById(id)) {
             throw new ResourceNotFoundException("Ordem de Serviço não encontrada com ID: " + id);
         }
-        ordemServicoRepository.deleteById(id);
+        try {
+            ordemServicoRepository.deleteById(id);
+            ordemServicoRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException("Não é possível excluir esta Ordem de Serviço, pois ela já está vinculada a um Orçamento existente.");
+        }
     }
 
     private String generateNewNumeroOS() {
         return "OS-" + getNextOsNumber();
     }
-
-    // Método utilitário para converter Entidade para DTO
 
     @Transactional(readOnly = true)
     private OrdemServicoResponseDTO convertToDTO(OrdemServico ordemServico) {
