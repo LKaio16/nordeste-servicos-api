@@ -3,13 +3,16 @@ package com.codagis.nordeste_servicos.service;
 import com.codagis.nordeste_servicos.dto.DesempenhoTecnicoDTO;
 import com.codagis.nordeste_servicos.dto.UsuarioRequestDTO;
 import com.codagis.nordeste_servicos.dto.UsuarioResponseDTO;
+import com.codagis.nordeste_servicos.exception.BusinessException;
 import com.codagis.nordeste_servicos.exception.ResourceNotFoundException;
+import com.codagis.nordeste_servicos.model.OrdemServico;
 import com.codagis.nordeste_servicos.model.PerfilUsuario;
 import com.codagis.nordeste_servicos.model.StatusOS; // Importar StatusOS
 import com.codagis.nordeste_servicos.model.Usuario;
 import com.codagis.nordeste_servicos.repository.OrdemServicoRepository;
 import com.codagis.nordeste_servicos.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +47,13 @@ public class UsuarioService {
     }
 
     public UsuarioResponseDTO createUsuario(UsuarioRequestDTO usuarioRequestDTO) {
+        if (usuarioRepository.findByEmail(usuarioRequestDTO.getEmail()).isPresent()) {
+            throw new BusinessException("O e-mail informado já está em uso.");
+        }
+        if (usuarioRepository.findByCracha(usuarioRequestDTO.getCracha()).isPresent()) {
+            throw new BusinessException("O crachá informado já está em uso.");
+        }
+
         Usuario usuario = new Usuario();
         usuario.setNome(usuarioRequestDTO.getNome());
         usuario.setCracha(usuarioRequestDTO.getCracha());
@@ -61,6 +71,18 @@ public class UsuarioService {
         Usuario existingUsuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + id));
 
+        usuarioRepository.findByEmail(usuarioRequestDTO.getEmail()).ifPresent(user -> {
+            if (!user.getId().equals(id)) {
+                throw new BusinessException("O e-mail informado já está em uso por outro usuário.");
+            }
+        });
+
+        usuarioRepository.findByCracha(usuarioRequestDTO.getCracha()).ifPresent(user -> {
+            if (!user.getId().equals(id)) {
+                throw new BusinessException("O crachá informado já está em uso por outro usuário.");
+            }
+        });
+
         existingUsuario.setNome(usuarioRequestDTO.getNome());
         existingUsuario.setCracha(usuarioRequestDTO.getCracha());
         existingUsuario.setEmail(usuarioRequestDTO.getEmail());
@@ -71,10 +93,17 @@ public class UsuarioService {
         return convertToDTO(updatedUsuario);
     }
 
+    @Transactional
     public void deleteUsuario(Long id) {
         if (!usuarioRepository.existsById(id)) {
             throw new ResourceNotFoundException("Usuário não encontrado com ID: " + id);
         }
+
+        List<OrdemServico> ordensServico = ordemServicoRepository.findByTecnicoAtribuidoId(id);
+        if (!ordensServico.isEmpty()) {
+            throw new BusinessException("Não é possível excluir o usuário, pois ele está associado a ordens de serviço.");
+        }
+
         usuarioRepository.deleteById(id);
     }
 

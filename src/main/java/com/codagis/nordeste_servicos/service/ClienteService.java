@@ -2,12 +2,18 @@ package com.codagis.nordeste_servicos.service;
 
 import com.codagis.nordeste_servicos.dto.ClienteRequestDTO;
 import com.codagis.nordeste_servicos.dto.ClienteResponseDTO;
+import com.codagis.nordeste_servicos.exception.BusinessException;
+import com.codagis.nordeste_servicos.exception.ResourceNotFoundException;
 import com.codagis.nordeste_servicos.model.Cliente;
+import com.codagis.nordeste_servicos.model.Orcamento;
+import com.codagis.nordeste_servicos.model.OrdemServico;
 import com.codagis.nordeste_servicos.repository.ClienteRepository;
-import org.apache.velocity.exception.ResourceNotFoundException; // Mantenha se usado em outros lugares, senão remova
+import com.codagis.nordeste_servicos.repository.OrcamentoRepository;
+import com.codagis.nordeste_servicos.repository.OrdemServicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import jakarta.persistence.EntityNotFoundException; // Usar exceção mais apropriada
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +24,12 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
+    @Autowired
+    private OrdemServicoRepository ordemServicoRepository;
+
+    @Autowired
+    private OrcamentoRepository orcamentoRepository;
+
     public List<ClienteResponseDTO> findAllClientes(String searchTerm, String tipoCliente) {
         List<Cliente> clientes = clienteRepository.findAllWithFilters(searchTerm, tipoCliente);
         return clientes.stream()
@@ -27,7 +39,7 @@ public class ClienteService {
 
     public ClienteResponseDTO findClienteById(Long id) {
         Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com ID: " + id)); // Exceção mais semântica
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + id));
         return convertToDTO(cliente);
     }
 
@@ -39,7 +51,7 @@ public class ClienteService {
 
     public ClienteResponseDTO updateCliente(Long id, ClienteRequestDTO clienteRequestDTO) {
         Cliente existingCliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + id));
 
         // *** CORREÇÃO: Atualiza todos os campos do cliente existente com os dados do DTO ***
         existingCliente.setTipoCliente(clienteRequestDTO.getTipoCliente());
@@ -60,11 +72,17 @@ public class ClienteService {
         return convertToDTO(updatedCliente);
     }
 
+    @Transactional
     public void deleteCliente(Long id) {
         if (!clienteRepository.existsById(id)) {
-            throw new EntityNotFoundException("Cliente não encontrado com ID: " + id);
+            throw new ResourceNotFoundException("Cliente não encontrado com ID: " + id);
         }
-        clienteRepository.deleteById(id);
+        try {
+            clienteRepository.deleteById(id);
+            clienteRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException("Não é possível excluir o cliente, pois ele possui orçamentos ou ordens de serviço associados.");
+        }
     }
 
     // *** CORREÇÃO: Atualiza convertToDTO para incluir todos os campos ***
