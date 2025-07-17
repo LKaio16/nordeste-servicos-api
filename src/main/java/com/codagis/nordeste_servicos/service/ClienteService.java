@@ -18,8 +18,8 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    public List<ClienteResponseDTO> findAllClientes() {
-        List<Cliente> clientes = clienteRepository.findAll();
+    public List<ClienteResponseDTO> findAllClientes(String searchTerm, String tipoCliente) {
+        List<Cliente> clientes = clienteRepository.findAllWithFilters(searchTerm, tipoCliente);
         return clientes.stream()
                 .map(this::convertToDTO) // Mapeia cada Cliente para ClienteResponseDTO
                 .collect(Collectors.toList());

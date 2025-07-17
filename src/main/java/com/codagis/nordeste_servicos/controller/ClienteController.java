@@ -19,8 +19,10 @@ public class ClienteController {
     private ClienteService clienteService;
 
     @GetMapping
-    public ResponseEntity<List<ClienteResponseDTO>> getAllClientes() {
-        List<ClienteResponseDTO> clientes = clienteService.findAllClientes();
+    public ResponseEntity<List<ClienteResponseDTO>> getAllClientes(
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false) String tipoCliente) {
+        List<ClienteResponseDTO> clientes = clienteService.findAllClientes(searchTerm, tipoCliente);
         return ResponseEntity.ok(clientes);
     }
 

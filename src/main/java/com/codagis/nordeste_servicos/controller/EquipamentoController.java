@@ -18,12 +18,10 @@ public class EquipamentoController {
     private EquipamentoService equipamentoService;
 
     @GetMapping
-    public ResponseEntity<List<EquipamentoResponseDTO>> getAllEquipamentos(@RequestParam(required = false) Long clienteId) {
-        if (clienteId != null) {
-            List<EquipamentoResponseDTO> equipamentos = equipamentoService.findEquipamentosByClienteId(clienteId);
-            return ResponseEntity.ok(equipamentos);
-        }
-        List<EquipamentoResponseDTO> equipamentos = equipamentoService.findAllEquipamentos();
+    public ResponseEntity<List<EquipamentoResponseDTO>> getAllEquipamentos(
+            @RequestParam(required = false) Long clienteId,
+            @RequestParam(required = false) String searchTerm) {
+        List<EquipamentoResponseDTO> equipamentos = equipamentoService.findAllEquipamentos(clienteId, searchTerm);
         return ResponseEntity.ok(equipamentos);
     }
 

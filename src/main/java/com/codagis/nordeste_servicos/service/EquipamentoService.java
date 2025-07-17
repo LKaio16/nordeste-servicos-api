@@ -25,8 +25,8 @@ public class EquipamentoService {
     @Autowired
     private ClienteRepository clienteRepository; // Precisamos do repositório de Cliente
 
-    public List<EquipamentoResponseDTO> findAllEquipamentos() {
-        List<Equipamento> equipamentos = equipamentoRepository.findAll();
+    public List<EquipamentoResponseDTO> findAllEquipamentos(Long clienteId, String searchTerm) {
+        List<Equipamento> equipamentos = equipamentoRepository.findAllWithFilters(clienteId, searchTerm);
         return equipamentos.stream()
                            .map(this::convertToDTO)
                            .collect(Collectors.toList());
