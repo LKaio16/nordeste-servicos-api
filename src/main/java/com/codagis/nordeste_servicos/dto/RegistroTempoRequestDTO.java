@@ -12,8 +12,6 @@ public class RegistroTempoRequestDTO {
 
     private Long ordemServicoId;
     private Long tecnicoId;
-    private Long tipoServicoId;
     private LocalDateTime horaInicio;
-    private LocalDateTime horaTermino; // Opcional ao iniciar o timer
-    // O campo horasTrabalhadas será calculado no serviço
+    private LocalDateTime horaTermino;
 }

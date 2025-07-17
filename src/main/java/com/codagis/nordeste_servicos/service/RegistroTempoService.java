@@ -67,14 +67,9 @@ public class RegistroTempoService {
         Usuario tecnico = usuarioRepository.findById(registroTempoRequestDTO.getTecnicoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Técnico não encontrado com ID: " + registroTempoRequestDTO.getTecnicoId()));
 
-        TipoServico tipoServico = tipoServicoRepository.findById(registroTempoRequestDTO.getTipoServicoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Tipo de Serviço não encontrado com ID: " + registroTempoRequestDTO.getTipoServicoId()));
-
-
         RegistroTempo novoRegistro = new RegistroTempo();
         novoRegistro.setOrdemServico(ordemServico);
         novoRegistro.setTecnico(tecnico);
-        novoRegistro.setTipoServico(tipoServico);
         novoRegistro.setHoraInicio(LocalDateTime.now());
 
         RegistroTempo savedRegistro = registroTempoRepository.save(novoRegistro);
@@ -119,8 +114,6 @@ public class RegistroTempoService {
         dto.setOrdemServicoId(registroTempo.getOrdemServico().getId());
         dto.setTecnicoId(registroTempo.getTecnico().getId());
         dto.setNomeTecnico(registroTempo.getTecnico().getNome());
-        dto.setTipoServicoId(registroTempo.getTipoServico().getId());
-        dto.setDescricaoTipoServico(registroTempo.getTipoServico().getDescricao());
         dto.setHoraInicio(registroTempo.getHoraInicio());
         dto.setHoraTermino(registroTempo.getHoraTermino());
         dto.setHorasTrabalhadas(registroTempo.getHorasTrabalhadas());

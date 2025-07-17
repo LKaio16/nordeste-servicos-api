@@ -25,10 +25,6 @@ public class RegistroTempo {
     @JoinColumn(name = "tecnico_id", nullable = false)
     private Usuario tecnico; // O técnico que registrou o tempo
 
-    @ManyToOne
-    @JoinColumn(name = "tipo_servico_id", nullable = false)
-    private TipoServico tipoServico; // Ex: Mão de Obra, Deslocamento
-
     @Column(nullable = false)
     private LocalDateTime horaInicio;
 

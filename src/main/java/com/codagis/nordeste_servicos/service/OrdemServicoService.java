@@ -355,24 +355,18 @@ public class OrdemServicoService {
             return null;
         }
 
-        // 1. Cria um DTO vazio usando o construtor padrão (garantido pelo @NoArgsConstructor)
         RegistroTempoResponseDTO dto = new RegistroTempoResponseDTO();
 
-        // 2. Popula o DTO usando os métodos "set" (garantidos pelo @Data)
         dto.setId(registro.getId());
         dto.setOrdemServicoId(registro.getOrdemServico().getId());
         dto.setTecnicoId(registro.getTecnico().getId());
         dto.setNomeTecnico(registro.getTecnico().getNome());
-        dto.setTipoServicoId(registro.getTipoServico().getId());
-        dto.setDescricaoTipoServico(registro.getTipoServico().getDescricao());
         dto.setHoraInicio(registro.getHoraInicio());
         dto.setHoraTermino(registro.getHoraTermino());
         dto.setHorasTrabalhadas(registro.getHorasTrabalhadas());
 
-        // 3. Define o campo formatado
         dto.setTempoFormatado(formatarHorasDecimais(registro.getHorasTrabalhadas()));
 
-        // 4. Retorna o DTO completo
         return dto;
     }
 }
