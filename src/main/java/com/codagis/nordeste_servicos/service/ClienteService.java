@@ -44,6 +44,12 @@ public class ClienteService {
     }
 
     public ClienteResponseDTO createCliente(ClienteRequestDTO clienteRequestDTO) {
+        if (clienteRepository.findByCpfCnpj(clienteRequestDTO.getCpfCnpj()).isPresent()) {
+            throw new BusinessException("O CPF/CNPJ informado já está cadastrado.");
+        }
+        if (clienteRepository.findByEmail(clienteRequestDTO.getEmail()).isPresent()) {
+            throw new BusinessException("O e-mail informado já está cadastrado.");
+        }
         Cliente cliente = convertToEntity(clienteRequestDTO);
         Cliente savedCliente = clienteRepository.save(cliente);
         return convertToDTO(savedCliente);
@@ -52,6 +58,18 @@ public class ClienteService {
     public ClienteResponseDTO updateCliente(Long id, ClienteRequestDTO clienteRequestDTO) {
         Cliente existingCliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + id));
+
+        clienteRepository.findByCpfCnpj(clienteRequestDTO.getCpfCnpj()).ifPresent(cliente -> {
+            if (!cliente.getId().equals(id)) {
+                throw new BusinessException("O CPF/CNPJ informado já está cadastrado em outro cliente.");
+            }
+        });
+
+        clienteRepository.findByEmail(clienteRequestDTO.getEmail()).ifPresent(cliente -> {
+            if (!cliente.getId().equals(id)) {
+                throw new BusinessException("O e-mail informado já está cadastrado em outro cliente.");
+            }
+        });
 
         // *** CORREÇÃO: Atualiza todos os campos do cliente existente com os dados do DTO ***
         existingCliente.setTipoCliente(clienteRequestDTO.getTipoCliente());

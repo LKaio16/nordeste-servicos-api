@@ -9,9 +9,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long>, JpaSpecificationExecutor<Cliente> {
+
+    Optional<Cliente> findByCpfCnpj(String cpfCnpj);
+    Optional<Cliente> findByEmail(String email);
 
     default List<Cliente> findAllWithFilters(String searchTerm, String tipoClienteStr) {
         Specification<Cliente> spec = Specification.where(null);
