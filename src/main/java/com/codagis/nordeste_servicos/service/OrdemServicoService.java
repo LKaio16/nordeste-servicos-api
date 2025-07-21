@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class OrdemServicoService {
@@ -229,6 +230,18 @@ public class OrdemServicoService {
         }
     }
 
+    @Transactional
+    public void updateOrdemServicoStatus(Long id, StatusOS novoStatus) {
+        OrdemServico ordemServico = ordemServicoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Ordem de Serviço não encontrada com ID: " + id));
+
+        // TODO: Adicionar validações de segurança, se necessário.
+        // Ex: um técnico só pode mudar de ABERTA para EM_ANDAMENTO.
+
+        ordemServico.setStatus(novoStatus);
+        ordemServicoRepository.save(ordemServico);
+    }
+
     private String generateNewNumeroOS() {
         return "OS-" + getNextOsNumber();
     }
@@ -324,18 +337,18 @@ public class OrdemServicoService {
     }
 
     public String getNextOsNumber() {
-        OrdemServico lastOs = ordemServicoRepository.findTopByOrderByIdDesc();
+        Optional<OrdemServico> ultimaOS = Optional.ofNullable(ordemServicoRepository.findTopByOrderByIdDesc());
 
         long nextNumber = 1;
-        if (lastOs != null && lastOs.getNumeroOS() != null) {
+        if (ultimaOS.isPresent() && ultimaOS.get().getNumeroOS() != null) {
             try {
-                String lastNumStr = lastOs.getNumeroOS().replaceAll("OS-", "").replaceAll("[^0-9]", "");
+                String lastNumStr = ultimaOS.get().getNumeroOS().replaceAll("OS-", "").replaceAll("[^0-9]", "");
                 if (!lastNumStr.isEmpty()) {
                     long lastNum = Long.parseLong(lastNumStr);
                     nextNumber = lastNum + 1;
                 }
             } catch (NumberFormatException e) {
-                System.err.println("WARN: Não foi possível parsear o último numeroOS: " + lastOs.getNumeroOS() + ". Gerando novo número a partir de 1.");
+                System.err.println("WARN: Não foi possível parsear o último numeroOS: " + ultimaOS.get().getNumeroOS() + ". Gerando novo número a partir de 1.");
             }
         }
         return String.valueOf(nextNumber);

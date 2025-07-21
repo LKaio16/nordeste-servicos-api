@@ -1,9 +1,6 @@
 package com.codagis.nordeste_servicos.controller;
 
-import com.codagis.nordeste_servicos.dto.AssinaturaOSResponseDTO;
-import com.codagis.nordeste_servicos.dto.FotoOSResponseDTO;
-import com.codagis.nordeste_servicos.dto.OrdemServicoRequestDTO;
-import com.codagis.nordeste_servicos.dto.OrdemServicoResponseDTO;
+import com.codagis.nordeste_servicos.dto.*;
 import com.codagis.nordeste_servicos.model.StatusOS;
 import com.codagis.nordeste_servicos.service.AssinaturaOSService;
 import com.codagis.nordeste_servicos.service.FotoOSService;
@@ -90,6 +87,12 @@ public class OrdemServicoController {
         // TODO: Implementar validação de segurança para permitir apenas ADMIN deletar OS
         ordemServicoService.deleteOrdemServico(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Void> updateOrdemServicoStatus(@PathVariable Long id, @RequestBody StatusUpdateRequest statusUpdateRequest) {
+        ordemServicoService.updateOrdemServicoStatus(id, statusUpdateRequest.getStatus());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/next-number")
