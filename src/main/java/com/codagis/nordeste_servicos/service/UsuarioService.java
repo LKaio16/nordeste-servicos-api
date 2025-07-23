@@ -94,6 +94,18 @@ public class UsuarioService {
     }
 
     @Transactional
+    public void updatePassword(Long userId, String newPassword) {
+        if (newPassword == null || newPassword.trim().isEmpty() || newPassword.length() < 6) {
+            throw new BusinessException("A nova senha deve ter no mínimo 6 caracteres.");
+        }
+        Usuario usuario = usuarioRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + userId));
+
+        usuario.setSenha(passwordEncoder.encode(newPassword));
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional
     public void deleteUsuario(Long id) {
         if (!usuarioRepository.existsById(id)) {
             throw new ResourceNotFoundException("Usuário não encontrado com ID: " + id);

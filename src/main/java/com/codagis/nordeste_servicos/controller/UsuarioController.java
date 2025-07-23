@@ -3,6 +3,7 @@ package com.codagis.nordeste_servicos.controller;
 import com.codagis.nordeste_servicos.dto.DesempenhoTecnicoDTO;
 import com.codagis.nordeste_servicos.dto.UsuarioRequestDTO;
 import com.codagis.nordeste_servicos.dto.UsuarioResponseDTO;
+import com.codagis.nordeste_servicos.dto.SenhaUpdateRequestDTO;
 import com.codagis.nordeste_servicos.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,13 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDTO> updateUsuario(@PathVariable Long id, @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
         UsuarioResponseDTO updatedUsuario = usuarioService.updateUsuario(id, usuarioRequestDTO);
         return ResponseEntity.ok(updatedUsuario);
+    }
+
+    @PatchMapping("/{id}/senha")
+    public ResponseEntity<Void> updatePassword(@PathVariable Long id, @RequestBody SenhaUpdateRequestDTO request) {
+        // TODO: Adicionar validação de segurança para garantir que apenas um ADMIN pode fazer isso.
+        usuarioService.updatePassword(id, request.getNovaSenha());
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
