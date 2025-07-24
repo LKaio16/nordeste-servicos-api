@@ -33,24 +33,10 @@ public class OrcamentoController {
     public ResponseEntity<List<OrcamentoResponseDTO>> getAllOrcamentos(
             @RequestParam(required = false) Long clienteId,
             @RequestParam(required = false) StatusOrcamento status,
-            @RequestParam(required = false) Long ordemServicoOrigemId) {
+            @RequestParam(required = false) Long ordemServicoOrigemId,
+            @RequestParam(required = false) String searchTerm) {
 
-        if (clienteId != null) {
-            List<OrcamentoResponseDTO> orçamentos = orçamentoService.findOrcamentosByClienteId(clienteId);
-            return ResponseEntity.ok(orçamentos);
-        }
-        if (status != null) {
-            List<OrcamentoResponseDTO> orçamentos = orçamentoService.findOrcamentosByStatus(status);
-            return ResponseEntity.ok(orçamentos);
-        }
-        if (ordemServicoOrigemId != null) {
-            Optional<OrcamentoResponseDTO> orçamento = orçamentoService.findOrcamentoByOrdemServicoId(ordemServicoOrigemId);
-            // CORRIGIDO AQUI: Retorna uma lista contendo o orçamento encontrado, ou uma lista vazia se não encontrado.
-            return orçamento.map(orc -> ResponseEntity.ok(Collections.singletonList(orc)))
-                    .orElseGet(() -> ResponseEntity.ok(Collections.emptyList()));
-        }
-
-        List<OrcamentoResponseDTO> orçamentos = orçamentoService.findAllOrcamentos();
+        List<OrcamentoResponseDTO> orçamentos = orçamentoService.findAllOrcamentos(clienteId, status, ordemServicoOrigemId, searchTerm);
         return ResponseEntity.ok(orçamentos);
     }
 

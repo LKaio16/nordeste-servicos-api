@@ -34,33 +34,11 @@ public class OrcamentoService {
     private ItemOrcamentoRepository itemOrcamentoRepository;
 
     @Transactional(readOnly = true)
-    public List<OrcamentoResponseDTO> findAllOrcamentos() {
-        List<Orcamento> orçamentos = orcamentoRepository.findAll();
+    public List<OrcamentoResponseDTO> findAllOrcamentos(Long clienteId, StatusOrcamento status, Long ordemServicoOrigemId, String searchTerm) {
+        List<Orcamento> orçamentos = orcamentoRepository.findByFilters(clienteId, status, ordemServicoOrigemId, searchTerm);
         return orçamentos.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<OrcamentoResponseDTO> findOrcamentosByClienteId(Long clienteId) {
-        List<Orcamento> orçamentos = orcamentoRepository.findByClienteId(clienteId);
-        return orçamentos.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<OrcamentoResponseDTO> findOrcamentosByStatus(StatusOrcamento status) {
-        List<Orcamento> orçamentos = orcamentoRepository.findByStatus(status);
-        return orçamentos.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<OrcamentoResponseDTO> findOrcamentoByOrdemServicoId(Long ordemServicoId) {
-        Optional<Orcamento> orçamento = orcamentoRepository.findByOrdemServicoOrigemId(ordemServicoId);
-        return orçamento.map(this::convertToDTO);
     }
 
     /**
