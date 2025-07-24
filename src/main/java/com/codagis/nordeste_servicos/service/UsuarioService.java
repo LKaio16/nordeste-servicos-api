@@ -111,7 +111,7 @@ public class UsuarioService {
             throw new ResourceNotFoundException("Usuário não encontrado com ID: " + id);
         }
 
-        List<OrdemServico> ordensServico = ordemServicoRepository.findByTecnicoAtribuidoId(id);
+        List<OrdemServico> ordensServico = ordemServicoRepository.findByFilters(id, null, null, null);
         if (!ordensServico.isEmpty()) {
             throw new BusinessException("Não é possível excluir o usuário, pois ele está associado a ordens de serviço.");
         }

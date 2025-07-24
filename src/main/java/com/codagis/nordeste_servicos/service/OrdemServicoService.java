@@ -52,37 +52,8 @@ public class OrdemServicoService {
     private RegistroTempoService registroTempoService;
 
     @Transactional(readOnly = true)
-    public List<OrdemServicoResponseDTO> findAllOrdensServico(String searchTerm) {
-        List<OrdemServico> ordens;
-        if (searchTerm != null && !searchTerm.isEmpty()) {
-            ordens = ordemServicoRepository.searchByTerm(searchTerm);
-        } else {
-            ordens = ordemServicoRepository.findAll();
-        }
-        return ordens.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<OrdemServicoResponseDTO> findOrdensServicoByTecnicoId(Long tecnicoId) {
-        List<OrdemServico> ordens = ordemServicoRepository.findByTecnicoAtribuidoId(tecnicoId);
-        return ordens.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<OrdemServicoResponseDTO> findOrdensServicoByClienteId(Long clienteId) {
-        List<OrdemServico> ordens = ordemServicoRepository.findByClienteId(clienteId);
-        return ordens.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<OrdemServicoResponseDTO> findOrdensServicoByStatus(StatusOS status) {
-        List<OrdemServico> ordens = ordemServicoRepository.findByStatus(status);
+    public List<OrdemServicoResponseDTO> findAllOrdensServico(Long tecnicoId, Long clienteId, StatusOS status, String searchTerm) {
+        List<OrdemServico> ordens = ordemServicoRepository.findByFilters(tecnicoId, clienteId, status, searchTerm);
         return ordens.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());

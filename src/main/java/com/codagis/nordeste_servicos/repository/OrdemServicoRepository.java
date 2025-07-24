@@ -11,23 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Long> {
+public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Long>, OrdemServicoRepositoryCustom {
     Optional<OrdemServico> findByNumeroOS(String numeroOS);
-
-    List<OrdemServico> findByTecnicoAtribuidoId(Long tecnicoId);
-
-    List<OrdemServico> findByClienteId(Long clienteId);
-
-    List<OrdemServico> findByStatus(StatusOS status);
-
-    // Adicionando a busca por searchTerm
-    @Query("SELECT os FROM OrdemServico os JOIN os.cliente c LEFT JOIN os.tecnicoAtribuido t " +
-            "WHERE (:searchTerm IS NULL OR " +
-            "CAST(os.id AS string) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(c.nomeCompleto) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(t.nome) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
-    List<OrdemServico> searchByTerm(@Param("searchTerm") String searchTerm);
-
 
     // Conta o total de OS atribuídas a um técnico
     int countByTecnicoAtribuidoId(Long tecnicoId);

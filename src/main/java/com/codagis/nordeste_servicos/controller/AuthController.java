@@ -51,10 +51,10 @@ public class AuthController {
                 );
                 return ResponseEntity.ok(responseDTO);
             } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou senha inválidos.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(java.util.Map.of("message", "Email ou senha inválidos."));
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou senha inválidos.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(java.util.Map.of("message", "Email ou senha inválidos."));
         }
     }
 }

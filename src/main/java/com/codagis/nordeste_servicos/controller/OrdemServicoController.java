@@ -42,21 +42,7 @@ public class OrdemServicoController {
             @RequestParam(required = false) StatusOS status,
             @RequestParam(required = false) String searchTerm) { // Parâmetro adicionado
 
-        if (tecnicoId != null) {
-            List<OrdemServicoResponseDTO> ordens = ordemServicoService.findOrdensServicoByTecnicoId(tecnicoId);
-            return ResponseEntity.ok(ordens);
-        }
-        if (clienteId != null) {
-            List<OrdemServicoResponseDTO> ordens = ordemServicoService.findOrdensServicoByClienteId(clienteId);
-            return ResponseEntity.ok(ordens);
-        }
-        if (status != null) {
-            List<OrdemServicoResponseDTO> ordens = ordemServicoService.findOrdensServicoByStatus(status);
-            return ResponseEntity.ok(ordens);
-        }
-
-        // Lógica de busca agora é chamada no serviço
-        List<OrdemServicoResponseDTO> ordens = ordemServicoService.findAllOrdensServico(searchTerm);
+        List<OrdemServicoResponseDTO> ordens = ordemServicoService.findAllOrdensServico(tecnicoId, clienteId, status, searchTerm);
         return ResponseEntity.ok(ordens);
     }
 
