@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.codagis.nordeste_servicos.util.ExcelHelper;
+import java.io.ByteArrayInputStream;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +32,12 @@ public class ClienteService {
 
     @Autowired
     private OrcamentoRepository orcamentoRepository;
+
+    public ByteArrayInputStream load() {
+        List<Cliente> clientes = clienteRepository.findAll();
+        ByteArrayInputStream in = ExcelHelper.clientesToExcel(clientes);
+        return in;
+    }
 
     public List<ClienteResponseDTO> findAllClientes(String searchTerm, String tipoCliente) {
         List<Cliente> clientes = clienteRepository.findAllWithFilters(searchTerm, tipoCliente);
