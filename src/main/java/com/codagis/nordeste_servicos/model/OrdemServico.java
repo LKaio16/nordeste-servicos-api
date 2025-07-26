@@ -26,7 +26,9 @@ public class OrdemServico {
 
     private LocalDateTime dataAbertura;
     private LocalDateTime dataAgendamento; // Opcional
+    @Column(name = "data_fechamento")
     private LocalDateTime dataFechamento; // Preenchido ao encerrar
+    @Column(name = "data_hora_emissao")
     private LocalDateTime dataHoraEmissao; // Data/Hora de emissão do relatório (pode ser gerado na hora de emitir o PDF)
 
     @ManyToOne(fetch = FetchType.LAZY) // Cliente

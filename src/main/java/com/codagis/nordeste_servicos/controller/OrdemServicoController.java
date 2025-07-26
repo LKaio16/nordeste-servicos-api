@@ -95,27 +95,31 @@ public class OrdemServicoController {
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> generateOsPdf(@PathVariable Long id) {
         try {
-            // 1. Obter os dados da Ordem de Serviço (sem as fotos, como antes)
+            // 1. Atualiza a data de emissão para o momento atual
+            ordemServicoService.updateDataHoraEmissao(id);
+
+            // 2. Obter os dados da Ordem de Serviço (agora com a data de emissão atualizada)
             OrdemServicoResponseDTO osData = ordemServicoService.findOrdemServicoById(id);
             if (osData == null) {
                 return ResponseEntity.notFound().build();
             }
 
+            // LOG PARA DEBUG
+            System.out.println("Data de Emissão para o PDF: " + osData.getDataHoraEmissao());
 
-            // 2. Buscar as fotos separadamente usando o FotoOSService
+
+            // 3. Buscar as fotos separadamente usando o FotoOSService
             List<FotoOSResponseDTO> fotos = fotoOSService.findFotosByOrdemServicoId(id);
-
             osData.setFotos(fotos);
 
-            // 3. (NOVO) Buscar a assinatura associada à OS
+            // 4. (NOVO) Buscar a assinatura associada à OS
             Optional<AssinaturaOSResponseDTO> assinatura = assinaturaOSService.findAssinaturaByOrdemServicoId(id);
             assinatura.ifPresent(osData::setAssinatura); // Adiciona a assinatura ao DTO principal se ela existir
 
-
-            // 4. Gerar o PDF usando o serviço com os dados agora completos
+            // 5. Gerar o PDF usando o serviço com os dados agora completos
             byte[] pdfBytes = pdfGenerationService.generateOsReportPdf(osData);
 
-            // 5. Configurar os cabeçalhos da resposta para download de PDF
+            // 6. Configurar os cabeçalhos da resposta para download de PDF
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("filename", "relatorio_os_" + osData.getNumeroOS() + ".pdf");

@@ -210,6 +210,19 @@ public class OrdemServicoService {
         // Ex: um técnico só pode mudar de ABERTA para EM_ANDAMENTO.
 
         ordemServico.setStatus(novoStatus);
+
+        if (novoStatus == StatusOS.CONCLUIDA) {
+            ordemServico.setDataFechamento(LocalDateTime.now());
+        }
+
+        ordemServicoRepository.save(ordemServico);
+    }
+
+    @Transactional
+    public void updateDataHoraEmissao(Long id) {
+        OrdemServico ordemServico = ordemServicoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Ordem de Serviço não encontrada com ID: " + id));
+        ordemServico.setDataHoraEmissao(LocalDateTime.now());
         ordemServicoRepository.save(ordemServico);
     }
 
@@ -226,6 +239,7 @@ public class OrdemServicoService {
         dto.setDataAbertura(ordemServico.getDataAbertura());
         dto.setDataAgendamento(ordemServico.getDataAgendamento());
         dto.setDataFechamento(ordemServico.getDataFechamento());
+        dto.setDataHoraEmissao(ordemServico.getDataHoraEmissao());
         dto.setPrioridade(ordemServico.getPrioridade());
 
         // Mapeamento do Cliente (já estava correto)
