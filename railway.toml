@@ -11,4 +11,4 @@ restartPolicyMaxRetries = 5
 # Configurações para economizar recursos
 [deploy.env]
 JAVA_OPTS = "-Xmx256m -Xms128m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication"
-SPRING_PROFILES_ACTIVE = "prod" 
+SPRING_PROFILES_ACTIVE = "test" 
