@@ -1,11 +1,31 @@
-# Use uma imagem mais estável do OpenJDK
+# Multi-stage build para otimizar o tamanho final
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
+
+# Define o diretório de trabalho
+WORKDIR /app
+
+# Copia os arquivos de configuração do Maven
+COPY pom.xml .
+COPY .mvn .mvn
+COPY mvnw .
+
+# Baixa as dependências (cache layer)
+RUN mvn dependency:go-offline -B
+
+# Copia o código fonte
+COPY src ./src
+
+# Faz o build da aplicação
+RUN mvn clean package -DskipTests
+
+# Stage de produção
 FROM eclipse-temurin:17-jre-alpine
 
 # Define o diretório de trabalho
 WORKDIR /app
 
-# Copia o arquivo JAR da aplicação
-COPY target/nordeste-servicos-0.0.1-SNAPSHOT.jar app.jar
+# Copia o JAR do stage de build
+COPY --from=build /app/target/nordeste-servicos-0.0.1-SNAPSHOT.jar app.jar
 
 # Expõe a porta 8080
 EXPOSE 8080
