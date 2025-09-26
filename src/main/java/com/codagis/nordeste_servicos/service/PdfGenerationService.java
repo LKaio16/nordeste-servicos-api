@@ -114,7 +114,6 @@ public class PdfGenerationService {
         return os.toByteArray();
     }
 
-    // (O resto da sua classe...)
     public byte[] generateOrcamentoReportPdf(OrcamentoResponseDTO orcamentoData) throws Exception {
         Context context = new Context();
         List<ItemOrcamentoResponseDTO> itens = itemOrcamentoService.findItensByOrcamentoId(orcamentoData.getId());
