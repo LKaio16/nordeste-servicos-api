@@ -24,7 +24,6 @@ hs_err_pid*
 replay_pid*
 
 # Maven
-!target/*.jar
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
