@@ -35,7 +35,6 @@ public class OrcamentoController {
             @RequestParam(required = false) StatusOrcamento status,
             @RequestParam(required = false) Long ordemServicoOrigemId,
             @RequestParam(required = false) String searchTerm) {
-
         List<OrcamentoResponseDTO> orçamentos = orçamentoService.findAllOrcamentos(clienteId, status, ordemServicoOrigemId, searchTerm);
         return ResponseEntity.ok(orçamentos);
     }
@@ -71,6 +70,8 @@ public class OrcamentoController {
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> generateOrcamentoPdf(@PathVariable Long id) {
         try {
+            System.out.println("-------------------- TESTE NOVAMENTE ------------------------------------");
+
             // 1. Obter os dados do Orçamento
             OrcamentoResponseDTO orcamentoData = orcamentoService.findOrcamentoById(id);
             if (orcamentoData == null) {
