@@ -1,6 +1,4 @@
 # Ignorar arquivos desnecessários no Railway
-target/
-!target/nordeste-servicos-0.0.1-SNAPSHOT.jar
 .git/
 .gitignore
 README.md
@@ -10,3 +8,5 @@ ECONOMIA_RECURSOS.md
 *.md
 .env
 env.example
+
+# Manter pasta target vazia para o Nixpacks gerar o JAR
