@@ -107,7 +107,6 @@ public class OrdemServicoController {
             // LOG PARA DEBUG
             System.out.println("Data de Emissão para o PDF: " + osData.getDataHoraEmissao());
 
-
             // 3. Buscar as fotos separadamente usando o FotoOSService
             List<FotoOSResponseDTO> fotos = fotoOSService.findFotosByOrdemServicoId(id);
             osData.setFotos(fotos);
