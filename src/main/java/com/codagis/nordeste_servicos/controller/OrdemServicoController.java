@@ -95,7 +95,6 @@ public class OrdemServicoController {
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> generateOsPdf(@PathVariable Long id) {
         try {
-            System.out.println("TESTE MUITO LOCO ----------------------------------------");
             // 1. Atualiza a data de emissão para o momento atual
             ordemServicoService.updateDataHoraEmissao(id);
 
