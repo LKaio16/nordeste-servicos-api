@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Proposta de Orçamento - Nordeste Serviços</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            font-size: 9pt;
+            color: #000;
+            background-color: #f4f4f4;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 8.5in;
+            min-height: 11in;
+            margin: 10px auto;
+            background-color: #fff;
+            padding: 30px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .header-section {
+            margin-bottom: 25px;
+            border-bottom: 2px solid #1565C0;
+            padding-bottom: 20px;
+        }
+
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .header-table td {
+            border: none;
+            vertical-align: top;
+            padding: 0;
+        }
+
+        .logo-container {
+            /* CORRIGIDO */
+            background-color: #1565C0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(30, 136, 229, 0.3);
+            text-align: center;
+        }
+
+        .logo {
+            width: 190px;
+            height: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .company-info {
+            font-size: 9pt;
+            color: #333;
+        }
+
+        .company-info p {
+            margin: 3px 0;
+            font-weight: 400;
+        }
+
+        .company-info strong {
+            color: #1565C0;
+            font-weight: 700;
+            font-size: 10pt;
+        }
+
+        .document-title-block {
+            /* CORRIGIDO */
+            background-color: #E3F2FD;
+            border: 2px solid #1565C0;
+            border-radius: 8px;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .document-title-block h1 {
+            font-size: 16pt;
+            margin: 0 0 8px 0;
+            font-weight: 700;
+            color: #0d47a1;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .document-title-block .subtitle {
+            font-size: 11pt;
+            font-weight: 500;
+            margin: 0;
+            color: #1565C0;
+        }
+
+        .document-details {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+        }
+
+        .document-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .document-details td {
+            border: none;
+            padding: 4px 8px;
+            font-size: 9pt;
+        }
+
+        .label {
+            font-weight: 700;
+            color: #0d47a1;
+        }
+
+        .client-section {
+            /* CORRIGIDO */
+            background-color: #F1F8E9;
+            border-left: 4px solid #4CAF50;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .client-section h2 {
+            margin: 0 0 15px 0;
+            font-size: 12pt;
+            font-weight: 700;
+            color: #2E7D32;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .client-info {
+            font-size: 10pt;
+            color: #333;
+        }
+
+        .items-section {
+            margin: 30px 0;
+        }
+
+        .section-title {
+            /* CORRIGIDO */
+            background-color: #1565C0;
+            color: white;
+            padding: 12px 20px;
+            margin: 0 0 20px 0;
+            font-size: 12pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(21, 101, 192, 0.3);
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .items-table th {
+            /* CORRIGIDO */
+            background-color: #1976D2;
+            color: white;
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .items-table td {
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            font-size: 9pt;
+            background-color: #fff;
+        }
+
+        .items-table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .items-table tbody tr:hover {
+            background-color: #e3f2fd;
+        }
+
+        .right-align {
+            text-align: right;
+        }
+
+        .center-align {
+            text-align: center;
+        }
+
+        .total-row {
+            /* CORRIGIDO */
+            background-color: #F1F8E9 !important;
+            border-top: 2px solid #4CAF50 !important;
+        }
+
+        .total-row td {
+            font-weight: 700;
+            font-size: 10pt;
+            color: #2E7D32;
+            padding: 15px 10px;
+        }
+
+        .total-value {
+            font-size: 12pt;
+            color: #1B5E20;
+        }
+
+        .conditions-section {
+            background-color: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .conditions-section h3 {
+            margin: 0 0 20px 0;
+            font-size: 12pt;
+            font-weight: 700;
+            color: #0d47a1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #1565C0;
+            padding-bottom: 8px;
+        }
+
+        .conditions-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .conditions-list li {
+            margin: 12px 0;
+            padding: 8px 0;
+            font-size: 9pt;
+            line-height: 1.5;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .conditions-list li:before {
+            content: "▶";
+            color: #1565C0;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            top: 8px;
+        }
+
+        .investment-highlight {
+            /* CORRIGIDO */
+            background-color: #E3F2FD;
+            border: 2px solid #1565C0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .investment-highlight p {
+            margin: 0;
+            font-size: 11pt;
+            font-weight: 700;
+            color: #0d47a1;
+        }
+
+        .investment-amount {
+            font-size: 14pt;
+            color: #1B5E20;
+            text-decoration: underline;
+        }
+
+        .warranty-section {
+            /* CORRIGIDO */
+            background-color: #FFF3E0;
+            border-left: 4px solid #FF9800;
+            padding: 15px 20px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warranty-section p {
+            margin: 0;
+            font-size: 11pt;
+            font-weight: 700;
+            color: #E65100;
+        }
+
+        .footer-info {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #1565C0;
+            text-align: center;
+            font-size: 8pt;
+            color: #666;
+        }
+
+        .custom-observations {
+            background-color: #f0f8ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            font-style: italic;
+            color: #0d47a1;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+            }
+            .container {
+                margin: 0;
+                box-shadow: none;
+                border: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Cabeçalho com Logo e Informações da Empresa -->
+    <div class="header-section">
+        <table class="header-table">
+            <tr>
+                <td style="width: 43%;">
+                    <div class="logo-container">
+                        <img class="logo" src="https://github.com/LKaio16/nordeste-servicos-api/blob/main/src/main/resources/static/logo.png?raw=true" alt="Nordeste Serviços Logo" />
+                    </div>
+                    <div class="company-info">
+                        <p><strong>NORDESTE GERADORES</strong></p>
+                        <p>Rua C, 357 - Loteamento Expedicionários 01</p>
+                        <p>Parque Dois Irmãos - CEP: 60.745-540</p>
+                        <p>Fortaleza - CE</p>
+                        <p><strong>Tel:</strong> (85) 99995-1508 | (85) 3493-7414</p>
+                        <p><strong>E-mail:</strong> nordesteservicos@manutencao.com.br</p>
+
+                    </div>
+                </td>
+                <td style="width: 7%;"></td>
+                <td style="width: 50%;">
+                    <div class="document-title-block">
+                        <h1>Proposta de Orçamento</h1>
+                        <p class="subtitle">Documento Comercial</p>
+                    </div>
+                    <div class="document-details">
+                        <table>
+                            <tr>
+                                <td><span class="label">Nº Orçamento:</span></td>
+                                <td th:text="${orcamento.numeroOrcamento}">ORÇ-001</td>
+                            </tr>
+                            <tr>
+                                <td><span class="label">Data de Emissão:</span></td>
+                                <td th:text="${#temporals.format(orcamento.dataCriacao, 'dd/MM/yyyy')}">01/01/2025</td>
+                            </tr>
+                            <tr>
+                                <td><span class="label">Validade:</span></td>
+                                <td th:text="${#temporals.format(orcamento.dataValidade, 'dd/MM/yyyy')}">31/01/2025</td>
+                            </tr>
+                            <tr>
+                                <td><span class="label">Status:</span></td>
+                                <td th:text="${orcamento.status?.name() ?: 'PENDENTE'}">PENDENTE</td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Seção do Cliente -->
+    <div class="client-section">
+        <h2>Dados do Cliente</h2>
+        <div class="client-info">
+            <p><strong>Cliente:</strong> <span th:text="${orcamento.nomeCliente}">Nome do Cliente</span></p>
+            <p th:if="${orcamento.ordemServicoOrigemId != null}">
+                <strong>Referente à OS:</strong> <span th:text="${'OS-' + orcamento.ordemServicoOrigemId}">OS-001</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Seção de Itens -->
+    <div class="items-section">
+        <h2 class="section-title">Discriminação dos Serviços e Materiais</h2>
+
+        <table class="items-table">
+            <thead>
+            <tr>
+                <th style="width: 8%;">Item</th>
+                <th style="width: 45%;">Descrição dos Serviços/Peças</th>
+                <th style="width: 12%;">Quantidade</th>
+                <th style="width: 17%;">Valor Unitário</th>
+                <th style="width: 18%;">Valor Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item, iterStat : ${itens}">
+                <td class="center-align" th:text="${iterStat.count}">1</td>
+                <td th:text="${item.descricao}">Descrição do serviço ou peça</td>
+                <td class="center-align" th:text="${#numbers.formatDecimal(item.quantidade, 1, 2, 'COMMA')}">1,00</td>
+                <td class="right-align" th:text="${#numbers.formatCurrency(item.valorUnitario)}">R$ 100,00</td>
+                <td class="right-align" th:text="${#numbers.formatCurrency(item.subtotal)}">R$ 100,00</td>
+            </tr>
+            <tr class="total-row">
+                <td colspan="4" class="right-align"><strong>VALOR TOTAL DOS SERVIÇOS</strong></td>
+                <td class="right-align total-value" th:text="${#numbers.formatCurrency(orcamento.valorTotal)}">R$ 2.150,00</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Observações Personalizadas (se houver) -->
+    <div th:if="${orcamento.observacoesCondicoes != null and !orcamento.observacoesCondicoes.trim().isEmpty()}" class="custom-observations">
+        <p><strong>Observações Específicas:</strong></p>
+        <p th:text="${orcamento.observacoesCondicoes}">Observações específicas do orçamento</p>
+    </div>
+
+    <!-- Seção de Condições Comerciais -->
+    <div class="conditions-section">
+        <h3>Condições Comerciais e Observações</h3>
+        <ul class="conditions-list">
+            <li>As peças e materiais a serem utilizados nas atividades serão cobrados conforme especificado neste orçamento, podendo haver orçamento complementar para itens não previstos.</li>
+            <li>Outras despesas relacionadas a deslocamento, tais como: transporte aéreo, locação de veículo, táxi e outros, quando necessárias, correrão por conta do cliente mediante acordo prévio.</li>
+            <li>Os valores desta proposta técnica poderão sofrer reajustes conforme variações de mercado. Caso ocorra, o cliente será informado antecipadamente para devida análise e aprovação.</li>
+            <li>Nenhuma Nota Fiscal poderá ser prorrogada pelo fato de não conhecimento das condições acima expostas.</li>
+            <li>A execução dos serviços está condicionada à aprovação formal desta proposta e ao cumprimento das condições de pagamento estabelecidas.</li>
+            <li>Todos os serviços serão executados por técnicos qualificados e certificados, seguindo as melhores práticas do mercado.</li>
+        </ul>
+    </div>
+
+    <!-- Destaque do Investimento -->
+    <div class="investment-highlight">
+        <p>Para a efetivação dos serviços apresentados, faz-se necessário o investimento de:</p>
+        <p class="investment-amount" th:text="${#numbers.formatCurrency(orcamento.valorTotal) + ' (REAIS)'}">R$ 2.150,00 (REAIS)</p>
+    </div>
+
+    <!-- Seção de Garantia -->
+    <div class="warranty-section">
+        <p><strong>GARANTIA:</strong> 30 (trinta) dias para serviços executados, conforme termos e condições da empresa.</p>
+    </div>
+
+    <!-- Rodapé -->
+    <div class="footer-info">
+        <p>Este documento foi gerado automaticamente pelo sistema de gestão da Nordeste Serviços.</p>
+        <p>Para dúvidas ou esclarecimentos, entre em contato através dos canais informados no cabeçalho.</p>
+        <p><strong>Nordeste Serviços</strong> - Excelência em Manutenção e Assistência Técnica</p>
+    </div>
+</div>
+
+</body>
+</html>
+
