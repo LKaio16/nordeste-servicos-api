@@ -34,6 +34,8 @@ public class PdfGenerationService {
 
     public byte[] generateOsReportPdf(OrdemServicoResponseDTO osData) throws Exception {
 
+        System.out.println(" - ----------------------- TESTE ------------------------------------");
+
         // 🔑 1. Salva a imagem em disco e cria uma URL HTTP para ela
         for (FotoOSResponseDTO foto : osData.getFotos()) {
             if (foto.getFotoBase64() != null && !foto.getFotoBase64().isBlank()) {
