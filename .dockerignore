@@ -1,7 +1,4 @@
 # Arquivos do Maven
-target/
-!target/*.jar
-!target/nordeste-servicos-0.0.1-SNAPSHOT.jar
 
 # Arquivos do Git
 .git/
