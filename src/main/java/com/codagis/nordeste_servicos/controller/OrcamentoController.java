@@ -71,7 +71,6 @@ public class OrcamentoController {
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> generateOrcamentoPdf(@PathVariable Long id) {
         try {
-            System.out.println("-------------------- TESTE NOVAMENTE ------------------------------------");
 
             // 1. Obter os dados do Orçamento
             OrcamentoResponseDTO orcamentoData = orcamentoService.findOrcamentoById(id);
