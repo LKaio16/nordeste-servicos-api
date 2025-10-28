@@ -96,8 +96,9 @@ public class OrcamentoService {
         existingOrcamento.setDataValidade(orçamentoRequestDTO.getDataValidade());
         existingOrcamento.setObservacoesCondicoes(orçamentoRequestDTO.getObservacoesCondicoes());
         existingOrcamento.setStatus(orçamentoRequestDTO.getStatus());
-
+        
         Orcamento updatedOrcamento = orcamentoRepository.save(existingOrcamento);
+        
         return convertToDTO(updatedOrcamento);
     }
 

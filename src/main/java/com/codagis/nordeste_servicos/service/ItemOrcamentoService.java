@@ -71,8 +71,8 @@ public class ItemOrcamentoService {
         if (itemOrcamentoRequestDTO.getQuantidade() == null || itemOrcamentoRequestDTO.getQuantidade() <= 0) {
             throw new BusinessException("A quantidade deve ser maior que zero.");
         }
-        if (itemOrcamentoRequestDTO.getValorUnitario() == null || itemOrcamentoRequestDTO.getValorUnitario() < 0) {
-            throw new BusinessException("O valor unitário não pode ser negativo.");
+        if (itemOrcamentoRequestDTO.getValorUnitario() == null) {
+            throw new BusinessException("O valor unitário é obrigatório.");
         }
 
         ItemOrcamento novoItem = convertToEntity(itemOrcamentoRequestDTO);
