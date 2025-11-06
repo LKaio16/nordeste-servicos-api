@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class PdfGenerationService {
@@ -116,6 +117,8 @@ public class PdfGenerationService {
 
     public byte[] generateOrcamentoReportPdf(OrcamentoResponseDTO orcamentoData) throws Exception {
         Context context = new Context();
+        // Garante formatação numérica e monetária em pt-BR (12.000,00)
+        context.setLocale(new Locale("pt", "BR"));
         List<ItemOrcamentoResponseDTO> itens = itemOrcamentoService.findItensByOrcamentoId(orcamentoData.getId());
         context.setVariable("orcamento", orcamentoData);
         context.setVariable("itens", itens);
