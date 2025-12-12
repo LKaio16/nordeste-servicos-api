@@ -52,11 +52,22 @@ public class OrdemServicoService {
     private RegistroTempoService registroTempoService;
 
     @Transactional(readOnly = true)
-    public List<OrdemServicoResponseDTO> findAllOrdensServico(Long tecnicoId, Long clienteId, StatusOS status, String searchTerm) {
-        List<OrdemServico> ordens = ordemServicoRepository.findByFilters(tecnicoId, clienteId, status, searchTerm);
+    public List<OrdemServicoResponseDTO> findAllOrdensServico(Long tecnicoId, Long clienteId, StatusOS status, String searchTerm, int page, int size) {
+        List<OrdemServico> ordens = ordemServicoRepository.findByFilters(tecnicoId, clienteId, status, searchTerm, page, size);
         return ordens.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public OsDashboardStatsDTO getDashboardStats() {
+        long totalOs = ordemServicoRepository.count();
+        long osEmAndamento = ordemServicoRepository.countByStatus(StatusOS.EM_ANDAMENTO);
+        long osPendentes = ordemServicoRepository.countByStatus(StatusOS.AGUARDANDO_APROVACAO);
+        long osAbertas = ordemServicoRepository.countByStatus(StatusOS.EM_ABERTO);
+        long osConcluidas = ordemServicoRepository.countByStatus(StatusOS.CONCLUIDA);
+        
+        return new OsDashboardStatsDTO(totalOs, osEmAndamento, osPendentes, osAbertas, osConcluidas);
     }
 
     @Transactional(readOnly = true)

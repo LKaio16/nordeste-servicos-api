@@ -40,10 +40,18 @@ public class OrdemServicoController {
             @RequestParam(required = false) Long tecnicoId,
             @RequestParam(required = false) Long clienteId,
             @RequestParam(required = false) StatusOS status,
-            @RequestParam(required = false) String searchTerm) { // Parâmetro adicionado
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) { // Parâmetros de paginação adicionados
 
-        List<OrdemServicoResponseDTO> ordens = ordemServicoService.findAllOrdensServico(tecnicoId, clienteId, status, searchTerm);
+        List<OrdemServicoResponseDTO> ordens = ordemServicoService.findAllOrdensServico(tecnicoId, clienteId, status, searchTerm, page, size);
         return ResponseEntity.ok(ordens);
+    }
+
+    @GetMapping("/dashboard/stats")
+    public ResponseEntity<OsDashboardStatsDTO> getDashboardStats() {
+        OsDashboardStatsDTO stats = ordemServicoService.getDashboardStats();
+        return ResponseEntity.ok(stats);
     }
 
     @GetMapping("/{id}")

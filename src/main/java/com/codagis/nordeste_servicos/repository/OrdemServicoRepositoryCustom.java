@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface OrdemServicoRepositoryCustom {
     List<OrdemServico> findByFilters(Long tecnicoId, Long clienteId, StatusOS status, String searchTerm);
+    List<OrdemServico> findByFilters(Long tecnicoId, Long clienteId, StatusOS status, String searchTerm, int page, int size);
 } 

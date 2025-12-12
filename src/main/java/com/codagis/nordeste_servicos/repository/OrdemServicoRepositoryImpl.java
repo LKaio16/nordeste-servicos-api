@@ -14,6 +14,11 @@ public class OrdemServicoRepositoryImpl implements OrdemServicoRepositoryCustom 
 
     @Override
     public List<OrdemServico> findByFilters(Long tecnicoId, Long clienteId, StatusOS status, String searchTerm) {
+        return findByFilters(tecnicoId, clienteId, status, searchTerm, 0, Integer.MAX_VALUE);
+    }
+
+    @Override
+    public List<OrdemServico> findByFilters(Long tecnicoId, Long clienteId, StatusOS status, String searchTerm, int page, int size) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<OrdemServico> query = cb.createQuery(OrdemServico.class);
         Root<OrdemServico> os = query.from(OrdemServico.class);
@@ -46,6 +51,10 @@ public class OrdemServicoRepositoryImpl implements OrdemServicoRepositoryCustom 
         query.where(cb.and(predicates.toArray(new Predicate[0])));
         query.orderBy(cb.desc(os.get("id")));
 
-        return entityManager.createQuery(query).getResultList();
+        // Aplica paginação
+        return entityManager.createQuery(query)
+                .setFirstResult(page * size)
+                .setMaxResults(size)
+                .getResultList();
     }
 } 
