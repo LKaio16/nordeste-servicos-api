@@ -1,6 +1,7 @@
 package com.codagis.nordeste_servicos.service;
 
 import com.codagis.nordeste_servicos.dto.*;
+import com.codagis.nordeste_servicos.util.NumeroExtensoUtil;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
@@ -123,6 +126,52 @@ public class PdfGenerationService {
         context.setVariable("orcamento", orcamentoData);
         context.setVariable("itens", itens);
         String htmlContent = templateEngine.process("orcamento-report-template", context);
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        PdfRendererBuilder builder = new PdfRendererBuilder();
+        builder.withHtmlContent(htmlContent, null);
+        builder.toStream(os);
+        builder.run();
+        return os.toByteArray();
+    }
+
+    public byte[] generateReciboPdf(ReciboRequestDTO reciboData) throws Exception {
+        Context context = new Context();
+        context.setLocale(new Locale("pt", "BR"));
+        
+        // Formatar valor monetário
+        String valorFormatado = String.format(Locale.forLanguageTag("pt-BR"), "%.2f", reciboData.getValor());
+        valorFormatado = valorFormatado.replace(".", ",");
+        String[] partes = valorFormatado.split(",");
+        String parteInteira = partes[0];
+        String parteDecimal = partes.length > 1 ? partes[1] : "00";
+        
+        // Adicionar separador de milhar
+        parteInteira = parteInteira.replaceAll("\\B(?=(\\d{3})+(?!\\d))", ".");
+        valorFormatado = "R$ " + parteInteira + "," + parteDecimal;
+        
+        // Converter valor para extenso
+        String valorExtenso = NumeroExtensoUtil.converterParaExtenso(reciboData.getValor());
+        
+        // Formatar data atual
+        LocalDate hoje = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd 'DE' MMMM 'DE' yyyy", new Locale("pt", "BR"));
+        String dataFormatada = hoje.format(formatter).toUpperCase();
+        
+        // Capitalizar primeira letra do referenteA
+        String referenteA = reciboData.getReferenteA();
+        if (referenteA != null && !referenteA.isEmpty()) {
+            referenteA = referenteA.substring(0, 1).toUpperCase() + 
+                        (referenteA.length() > 1 ? referenteA.substring(1) : "");
+        }
+        
+        // Adicionar variáveis ao contexto
+        context.setVariable("valor", valorFormatado);
+        context.setVariable("valorExtenso", valorExtenso);
+        context.setVariable("cliente", reciboData.getCliente());
+        context.setVariable("referenteA", referenteA);
+        context.setVariable("dataFormatada", dataFormatada);
+        
+        String htmlContent = templateEngine.process("recibo-template", context);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         PdfRendererBuilder builder = new PdfRendererBuilder();
         builder.withHtmlContent(htmlContent, null);

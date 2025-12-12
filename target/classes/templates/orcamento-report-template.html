@@ -362,7 +362,7 @@
                             <p>Parque Dois Irmãos - CEP: 60.745-540</p>
                             <p>Fortaleza - CE</p>
                             <p><strong>Tel:</strong> (85) 99995-1508 | (85) 3493-7414</p>
-                            <p><strong>E-mail:</strong> nordesteservicos@manutencao.com.br</p>
+                            <p><strong>E-mail:</strong> servicos@nordestegeradores.com.br</p>
 
                         </div>
                     </td>
@@ -432,15 +432,15 @@
                         <td class="center-align" th:text="${#numbers.formatDecimal(item.quantidade, 1, 2, 'COMMA')}">
                             1,00</td>
                         <td class="right-align"
-                            th:text="${'R$ ' + #numbers.formatDecimal(item.valorUnitario, 1, 2, 'COMMA')}">R$ 100,00
+                            th:text="${#numbers.formatCurrency(item.valorUnitario)}">R$ 100,00
                         </td>
                         <td class="right-align"
-                            th:text="${'R$ ' + #numbers.formatDecimal(item.subtotal, 1, 2, 'COMMA')}">R$ 100,00</td>
+                            th:text="${#numbers.formatCurrency(item.subtotal)}">R$ 100,00</td>
                     </tr>
                     <tr class="total-row">
                         <td colspan="4" class="right-align"><strong>VALOR TOTAL DOS SERVIÇOS</strong></td>
                         <td class="right-align total-value"
-                            th:text="${'R$ ' + #numbers.formatDecimal(orcamento.valorTotal, 1, 2, 'COMMA')}">R$ 2.150,00
+                            th:text="${#numbers.formatCurrency(orcamento.valorTotal)}">R$ 2.150,00
                         </td>
                     </tr>
                 </tbody>
@@ -477,7 +477,7 @@
         <div class="investment-highlight">
             <p>Para a efetivação dos serviços apresentados, faz-se necessário o investimento de:</p>
             <p class="investment-amount"
-                th:text="${'R$ ' + #numbers.formatDecimal(orcamento.valorTotal, 1, 2, 'COMMA') + ' (REAIS)'}">R$
+                th:text="${#numbers.formatCurrency(orcamento.valorTotal) + ' (REAIS)'}">R$
                 2.150,00 (REAIS)</p>
         </div>
 
