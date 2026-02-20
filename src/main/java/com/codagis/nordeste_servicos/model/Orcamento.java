@@ -30,6 +30,9 @@ public class Orcamento {
     @Column(nullable = false)
     private LocalDate dataValidade;
 
+    @Column(name = "data_hora_emissao")
+    private LocalDateTime dataHoraEmissao; // Data/Hora de emissão do PDF (atualizada toda vez que o PDF é gerado)
+
     @Enumerated(EnumType.STRING) // Armazena o enum como String
     private StatusOrcamento status; // Enum para representar os status do orçamento
 

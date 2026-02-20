@@ -71,14 +71,16 @@ public class OrcamentoController {
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> generateOrcamentoPdf(@PathVariable Long id) {
         try {
+            // 1. Atualiza a data de emissão para o momento atual
+            orcamentoService.updateDataHoraEmissao(id);
 
-            // 1. Obter os dados do Orçamento
+            // 2. Obter os dados do Orçamento (agora com a data de emissão atualizada)
             OrcamentoResponseDTO orcamentoData = orcamentoService.findOrcamentoById(id);
             if (orcamentoData == null) {
                 return ResponseEntity.notFound().build();
             }
 
-            // 2. Gerar o PDF usando o serviço
+            // 3. Gerar o PDF usando o serviço
             byte[] pdfBytes = pdfGenerationService.generateOrcamentoReportPdf(orcamentoData);
 
             // 3. Configurar os cabeçalhos da resposta para download de PDF

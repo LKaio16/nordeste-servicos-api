@@ -16,6 +16,7 @@ public class OrcamentoResponseDTO {
     private String numeroOrcamento;
     private LocalDate dataCriacao;
     private LocalDate dataValidade;
+    private LocalDateTime dataHoraEmissao; // Data/Hora de emissão do PDF
     private StatusOrcamento status;
 
     private Long clienteId;

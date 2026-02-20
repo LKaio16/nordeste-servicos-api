@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // IMPORT ADICIONADO
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -129,6 +130,18 @@ public class OrcamentoService {
         orcamentoRepository.saveAndFlush(orcamento);
     }
 
+    /**
+     * Atualiza a data/hora de emissão do orçamento para o momento atual.
+     * Este método é chamado toda vez que o PDF do orçamento é gerado.
+     */
+    @Transactional
+    public void updateDataHoraEmissao(Long id) {
+        Orcamento orcamento = orcamentoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Orçamento não encontrado com ID: " + id));
+        orcamento.setDataHoraEmissao(java.time.LocalDateTime.now());
+        orcamentoRepository.save(orcamento);
+    }
+
     private String generateNumeroOrcamento() {
         return "ORC-" + System.currentTimeMillis();
     }
@@ -139,6 +152,7 @@ public class OrcamentoService {
         dto.setNumeroOrcamento(orçamento.getNumeroOrcamento());
         dto.setDataCriacao(orçamento.getDataCriacao());
         dto.setDataValidade(orçamento.getDataValidade());
+        dto.setDataHoraEmissao(orçamento.getDataHoraEmissao());
         dto.setStatus(orçamento.getStatus());
         dto.setClienteId(orçamento.getCliente().getId());
         dto.setNomeCliente(orçamento.getCliente().getNomeCompleto());
