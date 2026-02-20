@@ -139,7 +139,7 @@ public class OrcamentoService {
         Orcamento orcamento = orcamentoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Orçamento não encontrado com ID: " + id));
         orcamento.setDataHoraEmissao(java.time.LocalDateTime.now());
-        orcamentoRepository.save(orcamento);
+        orcamentoRepository.saveAndFlush(orcamento); // Usa saveAndFlush para garantir que a atualização seja persistida imediatamente
     }
 
     private String generateNumeroOrcamento() {

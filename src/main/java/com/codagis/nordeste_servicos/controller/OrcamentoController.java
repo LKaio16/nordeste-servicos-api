@@ -75,10 +75,14 @@ public class OrcamentoController {
             orcamentoService.updateDataHoraEmissao(id);
 
             // 2. Obter os dados do Orçamento (agora com a data de emissão atualizada)
+            // Usa findOrcamentoById que já recalcula o valor total e busca os dados atualizados
             OrcamentoResponseDTO orcamentoData = orcamentoService.findOrcamentoById(id);
             if (orcamentoData == null) {
                 return ResponseEntity.notFound().build();
             }
+
+            // Log para debug - verificar se a data foi atualizada
+            System.out.println("Data de Emissão para o PDF: " + orcamentoData.getDataHoraEmissao());
 
             // 3. Gerar o PDF usando o serviço
             byte[] pdfBytes = pdfGenerationService.generateOrcamentoReportPdf(orcamentoData);
