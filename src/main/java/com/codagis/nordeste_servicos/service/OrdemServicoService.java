@@ -118,7 +118,7 @@ public class OrdemServicoService {
         ordemServico.setPrioridade(ordemServicoRequestDTO.getPrioridade() != null ? ordemServicoRequestDTO.getPrioridade() : PrioridadeOS.MEDIA);
         ordemServico.setEquipamento(equipamento);
         ordemServico.setTecnicoAtribuido(tecnicoAtribuido);
-        ordemServico.setProblemaRelatado(ordemServicoRequestDTO.getProblemaRelatado());
+        ordemServico.setProblemaRelatado(capitalizeFirstLetter(ordemServicoRequestDTO.getProblemaRelatado()));
 
         OrdemServico savedOrdemServico = ordemServicoRepository.save(ordemServico);
         return convertToDTO(savedOrdemServico);
@@ -171,7 +171,7 @@ public class OrdemServicoService {
         }
 
         if (ordemServicoRequestDTO.getProblemaRelatado() != null) {
-            existingOrdemServico.setProblemaRelatado(ordemServicoRequestDTO.getProblemaRelatado());
+            existingOrdemServico.setProblemaRelatado(capitalizeFirstLetter(ordemServicoRequestDTO.getProblemaRelatado()));
         }
         if (ordemServicoRequestDTO.getDataAgendamento() != null) {
             existingOrdemServico.setDataAgendamento(ordemServicoRequestDTO.getDataAgendamento());
@@ -180,10 +180,10 @@ public class OrdemServicoService {
             existingOrdemServico.setPrioridade(ordemServicoRequestDTO.getPrioridade());
         }
         if (ordemServicoRequestDTO.getAnaliseFalha() != null) {
-            existingOrdemServico.setAnaliseFalha(ordemServicoRequestDTO.getAnaliseFalha());
+            existingOrdemServico.setAnaliseFalha(capitalizeFirstLetter(ordemServicoRequestDTO.getAnaliseFalha()));
         }
         if (ordemServicoRequestDTO.getSolucaoAplicada() != null) {
-            existingOrdemServico.setSolucaoAplicada(ordemServicoRequestDTO.getSolucaoAplicada());
+            existingOrdemServico.setSolucaoAplicada(capitalizeFirstLetter(ordemServicoRequestDTO.getSolucaoAplicada()));
         }
         if (ordemServicoRequestDTO.getStatus() != null && existingOrdemServico.getStatus() != ordemServicoRequestDTO.getStatus()) {
             existingOrdemServico.setStatus(ordemServicoRequestDTO.getStatus());
@@ -315,9 +315,9 @@ public class OrdemServicoService {
         }
 
 
-        dto.setProblemaRelatado(ordemServico.getProblemaRelatado());
-        dto.setAnaliseFalha(ordemServico.getAnaliseFalha());
-        dto.setSolucaoAplicada(ordemServico.getSolucaoAplicada());
+        dto.setProblemaRelatado(capitalizeFirstLetter(ordemServico.getProblemaRelatado()));
+        dto.setAnaliseFalha(capitalizeFirstLetter(ordemServico.getAnaliseFalha()));
+        dto.setSolucaoAplicada(capitalizeFirstLetter(ordemServico.getSolucaoAplicada()));
 
         // As listas de registros, itens, fotos, etc., continuam iguais.
         // ... (resto do seu código)
@@ -327,9 +327,21 @@ public class OrdemServicoService {
 
     private OrdemServico convertToEntity(OrdemServicoRequestDTO ordemServicoRequestDTO) {
         OrdemServico ordemServico = new OrdemServico();
-        ordemServico.setProblemaRelatado(ordemServicoRequestDTO.getProblemaRelatado());
+        ordemServico.setProblemaRelatado(capitalizeFirstLetter(ordemServicoRequestDTO.getProblemaRelatado()));
         ordemServico.setDataAgendamento(ordemServicoRequestDTO.getDataAgendamento());
         return ordemServico;
+    }
+
+    /**
+     * Capitaliza a primeira letra de uma string.
+     * Se a string for null ou vazia, retorna null.
+     */
+    private String capitalizeFirstLetter(String texto) {
+        if (texto == null || texto.trim().isEmpty()) {
+            return texto;
+        }
+        String trimmed = texto.trim();
+        return trimmed.substring(0, 1).toUpperCase() + (trimmed.length() > 1 ? trimmed.substring(1) : "");
     }
 
     public String getNextOsNumber() {
