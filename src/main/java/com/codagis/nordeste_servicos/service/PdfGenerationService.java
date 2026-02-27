@@ -38,19 +38,19 @@ public class PdfGenerationService {
 
     public byte[] generateOsReportPdf(OrdemServicoResponseDTO osData) throws Exception {
 
-        // 🔑 1. Salva a imagem em disco e cria uma URL HTTP para ela
+        // 🔑 1. Fotos: fotoUrl (GCS) ou base64 (legado) - converte base64 em temp file para evitar SpEL limit de 100k chars
+        if (osData.getFotos() != null) {
         for (FotoOSResponseDTO foto : osData.getFotos()) {
-            if (foto.getFotoBase64() != null && !foto.getFotoBase64().isBlank()) {
-                // Cria o arquivo temporário
+            if (foto.getFotoUrl() != null) {
+                foto.setCaminhoTemporario(foto.getFotoUrl());
+            } else if (foto.getFotoBase64() != null && !foto.getFotoBase64().isBlank()) {
                 Path tempFile = Files.createTempFile("foto_os_", ".jpg");
                 byte[] decodedBytes = Base64.getDecoder().decode(foto.getFotoBase64());
                 Files.write(tempFile, decodedBytes);
-
-
                 String imageUrl = "http://localhost:8080/api/internal/temp-images/" + tempFile.getFileName().toString();
-                foto.setCaminhoTemporario(imageUrl); // Usamos o mesmo campo para armazenar a URL HTTP
-                System.out.println("URL da imagem gerada: " + foto.getCaminhoTemporario());
+                foto.setCaminhoTemporario(imageUrl);
             }
+        }
         }
 
         // 🔑 2. Monta o HTML com Thymeleaf
@@ -100,19 +100,19 @@ public class PdfGenerationService {
         builder.toStream(os);
         builder.run();
 
-        // 🔑 4. Limpa os arquivos temporários
+        // 🔑 4. Limpa arquivos temporários criados para fotos (apenas os locais, não GCS)
+        if (osData.getFotos() != null) {
         for (FotoOSResponseDTO foto : osData.getFotos()) {
-            if (foto.getCaminhoTemporario() != null && foto.getCaminhoTemporario().startsWith("http")) {
+            if (foto.getCaminhoTemporario() != null && foto.getCaminhoTemporario().startsWith("http://localhost")) {
                 try {
-                    // Extrai o nome do arquivo da URL para deletá-lo
-                    String url = foto.getCaminhoTemporario();
-                    String filename = url.substring(url.lastIndexOf('/') + 1);
+                    String filename = foto.getCaminhoTemporario().substring(foto.getCaminhoTemporario().lastIndexOf('/') + 1);
                     Path pathToDelete = new File(System.getProperty("java.io.tmpdir"), filename).toPath();
                     Files.deleteIfExists(pathToDelete);
                 } catch (Exception e) {
-                    System.err.println("Falha ao deletar arquivo temporário: " + e.getMessage());
+                    // ignora falha ao deletar
                 }
             }
+        }
         }
 
         return os.toByteArray();

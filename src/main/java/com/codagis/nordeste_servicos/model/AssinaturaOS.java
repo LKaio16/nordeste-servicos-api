@@ -6,6 +6,13 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "assinaturaos", indexes = {
+    @Index(name = "idx_assin_ordem_servico", columnList = "ordem_servico_id"),
+    @Index(name = "idx_assin_nome_cliente", columnList = "nome_cliente_responsavel"),
+    @Index(name = "idx_assin_doc_cliente", columnList = "documento_cliente_responsavel"),
+    @Index(name = "idx_assin_nome_tecnico", columnList = "nome_tecnico_responsavel"),
+    @Index(name = "idx_assin_data_hora", columnList = "data_hora_coleta")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -380,7 +380,7 @@
                                 </tr>
                                 <tr>
                                     <td><span class="label">Data de Emissão:</span></td>
-                                    <td th:text="${#temporals.format(orcamento.dataCriacao, 'dd/MM/yyyy')}">01/01/2025
+                                    <td th:text="${orcamento.dataHoraEmissao != null ? #temporals.format(orcamento.dataHoraEmissao, 'dd/MM/yyyy HH:mm') : (#temporals.format(orcamento.dataCriacao, 'dd/MM/yyyy'))}">01/01/2025
                                     </td>
                                 </tr>
                                 <tr>

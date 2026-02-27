@@ -24,6 +24,7 @@ public class OrdemServicoRepositoryImpl implements OrdemServicoRepositoryCustom 
         Root<OrdemServico> os = query.from(OrdemServico.class);
         os.fetch("cliente", JoinType.INNER);
         os.fetch("tecnicoAtribuido", JoinType.LEFT);
+        // Não faz fetch de "fotos" - evita carregar foto_base64 (LOB pesado da tabela fotoos)
 
         List<Predicate> predicates = new ArrayList<>();
 

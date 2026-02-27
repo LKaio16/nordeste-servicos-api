@@ -7,6 +7,23 @@ import java.time.LocalDateTime;
 import java.util.List; // Para coleções de entidades relacionadas
 
 @Entity
+@Table(name = "ordem_servico", indexes = {
+    @Index(name = "idx_os_numero", columnList = "numeroos"),
+    @Index(name = "idx_os_status", columnList = "status"),
+    @Index(name = "idx_os_data_abertura", columnList = "data_abertura"),
+    @Index(name = "idx_os_data_agendamento", columnList = "data_agendamento"),
+    @Index(name = "idx_os_data_fechamento", columnList = "data_fechamento"),
+    @Index(name = "idx_os_data_hora_emissao", columnList = "data_hora_emissao"),
+    @Index(name = "idx_os_cliente", columnList = "cliente_id"),
+    @Index(name = "idx_os_equipamento", columnList = "equipamento_id"),
+    @Index(name = "idx_os_tecnico", columnList = "tecnico_id"),
+    @Index(name = "idx_os_prioridade", columnList = "prioridade"),
+    @Index(name = "idx_os_problema_relatado", columnList = "problema_relatado"),
+    @Index(name = "idx_os_analise_falha", columnList = "analise_falha"),
+    @Index(name = "idx_os_solucao_aplicada", columnList = "solucao_aplicada"),
+    @Index(name = "idx_os_cliente_status", columnList = "cliente_id, status"),
+    @Index(name = "idx_os_tecnico_status", columnList = "tecnico_id, status")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -115,8 +115,8 @@ public class OrdemServicoController {
             // LOG PARA DEBUG
             System.out.println("Data de Emissão para o PDF: " + osData.getDataHoraEmissao());
 
-            // 3. Buscar as fotos separadamente usando o FotoOSService
-            List<FotoOSResponseDTO> fotos = fotoOSService.findFotosByOrdemServicoId(id);
+            // 3. Buscar as fotos (com base64 para PDF - fotos legadas)
+            List<FotoOSResponseDTO> fotos = fotoOSService.findFotosByOrdemServicoId(id, true);
             osData.setFotos(fotos);
 
             // 4. (NOVO) Buscar a assinatura associada à OS

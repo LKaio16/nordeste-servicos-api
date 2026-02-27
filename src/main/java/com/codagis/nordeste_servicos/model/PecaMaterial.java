@@ -4,6 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "peca_material", indexes = {
+    @Index(name = "idx_peca_codigo", columnList = "codigo"),
+    @Index(name = "idx_peca_descricao", columnList = "descricao"),
+    @Index(name = "idx_peca_preco", columnList = "preco"),
+    @Index(name = "idx_peca_estoque", columnList = "estoque")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

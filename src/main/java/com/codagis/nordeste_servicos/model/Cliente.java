@@ -4,6 +4,22 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "cliente", indexes = {
+    @Index(name = "idx_cliente_tipo", columnList = "tipo_cliente"),
+    @Index(name = "idx_cliente_nome", columnList = "nome_completo"),
+    @Index(name = "idx_cliente_cpf_cnpj", columnList = "cpf_cnpj"),
+    @Index(name = "idx_cliente_email", columnList = "email"),
+    @Index(name = "idx_cliente_telefone_principal", columnList = "telefone_principal"),
+    @Index(name = "idx_cliente_telefone_adicional", columnList = "telefone_adicional"),
+    @Index(name = "idx_cliente_cep", columnList = "cep"),
+    @Index(name = "idx_cliente_rua", columnList = "rua"),
+    @Index(name = "idx_cliente_numero", columnList = "numero"),
+    @Index(name = "idx_cliente_complemento", columnList = "complemento"),
+    @Index(name = "idx_cliente_bairro", columnList = "bairro"),
+    @Index(name = "idx_cliente_cidade", columnList = "cidade"),
+    @Index(name = "idx_cliente_estado", columnList = "estado"),
+    @Index(name = "idx_cliente_cidade_estado", columnList = "cidade, estado")
+})
 @Data // Lombok: Gera getters, setters, toString, equals, hashCode
 @NoArgsConstructor // Lombok: Gera construtor sem argumentos
 @AllArgsConstructor // Lombok: Gera construtor com todos os argumentos

@@ -6,6 +6,14 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "registro_tempo", indexes = {
+    @Index(name = "idx_reg_tempo_ordem_servico", columnList = "ordem_servico_id"),
+    @Index(name = "idx_reg_tempo_tecnico", columnList = "tecnico_id"),
+    @Index(name = "idx_reg_tempo_hora_inicio", columnList = "hora_inicio"),
+    @Index(name = "idx_reg_tempo_hora_termino", columnList = "hora_termino"),
+    @Index(name = "idx_reg_tempo_horas_trabalhadas", columnList = "horas_trabalhadas"),
+    @Index(name = "idx_reg_tempo_os_tec_hora", columnList = "ordem_servico_id, tecnico_id, hora_termino")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

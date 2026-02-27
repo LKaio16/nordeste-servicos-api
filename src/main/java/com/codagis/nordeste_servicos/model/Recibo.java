@@ -11,7 +11,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "recibos")
+@Table(name = "recibos", indexes = {
+    @Index(name = "idx_recibo_valor", columnList = "valor"),
+    @Index(name = "idx_recibo_cliente", columnList = "cliente"),
+    @Index(name = "idx_recibo_referente", columnList = "referentea"),
+    @Index(name = "idx_recibo_data_criacao", columnList = "data_criacao"),
+    @Index(name = "idx_recibo_numero", columnList = "numero_recibo")
+})
 public class Recibo {
 
     @Id

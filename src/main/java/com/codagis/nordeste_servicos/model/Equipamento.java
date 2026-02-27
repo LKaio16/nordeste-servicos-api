@@ -4,6 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "equipamento", indexes = {
+    @Index(name = "idx_equip_tipo", columnList = "tipo"),
+    @Index(name = "idx_equip_marca_modelo", columnList = "marca_modelo"),
+    @Index(name = "idx_equip_numero_serie", columnList = "numero_serie_chassi"),
+    @Index(name = "idx_equip_horimetro", columnList = "horimetro"),
+    @Index(name = "idx_equip_cliente", columnList = "cliente_id")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

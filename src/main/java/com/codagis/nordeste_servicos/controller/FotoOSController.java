@@ -23,6 +23,12 @@ public class FotoOSController {
         return ResponseEntity.ok(fotos);
     }
 
+    @GetMapping("/{fotoId}")
+    public ResponseEntity<FotoOSResponseDTO> getFotoById(@PathVariable Long osId, @PathVariable Long fotoId) {
+        FotoOSResponseDTO foto = fotoOSService.findFotoById(fotoId);
+        return ResponseEntity.ok(foto);
+    }
+
     @PostMapping
     public ResponseEntity<FotoOSResponseDTO> uploadFoto(@PathVariable Long osId, @RequestBody FotoOSUploadRequestDTO requestDTO) {
         FotoOSResponseDTO savedFoto = fotoOSService.saveFoto(osId, requestDTO);

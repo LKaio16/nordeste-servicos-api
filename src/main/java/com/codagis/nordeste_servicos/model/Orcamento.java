@@ -10,6 +10,18 @@ import java.util.List; // Para a lista de itens do orçamento
 import com.codagis.nordeste_servicos.model.ItemOrcamento; // <-- ADICIONE ESTA LINHA
 
 @Entity
+@Table(name = "orcamento", indexes = {
+    @Index(name = "idx_orcamento_numero", columnList = "numero_orcamento"),
+    @Index(name = "idx_orcamento_data_criacao", columnList = "data_criacao"),
+    @Index(name = "idx_orcamento_data_validade", columnList = "data_validade"),
+    @Index(name = "idx_orcamento_data_hora_emissao", columnList = "data_hora_emissao"),
+    @Index(name = "idx_orcamento_status", columnList = "status"),
+    @Index(name = "idx_orcamento_cliente", columnList = "cliente_id"),
+    @Index(name = "idx_orcamento_ordem_servico", columnList = "ordem_servico_id"),
+    @Index(name = "idx_orcamento_observacoes", columnList = "observacoes_condicoes"),
+    @Index(name = "idx_orcamento_valor_total", columnList = "valor_total"),
+    @Index(name = "idx_orcamento_cliente_status", columnList = "cliente_id, status")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
