@@ -89,6 +89,14 @@ public class UsuarioService {
         existingUsuario.setPerfil(usuarioRequestDTO.getPerfil());
         existingUsuario.setFotoPerfil(usuarioRequestDTO.getFotoPerfil());
 
+        // Atualiza a senha apenas se foi informada (texto plano; será codificada com BCrypt)
+        if (usuarioRequestDTO.getSenha() != null && !usuarioRequestDTO.getSenha().trim().isEmpty()) {
+            if (usuarioRequestDTO.getSenha().length() < 6) {
+                throw new BusinessException("A senha deve ter no mínimo 6 caracteres.");
+            }
+            existingUsuario.setSenha(passwordEncoder.encode(usuarioRequestDTO.getSenha()));
+        }
+
         Usuario updatedUsuario = usuarioRepository.save(existingUsuario);
         return convertToDTO(updatedUsuario);
     }
