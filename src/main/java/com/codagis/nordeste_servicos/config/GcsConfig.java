@@ -4,8 +4,8 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.beans.factory.annotation.Value;
 
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 @Configuration
-@Conditional(GcsEnabledCondition.class)
+@Profile("!test")  // sempre ativo exceto em testes (evita precisar de credenciais reais)
 public class GcsConfig {
 
     private static final Logger log = LoggerFactory.getLogger(GcsConfig.class);
