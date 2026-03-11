@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Value;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,6 +19,8 @@ import java.nio.charset.StandardCharsets;
 @Configuration
 @Conditional(GcsEnabledCondition.class)
 public class GcsConfig {
+
+    private static final Logger log = LoggerFactory.getLogger(GcsConfig.class);
 
     @Value("${gcloud.bucket:ne-servicos}")
     private String bucketName;
@@ -28,6 +33,7 @@ public class GcsConfig {
 
     @Bean
     public Storage storage() throws IOException {
+        log.info("Configurando Google Cloud Storage (bucket: {})", bucketName);
         StorageOptions.Builder builder = StorageOptions.newBuilder();
 
         // Usa JSON inline só se parecer um JSON válido (evita parse de caminho ou valor inválido)
@@ -39,7 +45,9 @@ public class GcsConfig {
                 GoogleCredentials credentials = GoogleCredentials.fromStream(
                         new ByteArrayInputStream(normalized.getBytes(StandardCharsets.UTF_8)));
                 builder.setCredentials(credentials);
+                log.info("GCS: credenciais carregadas a partir de GCLOUD_CREDENTIALS_JSON");
             } catch (Exception e) {
+                log.error("GCLOUD_CREDENTIALS_JSON inválido: {}", e.getMessage());
                 throw new IllegalStateException(
                         "GCLOUD_CREDENTIALS_JSON deve ser um JSON válido de conta de serviço (começando com {\"type\":\"service_account\"...). Erro: " + e.getMessage(), e);
             }
