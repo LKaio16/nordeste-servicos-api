@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 @Configuration
-@ConditionalOnProperty(name = "gcloud.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "gcloud.enabled", havingValue = "true")
 public class GcsConfig {
 
     @Value("${gcloud.bucket:ne-servicos}")
@@ -31,10 +31,17 @@ public class GcsConfig {
     public Storage storage() throws IOException {
         StorageOptions.Builder builder = StorageOptions.newBuilder();
 
-        if (credentialsJson != null && !credentialsJson.isBlank()) {
-            GoogleCredentials credentials = GoogleCredentials.fromStream(
-                    new ByteArrayInputStream(credentialsJson.getBytes(StandardCharsets.UTF_8)));
-            builder.setCredentials(credentials);
+        // Usa JSON inline só se parecer um JSON válido (evita parse de caminho ou valor inválido)
+        String json = (credentialsJson != null && !credentialsJson.isBlank()) ? credentialsJson.trim() : null;
+        if (json != null && json.startsWith("{")) {
+            try {
+                GoogleCredentials credentials = GoogleCredentials.fromStream(
+                        new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));
+                builder.setCredentials(credentials);
+            } catch (Exception e) {
+                throw new IllegalStateException(
+                        "GCLOUD_CREDENTIALS_JSON deve ser um JSON válido de conta de serviço (começando com {\"type\":\"service_account\"...). Erro: " + e.getMessage(), e);
+            }
         } else if (credentialsPath != null && !credentialsPath.isBlank()) {
             builder.setCredentials(GoogleCredentials.fromStream(new FileInputStream(credentialsPath)));
         } else {
