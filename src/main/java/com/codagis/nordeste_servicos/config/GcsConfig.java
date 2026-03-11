@@ -3,10 +3,9 @@ package com.codagis.nordeste_servicos.config;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.ByteArrayInputStream;
@@ -15,7 +14,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 @Configuration
-@ConditionalOnProperty(name = "gcloud.enabled", havingValue = "true")
+@Conditional(GcsEnabledCondition.class)
 public class GcsConfig {
 
     @Value("${gcloud.bucket:ne-servicos}")
@@ -35,8 +34,10 @@ public class GcsConfig {
         String json = (credentialsJson != null && !credentialsJson.isBlank()) ? credentialsJson.trim() : null;
         if (json != null && json.startsWith("{")) {
             try {
+                // Em variável de ambiente, \n na chave privada pode vir como literal backslash-n; normaliza para newline
+                String normalized = json.replace("\\n", "\n");
                 GoogleCredentials credentials = GoogleCredentials.fromStream(
-                        new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));
+                        new ByteArrayInputStream(normalized.getBytes(StandardCharsets.UTF_8)));
                 builder.setCredentials(credentials);
             } catch (Exception e) {
                 throw new IllegalStateException(
