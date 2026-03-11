@@ -5,8 +5,6 @@
     },
     "deploy": {
         "startCommand": "java -Xmx256m -Xms128m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -jar target/nordeste-servicos-0.0.1-SNAPSHOT.jar",
-        "healthcheckPath": "/health",
-        "healthcheckTimeout": 300,
         "restartPolicyType": "ON_FAILURE",
         "restartPolicyMaxRetries": 2
     }
