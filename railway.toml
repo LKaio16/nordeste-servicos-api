@@ -2,9 +2,6 @@
 builder = "NIXPACKS"
 
 [deploy]
-# Endpoint simples que não depende do Actuator nem do banco
-healthcheckPath = "/health"
-healthcheckTimeout = 600
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
 
