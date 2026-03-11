@@ -1,8 +1,9 @@
 [phases.setup]
 nixPkgs = ["maven", "openjdk17"]
 
+# Sempre zera target antes do build (evita artefatos antigos em cache do Railway)
 [phases.build]
-cmds = ["mvn clean package -DskipTests"]
+cmds = ["rm -rf target", "mvn clean package -DskipTests"]
 
 [phases.start]
 cmd = "java -Xmx256m -Xms128m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -jar target/nordeste-servicos-0.0.1-SNAPSHOT.jar"
