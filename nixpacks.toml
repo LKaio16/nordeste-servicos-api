@@ -4,9 +4,9 @@ nixPkgs = ["maven", "openjdk17"]
 [phases.build]
 cmds = ["mvn clean package -DskipTests"]
 
-# PORT é definido pelo Railway em runtime; -Dserver.port obrigatório para escutar na porta correta
+# Usa start.sh para garantir que PORT e server.address são aplicados em runtime (Railway)
 [phases.start]
-cmd = "java -Dserver.port=${PORT:-8080} -Xmx256m -Xms128m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -jar target/nordeste-servicos-0.0.1-SNAPSHOT.jar"
+cmd = "sh start.sh"
 
 [variables]
 JAVA_OPTS = "-Xmx256m -Xms128m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication"
