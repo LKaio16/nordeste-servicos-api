@@ -294,13 +294,15 @@ public class OrdemServicoService {
 
         if (ordemServico.getTecnicoAtribuido() != null) {
             Usuario tecnicoEntity = ordemServico.getTecnicoAtribuido();
+            // Não inclui fotoPerfil (base64) para evitar payload pesado; usa apenas fotoUrl
             dto.setTecnicoAtribuido(new UsuarioResponseDTO(
                     tecnicoEntity.getId(),
                     tecnicoEntity.getNome(),
                     tecnicoEntity.getCracha(),
                     tecnicoEntity.getEmail(),
                     tecnicoEntity.getPerfil(),
-                    tecnicoEntity.getFotoPerfil()
+                    null,
+                    tecnicoEntity.getFotoUrl()
             ));
         } else {
             dto.setTecnicoAtribuido(null);

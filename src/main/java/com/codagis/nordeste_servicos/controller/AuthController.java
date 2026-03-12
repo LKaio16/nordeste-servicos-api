@@ -47,7 +47,8 @@ public class AuthController {
                         usuario.getEmail(),
                         usuario.getPerfil(),
                         token,
-                        usuario.getFotoPerfil() // Incluindo a foto no DTO de login
+                        usuario.getFotoPerfil(),
+                        usuario.getFotoUrl()
                 );
                 return ResponseEntity.ok(responseDTO);
             } else {

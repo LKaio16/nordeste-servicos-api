@@ -48,6 +48,30 @@ public class GoogleCloudStorageService {
     }
 
     /**
+     * Faz upload da foto de perfil do usuário para o bucket GCS.
+     * Organiza em pastas: fotos-usuarios/{usuarioId}/avatar.ext
+     */
+    public String uploadImageForUsuario(Long usuarioId, byte[] imageBytes, String contentType, String originalFilename) {
+        String extension = "jpg";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf('.') + 1).toLowerCase();
+            if (!extension.matches("jpg|jpeg|png|gif|webp")) {
+                extension = "jpg";
+            }
+        }
+        String objectName = "fotos-usuarios/" + usuarioId + "/avatar." + extension;
+
+        BlobId blobId = BlobId.of(bucketName, objectName);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+                .setContentType(contentType != null ? contentType : "image/jpeg")
+                .build();
+
+        storage.create(blobInfo, imageBytes);
+
+        return "https://storage.googleapis.com/" + bucketName + "/" + objectName;
+    }
+
+    /**
      * Remove a imagem do GCS a partir da URL pública.
      * URL esperada: https://storage.googleapis.com/[bucket]/[object-path]
      */

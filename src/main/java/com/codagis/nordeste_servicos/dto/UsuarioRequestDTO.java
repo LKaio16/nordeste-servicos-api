@@ -16,4 +16,5 @@ public class UsuarioRequestDTO {
     private String senha;
     private PerfilUsuario perfil;
     private String fotoPerfil;
+    private String fotoUrl;
 }

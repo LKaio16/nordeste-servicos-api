@@ -11,6 +11,7 @@ public class DesempenhoTecnicoDTO {
     private Long id;
     private String nome;
     private String fotoPerfil;
+    private String fotoUrl;
     private int totalOS;
     private double desempenho;
 }

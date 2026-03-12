@@ -17,4 +17,5 @@ public class LoginResponseDTO {
     private PerfilUsuario perfil; // O enum de PerfilUsuario
     private String token; // O token JWT
     private String fotoPerfil;
+    private String fotoUrl;
 }

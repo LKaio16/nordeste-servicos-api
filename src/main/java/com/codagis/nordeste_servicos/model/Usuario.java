@@ -35,7 +35,9 @@ public class Usuario {
     private PerfilUsuario perfil; // Enum para ADMIN, TECNICO
 
     @Lob
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "foto_perfil", columnDefinition = "TEXT")
     private String fotoPerfil;
-    // O Lombok cuida de Getters e Setters, etc.
+
+    @Column(name = "foto_url", length = 512)
+    private String fotoUrl;
 }

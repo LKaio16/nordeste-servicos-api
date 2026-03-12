@@ -13,6 +13,9 @@ import com.codagis.nordeste_servicos.repository.OrdemServicoRepository;
 import com.codagis.nordeste_servicos.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,28 @@ public class UsuarioService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired(required = false)
+    private GoogleCloudStorageService googleCloudStorageService;
+
+    @Transactional
+    public UsuarioResponseDTO uploadFotoPerfil(Long id, MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            throw new BusinessException("Arquivo de imagem é obrigatório.");
+        }
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + id));
+        if (googleCloudStorageService == null) {
+            throw new BusinessException("Upload de imagens não está configurado (Google Cloud Storage).");
+        }
+        byte[] bytes = file.getBytes();
+        String contentType = file.getContentType();
+        String originalFilename = file.getOriginalFilename();
+        String fotoUrl = googleCloudStorageService.uploadImageForUsuario(id, bytes, contentType, originalFilename);
+        usuario.setFotoUrl(fotoUrl);
+        usuarioRepository.save(usuario);
+        return convertToDTO(usuario);
+    }
 
     public List<UsuarioResponseDTO> findAllUsuarios() {
         List<Usuario> usuarios = usuarioRepository.findAll();
@@ -156,7 +181,8 @@ public class UsuarioService {
                 tecnico.getId(),
                 tecnico.getNome(),
                 tecnico.getFotoPerfil(),
-                totalOS, // O total agora reflete todas as OS atribuídas
+                tecnico.getFotoUrl(),
+                totalOS,
                 desempenho
         );
     }
@@ -169,6 +195,7 @@ public class UsuarioService {
         dto.setEmail(usuario.getEmail());
         dto.setPerfil(usuario.getPerfil());
         dto.setFotoPerfil(usuario.getFotoPerfil());
+        dto.setFotoUrl(usuario.getFotoUrl());
         return dto;
     }
 
