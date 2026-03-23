@@ -77,16 +77,24 @@ public class RegistroTempoService {
     }
 
     @Transactional
-    public RegistroTempoResponseDTO finalizarRegistroTempo(Long id) {
+    public RegistroTempoResponseDTO finalizarRegistroTempo(Long id, LocalDateTime horaTerminoCustom) {
         RegistroTempo registro = registroTempoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Registro de Tempo não encontrado com ID: " + id));
 
-        if (registro.getHoraTermino() != null) {
+        // Regra original: não permitir finalizar duas vezes.
+        // Para edição (web), se o client enviar horaTerminoCustom, permitimos atualizar.
+        if (registro.getHoraTermino() != null && horaTerminoCustom == null) {
             throw new BusinessException("Este registro de tempo já foi finalizado.");
         }
 
-        registro.setHoraTermino(LocalDateTime.now());
-        registro.setHorasTrabalhadas(calculateHours(registro.getHoraInicio(), registro.getHoraTermino()));
+        LocalDateTime novaHoraTermino = horaTerminoCustom != null ? horaTerminoCustom : LocalDateTime.now();
+
+        if (registro.getHoraInicio() != null && novaHoraTermino != null && novaHoraTermino.isBefore(registro.getHoraInicio())) {
+            throw new BusinessException("Hora de término não pode ser anterior à hora de início.");
+        }
+
+        registro.setHoraTermino(novaHoraTermino);
+        registro.setHorasTrabalhadas(calculateHours(registro.getHoraInicio(), novaHoraTermino));
 
         RegistroTempo updatedRegistro = registroTempoRepository.save(registro);
         return convertToDTO(updatedRegistro);

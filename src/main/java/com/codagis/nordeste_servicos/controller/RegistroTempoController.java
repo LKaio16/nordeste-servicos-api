@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -38,9 +39,16 @@ public class RegistroTempoController {
     }
 
     @PutMapping("/{id}/finalizar")
-    public ResponseEntity<RegistroTempoResponseDTO> finalizarRegistroTempo(@PathVariable Long osId, @PathVariable Long id) {
-        RegistroTempoResponseDTO registroFinalizado = registroTempoService.finalizarRegistroTempo(id);
-        return ResponseEntity.ok(registroFinalizado);
+    public ResponseEntity<RegistroTempoResponseDTO> finalizarRegistroTempo(
+            @PathVariable Long osId,
+            @PathVariable Long id,
+            @RequestBody(required = false) RegistroTempoRequestDTO registroTempoRequestDTO
+    ) {
+        // Para "edição" no web: se vier horaTermino no body, atualizamos.
+        // Se não vier, cai no comportamento padrão (finaliza agora).
+        LocalDateTime horaTermino = registroTempoRequestDTO != null ? registroTempoRequestDTO.getHoraTermino() : null;
+        RegistroTempoResponseDTO registroAtualizado = registroTempoService.finalizarRegistroTempo(id, horaTermino);
+        return ResponseEntity.ok(registroAtualizado);
     }
 
     @DeleteMapping("/{id}")
