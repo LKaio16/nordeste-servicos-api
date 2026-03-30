@@ -71,7 +71,7 @@ public class FotoOSService {
         FotoOS fotoOS = new FotoOS();
         fotoOS.setOrdemServico(ordemServico);
         fotoOS.setFotoBase64(null);
-        fotoOS.setDescricao(requestDTO.getDescricao());
+        fotoOS.setDescricao(capitalizeFirstLetter(requestDTO.getDescricao()));
         fotoOS.setNomeArquivoOriginal(requestDTO.getNomeArquivoOriginal());
         fotoOS.setTipoConteudo(requestDTO.getTipoConteudo());
         fotoOS.setTamanhoArquivo(requestDTO.getTamanhoArquivo());
@@ -105,7 +105,7 @@ public class FotoOSService {
                 fotoOS.getId(),
                 fotoOS.getOrdemServico().getId(),
                 base64,
-                fotoOS.getDescricao(),
+                capitalizeFirstLetter(fotoOS.getDescricao()),
                 fotoOS.getNomeArquivoOriginal(),
                 fotoOS.getTipoConteudo(),
                 fotoOS.getTamanhoArquivo(),
@@ -113,5 +113,12 @@ public class FotoOSService {
                 fotoOS.getCaminhoTemporario(),
                 fotoOS.getFotoUrl()
         );
+    }
+
+    private String capitalizeFirstLetter(String text) {
+        if (text == null) return null;
+        String trimmed = text.trim();
+        if (trimmed.isEmpty()) return trimmed;
+        return trimmed.substring(0, 1).toUpperCase() + trimmed.substring(1);
     }
 }
