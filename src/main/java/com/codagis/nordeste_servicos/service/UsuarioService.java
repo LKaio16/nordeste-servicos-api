@@ -11,6 +11,7 @@ import com.codagis.nordeste_servicos.model.StatusOS; // Importar StatusOS
 import com.codagis.nordeste_servicos.model.Usuario;
 import com.codagis.nordeste_servicos.repository.OrdemServicoRepository;
 import com.codagis.nordeste_servicos.repository.UsuarioRepository;
+import com.codagis.nordeste_servicos.util.ValidationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.multipart.MultipartFile;
@@ -72,7 +73,13 @@ public class UsuarioService {
     }
 
     public UsuarioResponseDTO createUsuario(UsuarioRequestDTO usuarioRequestDTO) {
-        if (usuarioRepository.findByEmail(usuarioRequestDTO.getEmail()).isPresent()) {
+        final String email = ValidationUtils.normalizeEmail(usuarioRequestDTO.getEmail());
+        if (!ValidationUtils.isValidEmail(email)) {
+            throw new BusinessException("Formato de e-mail inválido.");
+        }
+        usuarioRequestDTO.setEmail(email);
+
+        if (usuarioRepository.findByEmail(email).isPresent()) {
             throw new BusinessException("O e-mail informado já está em uso.");
         }
         if (usuarioRepository.findByCracha(usuarioRequestDTO.getCracha()).isPresent()) {
@@ -82,7 +89,7 @@ public class UsuarioService {
         Usuario usuario = new Usuario();
         usuario.setNome(usuarioRequestDTO.getNome());
         usuario.setCracha(usuarioRequestDTO.getCracha());
-        usuario.setEmail(usuarioRequestDTO.getEmail());
+        usuario.setEmail(email);
         usuario.setSenha(passwordEncoder.encode(usuarioRequestDTO.getSenha()));
         usuario.setPerfil(usuarioRequestDTO.getPerfil());
         usuario.setFotoPerfil(usuarioRequestDTO.getFotoPerfil());
@@ -96,7 +103,13 @@ public class UsuarioService {
         Usuario existingUsuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + id));
 
-        usuarioRepository.findByEmail(usuarioRequestDTO.getEmail()).ifPresent(user -> {
+        final String email = ValidationUtils.normalizeEmail(usuarioRequestDTO.getEmail());
+        if (!ValidationUtils.isValidEmail(email)) {
+            throw new BusinessException("Formato de e-mail inválido.");
+        }
+        usuarioRequestDTO.setEmail(email);
+
+        usuarioRepository.findByEmail(email).ifPresent(user -> {
             if (!user.getId().equals(id)) {
                 throw new BusinessException("O e-mail informado já está em uso por outro usuário.");
             }
@@ -110,7 +123,7 @@ public class UsuarioService {
 
         existingUsuario.setNome(usuarioRequestDTO.getNome());
         existingUsuario.setCracha(usuarioRequestDTO.getCracha());
-        existingUsuario.setEmail(usuarioRequestDTO.getEmail());
+        existingUsuario.setEmail(email);
         existingUsuario.setPerfil(usuarioRequestDTO.getPerfil());
         existingUsuario.setFotoPerfil(usuarioRequestDTO.getFotoPerfil());
 

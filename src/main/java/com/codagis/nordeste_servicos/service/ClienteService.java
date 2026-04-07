@@ -15,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.codagis.nordeste_servicos.util.ExcelHelper;
+import com.codagis.nordeste_servicos.util.ValidationUtils;
 import java.io.ByteArrayInputStream;
 
 
@@ -53,12 +54,27 @@ public class ClienteService {
     }
 
     public ClienteResponseDTO createCliente(ClienteRequestDTO clienteRequestDTO) {
-        if (clienteRepository.findByCpfCnpj(clienteRequestDTO.getCpfCnpj()).isPresent()) {
+        // Normalizações
+        final String cpfCnpj = ValidationUtils.onlyDigits(clienteRequestDTO.getCpfCnpj());
+        final String email = ValidationUtils.normalizeEmail(clienteRequestDTO.getEmail());
+
+        if (!ValidationUtils.isValidCpfCnpj(cpfCnpj)) {
+            throw new BusinessException("CPF/CNPJ inválido.");
+        }
+        if (!ValidationUtils.isValidEmail(email)) {
+            throw new BusinessException("Formato de e-mail inválido.");
+        }
+
+        if (clienteRepository.findByCpfCnpj(cpfCnpj).isPresent()) {
             throw new BusinessException("O CPF/CNPJ informado já está cadastrado.");
         }
-        if (clienteRepository.findByEmail(clienteRequestDTO.getEmail()).isPresent()) {
+        if (clienteRepository.findByEmail(email).isPresent()) {
             throw new BusinessException("O e-mail informado já está cadastrado.");
         }
+
+        clienteRequestDTO.setCpfCnpj(cpfCnpj);
+        clienteRequestDTO.setEmail(email);
+
         Cliente cliente = convertToEntity(clienteRequestDTO);
         Cliente savedCliente = clienteRepository.save(cliente);
         return convertToDTO(savedCliente);
@@ -68,17 +84,30 @@ public class ClienteService {
         Cliente existingCliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + id));
 
-        clienteRepository.findByCpfCnpj(clienteRequestDTO.getCpfCnpj()).ifPresent(cliente -> {
+        final String cpfCnpj = ValidationUtils.onlyDigits(clienteRequestDTO.getCpfCnpj());
+        final String email = ValidationUtils.normalizeEmail(clienteRequestDTO.getEmail());
+
+        if (!ValidationUtils.isValidCpfCnpj(cpfCnpj)) {
+            throw new BusinessException("CPF/CNPJ inválido.");
+        }
+        if (!ValidationUtils.isValidEmail(email)) {
+            throw new BusinessException("Formato de e-mail inválido.");
+        }
+
+        clienteRepository.findByCpfCnpj(cpfCnpj).ifPresent(cliente -> {
             if (!cliente.getId().equals(id)) {
                 throw new BusinessException("O CPF/CNPJ informado já está cadastrado em outro cliente.");
             }
         });
 
-        clienteRepository.findByEmail(clienteRequestDTO.getEmail()).ifPresent(cliente -> {
+        clienteRepository.findByEmail(email).ifPresent(cliente -> {
             if (!cliente.getId().equals(id)) {
                 throw new BusinessException("O e-mail informado já está cadastrado em outro cliente.");
             }
         });
+
+        clienteRequestDTO.setCpfCnpj(cpfCnpj);
+        clienteRequestDTO.setEmail(email);
 
         // *** CORREÇÃO: Atualiza todos os campos do cliente existente com os dados do DTO ***
         existingCliente.setTipoCliente(clienteRequestDTO.getTipoCliente());
