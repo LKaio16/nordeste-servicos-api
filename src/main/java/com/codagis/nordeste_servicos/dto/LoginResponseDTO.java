@@ -1,4 +1,3 @@
-// src/main/java/com/codagis/nordeste_servicos/dto/LoginResponseDTO.java
 package com.codagis.nordeste_servicos.dto;
 
 import com.codagis.nordeste_servicos.model.PerfilUsuario;
@@ -8,14 +7,14 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor // Adicionado para facilitar a criação com todos os campos
+@AllArgsConstructor
 public class LoginResponseDTO {
     private Long id;
     private String nome;
     private String cracha;
     private String email;
-    private PerfilUsuario perfil; // O enum de PerfilUsuario
-    private String token; // O token JWT
+    private PerfilUsuario perfil;
+    private String token;
     private String fotoPerfil;
     private String fotoUrl;
 }

@@ -7,20 +7,19 @@ import com.codagis.nordeste_servicos.exception.BusinessException;
 import com.codagis.nordeste_servicos.exception.ResourceNotFoundException;
 import com.codagis.nordeste_servicos.model.OrdemServico;
 import com.codagis.nordeste_servicos.model.PerfilUsuario;
-import com.codagis.nordeste_servicos.model.StatusOS; // Importar StatusOS
+import com.codagis.nordeste_servicos.model.StatusOS;
 import com.codagis.nordeste_servicos.model.Usuario;
 import com.codagis.nordeste_servicos.repository.OrdemServicoRepository;
 import com.codagis.nordeste_servicos.repository.UsuarioRepository;
 import com.codagis.nordeste_servicos.util.ValidationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -98,7 +97,6 @@ public class UsuarioService {
         return convertToDTO(savedUsuario);
     }
 
-
     public UsuarioResponseDTO updateUsuario(Long id, UsuarioRequestDTO usuarioRequestDTO) {
         Usuario existingUsuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + id));
@@ -127,7 +125,6 @@ public class UsuarioService {
         existingUsuario.setPerfil(usuarioRequestDTO.getPerfil());
         existingUsuario.setFotoPerfil(usuarioRequestDTO.getFotoPerfil());
 
-        // Atualiza a senha apenas se foi informada (texto plano; será codificada com BCrypt)
         if (usuarioRequestDTO.getSenha() != null && !usuarioRequestDTO.getSenha().trim().isEmpty()) {
             if (usuarioRequestDTO.getSenha().length() < 6) {
                 throw new BusinessException("A senha deve ter no mínimo 6 caracteres.");
@@ -180,14 +177,8 @@ public class UsuarioService {
     }
 
     private DesempenhoTecnicoDTO convertToDesempenhoDTO(Usuario tecnico) {
-        // LÓGICA ALTERADA: Conta o total de OS atribuídas ao técnico.
         int totalOS = ordemServicoRepository.countByTecnicoAtribuidoId(tecnico.getId());
-
-        // Conta apenas as Ordens de Serviço com status CONCLUIDA.
         int osConcluidas = ordemServicoRepository.countByTecnicoAtribuidoIdAndStatus(tecnico.getId(), StatusOS.CONCLUIDA);
-
-        // A métrica de desempenho agora é a razão entre OS concluídas e o total de OS atribuídas.
-        // Se o técnico não tiver nenhuma OS, seu desempenho é 0.
         double desempenho = (totalOS > 0) ? ((double) osConcluidas / totalOS) : 0.0;
 
         return new DesempenhoTecnicoDTO(

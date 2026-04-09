@@ -19,7 +19,6 @@ public class TempImageController {
     @GetMapping("/{filename:.+}")
     public ResponseEntity<InputStreamResource> getTempImage(@PathVariable String filename) {
         try {
-            // Constrói o caminho para o arquivo dentro do diretório temporário do sistema
             Path filePath = Paths.get(System.getProperty("java.io.tmpdir"), filename);
             File file = filePath.toFile();
 

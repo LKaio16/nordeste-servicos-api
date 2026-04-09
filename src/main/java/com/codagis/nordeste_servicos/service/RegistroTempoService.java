@@ -6,7 +6,6 @@ import com.codagis.nordeste_servicos.exception.BusinessException;
 import com.codagis.nordeste_servicos.exception.ResourceNotFoundException;
 import com.codagis.nordeste_servicos.model.OrdemServico;
 import com.codagis.nordeste_servicos.model.RegistroTempo;
-import com.codagis.nordeste_servicos.model.TipoServico;
 import com.codagis.nordeste_servicos.model.Usuario;
 import com.codagis.nordeste_servicos.repository.OrdemServicoRepository;
 import com.codagis.nordeste_servicos.repository.RegistroTempoRepository;
@@ -14,7 +13,7 @@ import com.codagis.nordeste_servicos.repository.TipoServicoRepository;
 import com.codagis.nordeste_servicos.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // Importe a anotação
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -37,7 +36,7 @@ public class RegistroTempoService {
     @Autowired
     private TipoServicoRepository tipoServicoRepository;
 
-    @Transactional(readOnly = true) // <-- ANOTAÇÃO ADICIONADA AQUI
+    @Transactional(readOnly = true)
     public List<RegistroTempoResponseDTO> findRegistrosTempoByOrdemServicoId(Long ordemServicoId) {
         List<RegistroTempo> registros = registroTempoRepository.findByOrdemServicoId(ordemServicoId);
         return registros.stream()
@@ -81,8 +80,6 @@ public class RegistroTempoService {
         RegistroTempo registro = registroTempoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Registro de Tempo não encontrado com ID: " + id));
 
-        // Regra original: não permitir finalizar duas vezes.
-        // Para edição (web), se o client enviar horaTerminoCustom, permitimos atualizar.
         if (registro.getHoraTermino() != null && horaTerminoCustom == null) {
             throw new BusinessException("Este registro de tempo já foi finalizado.");
         }

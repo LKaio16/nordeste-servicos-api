@@ -44,8 +44,6 @@ public class RegistroTempoController {
             @PathVariable Long id,
             @RequestBody(required = false) RegistroTempoRequestDTO registroTempoRequestDTO
     ) {
-        // Para "edição" no web: se vier horaTermino no body, atualizamos.
-        // Se não vier, cai no comportamento padrão (finaliza agora).
         LocalDateTime horaTermino = registroTempoRequestDTO != null ? registroTempoRequestDTO.getHoraTermino() : null;
         RegistroTempoResponseDTO registroAtualizado = registroTempoService.finalizarRegistroTempo(id, horaTermino);
         return ResponseEntity.ok(registroAtualizado);

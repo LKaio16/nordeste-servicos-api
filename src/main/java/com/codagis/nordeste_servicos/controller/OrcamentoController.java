@@ -48,22 +48,18 @@ public class OrcamentoController {
 
     @PostMapping
     public ResponseEntity<OrcamentoResponseDTO> createOrcamento(@RequestBody OrcamentoRequestDTO orçamentoRequestDTO) {
-        // TODO: Implementar validação de segurança (quem pode criar orçamento? Admin? Técnico?)
         OrcamentoResponseDTO savedOrcamento = orçamentoService.createOrcamento(orçamentoRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedOrcamento);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<OrcamentoResponseDTO> updateOrcamento(@PathVariable Long id, @RequestBody OrcamentoRequestDTO orçamentoRequestDTO) {
-        // TODO: Implementar validação de segurança (quem pode atualizar orçamento?)
-        // TODO: Considerar quais campos podem ser atualizados dependendo do status do orçamento
         OrcamentoResponseDTO updatedOrcamento = orçamentoService.updateOrcamento(id, orçamentoRequestDTO);
         return ResponseEntity.ok(updatedOrcamento);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrcamento(@PathVariable Long id) {
-        // TODO: Implementar validação de segurança (quem pode deletar orçamento?)
         orçamentoService.deleteOrcamento(id);
         return ResponseEntity.noContent().build();
     }
@@ -71,23 +67,16 @@ public class OrcamentoController {
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> generateOrcamentoPdf(@PathVariable Long id) {
         try {
-            // 1. Atualiza a data de emissão para o momento atual
             orcamentoService.updateDataHoraEmissao(id);
-
-            // 2. Obter os dados do Orçamento (agora com a data de emissão atualizada)
-            // Usa findOrcamentoById que já recalcula o valor total e busca os dados atualizados
             OrcamentoResponseDTO orcamentoData = orcamentoService.findOrcamentoById(id);
             if (orcamentoData == null) {
                 return ResponseEntity.notFound().build();
             }
 
-            // Log para debug - verificar se a data foi atualizada
             System.out.println("Data de Emissão para o PDF: " + orcamentoData.getDataHoraEmissao());
 
-            // 3. Gerar o PDF usando o serviço
             byte[] pdfBytes = pdfGenerationService.generateOrcamentoReportPdf(orcamentoData);
 
-            // 3. Configurar os cabeçalhos da resposta para download de PDF
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("filename", "Orçamento_" + orcamentoData.getNumeroOrcamento() + ".pdf");
