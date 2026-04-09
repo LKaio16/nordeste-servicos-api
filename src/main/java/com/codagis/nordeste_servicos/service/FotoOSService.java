@@ -9,6 +9,8 @@ import com.codagis.nordeste_servicos.model.OrdemServico;
 import com.codagis.nordeste_servicos.repository.FotoOSRepository;
 import com.codagis.nordeste_servicos.repository.OrdemServicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class FotoOSService {
+
+    private static final Logger log = LoggerFactory.getLogger(FotoOSService.class);
 
     @Autowired
     private FotoOSRepository fotoOSRepository;
@@ -60,7 +64,10 @@ public class FotoOSService {
         }
 
         if (googleCloudStorageService == null) {
-            throw new BusinessException("Google Cloud Storage não configurado. Defina GCLOUD_BUCKET (ex: ne-servicos) e GCLOUD_CREDENTIALS_JSON com o JSON completo da conta de serviço.");
+            log.error("GCS indisponível: GoogleCloudStorageService não foi criado (verifique gcloud.enabled, SPRING_PROFILES_ACTIVE e credenciais)");
+            throw new BusinessException(
+                    "Google Cloud Storage não configurado. Defina GCLOUD_BUCKET (ex: ne-servicos) e GCLOUD_CREDENTIALS_B64 "
+                            + "(JSON da conta de serviço em Base64), ou GCLOUD_CREDENTIALS_JSON, ou GOOGLE_APPLICATION_CREDENTIALS.");
         }
 
         byte[] imageBytes = Base64.getDecoder().decode(requestDTO.getFotoBase64());
@@ -91,7 +98,8 @@ public class FotoOSService {
             try {
                 googleCloudStorageService.deleteImage(foto.getFotoUrl());
             } catch (Exception e) {
-                // Log e continua - remove do banco mesmo se falhar na nuvem
+                log.warn("Falha ao deletar imagem no GCS (seguindo com delete no banco). fotoId={} url={} err={}",
+                        fotoId, foto.getFotoUrl(), e.getMessage());
             }
         }
 
