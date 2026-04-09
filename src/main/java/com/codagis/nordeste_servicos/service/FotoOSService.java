@@ -60,9 +60,7 @@ public class FotoOSService {
         }
 
         if (googleCloudStorageService == null) {
-            throw new BusinessException(
-                    "Google Cloud Storage não configurado. Defina GCLOUD_BUCKET (ex: ne-servicos) e GCLOUD_CREDENTIALS_B64 "
-                            + "(JSON da conta de serviço em Base64), ou GCLOUD_CREDENTIALS_JSON, ou GOOGLE_APPLICATION_CREDENTIALS.");
+            throw new BusinessException("Google Cloud Storage não configurado. Defina GCLOUD_BUCKET (ex: ne-servicos) e GCLOUD_CREDENTIALS_JSON com o JSON completo da conta de serviço.");
         }
 
         byte[] imageBytes = Base64.getDecoder().decode(requestDTO.getFotoBase64());
