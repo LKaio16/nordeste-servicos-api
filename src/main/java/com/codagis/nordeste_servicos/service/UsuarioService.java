@@ -48,8 +48,7 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + id));
         if (googleCloudStorageService == null) {
-            throw new BusinessException(
-                    "Upload de imagens não está configurado (Google Cloud Storage). Defina GCLOUD_CREDENTIALS_JSON_B64 ou GCLOUD_CREDENTIALS_JSON.");
+            throw new BusinessException("Upload de imagens não está configurado (Google Cloud Storage).");
         }
         byte[] bytes = file.getBytes();
         String contentType = file.getContentType();
