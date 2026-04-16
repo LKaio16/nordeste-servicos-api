@@ -8,10 +8,10 @@ import com.codagis.nordeste_servicos.model.Usuario;
 import com.codagis.nordeste_servicos.service.RefreshTokenService;
 import com.codagis.nordeste_servicos.service.UsuarioService;
 import com.codagis.nordeste_servicos.util.JwtUtil;
+import com.codagis.nordeste_servicos.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,13 +26,19 @@ import java.util.Optional;
 public class AuthController {
 
     private final UsuarioService usuarioService;
-    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
-        Optional<Usuario> usuarioOptional = usuarioService.findByEmail(loginRequestDTO.getEmail());
+        String email = ValidationUtils.normalizeEmail(
+                loginRequestDTO.getEmail() != null ? loginRequestDTO.getEmail() : "");
+        if (email.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Email ou senha inválidos."));
+        }
+
+        Optional<Usuario> usuarioOptional = usuarioService.findByEmail(email);
 
         if (usuarioOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -40,7 +46,7 @@ public class AuthController {
         }
 
         Usuario usuario = usuarioOptional.get();
-        if (!passwordEncoder.matches(loginRequestDTO.getSenha(), usuario.getSenha())) {
+        if (!usuarioService.matchesPassword(usuario, loginRequestDTO.getSenha())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Email ou senha inválidos."));
         }

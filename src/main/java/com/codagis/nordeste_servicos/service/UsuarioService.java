@@ -169,6 +169,27 @@ public class UsuarioService {
         return usuarioRepository.findByEmail(email);
     }
 
+    /**
+     * Verifica senha com BCrypt. Se o banco ainda tiver senha em texto plano (legado), confere e regrava com hash.
+     */
+    @Transactional
+    public boolean matchesPassword(Usuario usuario, String senhaInformada) {
+        if (senhaInformada == null || usuario.getSenha() == null) {
+            return false;
+        }
+        String stored = usuario.getSenha();
+        if (passwordEncoder.matches(senhaInformada, stored)) {
+            return true;
+        }
+        boolean looksBcrypt = stored.startsWith("$2a$") || stored.startsWith("$2b$") || stored.startsWith("$2y$");
+        if (!looksBcrypt && stored.equals(senhaInformada)) {
+            usuario.setSenha(passwordEncoder.encode(senhaInformada));
+            usuarioRepository.save(usuario);
+            return true;
+        }
+        return false;
+    }
+
     @Transactional(readOnly = true)
     public Optional<Usuario> findByIdEntity(Long id) {
         return usuarioRepository.findById(id);
