@@ -5,6 +5,7 @@ import com.codagis.nordeste_servicos.model.StatusOS;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -37,4 +38,8 @@ public class OrdemServicoResponseDTO {
     private List<ItemOSUtilizadoResponseDTO> itensUtilizados;
     private List<FotoOSResponseDTO> fotos;
     private AssinaturaOSResponseDTO assinatura;
+
+    private boolean lembreteAtivo;
+    private Integer lembreteDiasAposFechamento;
+    private LocalDate lembreteDataAlvo;
 }

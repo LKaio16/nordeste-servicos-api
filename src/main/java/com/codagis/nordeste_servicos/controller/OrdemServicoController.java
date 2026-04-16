@@ -71,6 +71,11 @@ public class OrdemServicoController {
         return ResponseEntity.ok(stats);
     }
 
+    @GetMapping("/lembretes")
+    public ResponseEntity<List<OrdemServicoResponseDTO>> listarLembretesAtivos() {
+        return ResponseEntity.ok(ordemServicoService.listarLembretesAtivos());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<OrdemServicoResponseDTO> getOrdemServicoById(@PathVariable Long id) {
         OrdemServicoResponseDTO ordem = ordemServicoService.findOrdemServicoById(id);
@@ -99,6 +104,14 @@ public class OrdemServicoController {
     public ResponseEntity<Void> updateOrdemServicoStatus(@PathVariable Long id, @RequestBody StatusUpdateRequest statusUpdateRequest) {
         ordemServicoService.updateOrdemServicoStatus(id, statusUpdateRequest.getStatus());
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/lembrete")
+    public ResponseEntity<OrdemServicoResponseDTO> atualizarLembrete(
+            @PathVariable Long id,
+            @RequestBody OsLembreteRequestDTO request) {
+        OrdemServicoResponseDTO updated = ordemServicoService.atualizarLembrete(id, request);
+        return ResponseEntity.ok(updated);
     }
 
     @GetMapping("/next-number")

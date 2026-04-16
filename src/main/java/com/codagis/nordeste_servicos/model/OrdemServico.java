@@ -3,6 +3,7 @@ package com.codagis.nordeste_servicos.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -86,5 +87,14 @@ public class OrdemServico {
 
     @Enumerated(EnumType.STRING)
     private PrioridadeOS prioridade;
+
+    @Column(name = "lembrete_ativo", nullable = false)
+    private boolean lembreteAtivo = false;
+
+    @Column(name = "lembrete_dias_apos_fechamento")
+    private Integer lembreteDiasAposFechamento;
+
+    @Column(name = "lembrete_data_alvo")
+    private LocalDate lembreteDataAlvo;
 
 }

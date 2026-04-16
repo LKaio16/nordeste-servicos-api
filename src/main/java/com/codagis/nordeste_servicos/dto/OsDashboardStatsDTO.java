@@ -17,6 +17,10 @@ public class OsDashboardStatsDTO {
     private Long osConcluidas;
     private Long totalClientes;
     private Long totalEquipamentos;
+    /** Lembretes ativos com data alvo nos próximos 7 dias (inclui hoje). */
+    private Long lembretesProximos7Dias;
+    /** Lembretes ativos cuja data alvo já passou (antes de hoje). */
+    private Long lembretesAtrasados;
     private List<DashboardTecnicoStatsDTO> osPorTecnico;
     private List<OrdemServicoResponseDTO> ordensRecentes;
 }

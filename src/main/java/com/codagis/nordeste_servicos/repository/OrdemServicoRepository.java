@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,4 +38,25 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Long
             GROUP BY o.tecnicoAtribuido.id
             """)
     List<Object[]> getTecnicoPerformanceCounts(@Param("tecnicoIds") List<Long> tecnicoIds, @Param("concluidaStatus") StatusOS concluidaStatus);
+
+    @Query("""
+            SELECT COUNT(o) FROM OrdemServico o
+            WHERE o.lembreteAtivo = true AND o.lembreteDataAlvo IS NOT NULL
+            AND o.lembreteDataAlvo BETWEEN :inicio AND :fim
+            """)
+    long countLembretesAtivosEntre(@Param("inicio") LocalDate inicio, @Param("fim") LocalDate fim);
+
+    @Query("""
+            SELECT COUNT(o) FROM OrdemServico o
+            WHERE o.lembreteAtivo = true AND o.lembreteDataAlvo IS NOT NULL
+            AND o.lembreteDataAlvo < :hoje
+            """)
+    long countLembretesAtivosAtrasados(@Param("hoje") LocalDate hoje);
+
+    @Query("""
+            SELECT o FROM OrdemServico o
+            WHERE o.lembreteAtivo = true AND o.lembreteDataAlvo IS NOT NULL
+            ORDER BY o.lembreteDataAlvo ASC, o.id ASC
+            """)
+    List<OrdemServico> findAllLembretesAtivosOrderByDataAlvo();
 }

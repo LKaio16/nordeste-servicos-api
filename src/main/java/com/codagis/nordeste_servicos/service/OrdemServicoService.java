@@ -28,6 +28,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
@@ -95,6 +96,10 @@ public class OrdemServicoService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
 
+        LocalDate hoje = LocalDate.now();
+        long lembretesProximos7Dias = ordemServicoRepository.countLembretesAtivosEntre(hoje, hoje.plusDays(7));
+        long lembretesAtrasados = ordemServicoRepository.countLembretesAtivosAtrasados(hoje);
+
         return new OsDashboardStatsDTO(
                 totalOs,
                 osEmAndamento,
@@ -103,9 +108,55 @@ public class OrdemServicoService {
                 osConcluidas,
                 totalClientes,
                 totalEquipamentos,
+                lembretesProximos7Dias,
+                lembretesAtrasados,
                 osPorTecnico,
                 ordensRecentes
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrdemServicoResponseDTO> listarLembretesAtivos() {
+        return ordemServicoRepository.findAllLembretesAtivosOrderByDataAlvo().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public OrdemServicoResponseDTO atualizarLembrete(Long id, OsLembreteRequestDTO request) {
+        if (request == null) {
+            throw new BusinessException("Dados do lembrete inválidos.");
+        }
+        OrdemServico os = ordemServicoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Ordem de Serviço não encontrada com ID: " + id));
+
+        if (!isStatusFechada(os.getStatus())) {
+            throw new BusinessException("Lembretes só podem ser definidos em OS concluída ou encerrada.");
+        }
+        if (os.getDataFechamento() == null) {
+            throw new BusinessException("Esta OS não possui data de fechamento; não é possível calcular o lembrete.");
+        }
+
+        if (!request.isAtivo()) {
+            os.setLembreteAtivo(false);
+            os.setLembreteDiasAposFechamento(null);
+            os.setLembreteDataAlvo(null);
+        } else {
+            Integer dias = request.getDiasAposFechamento();
+            if (dias == null || dias < 1 || dias > 365) {
+                throw new BusinessException("Informe entre 1 e 365 dias após o fechamento.");
+            }
+            LocalDate base = os.getDataFechamento().toLocalDate();
+            os.setLembreteAtivo(true);
+            os.setLembreteDiasAposFechamento(dias);
+            os.setLembreteDataAlvo(base.plusDays(dias));
+        }
+
+        return convertToDTO(ordemServicoRepository.save(os));
+    }
+
+    private static boolean isStatusFechada(StatusOS status) {
+        return status == StatusOS.CONCLUIDA || status == StatusOS.ENCERRADA;
     }
 
     @Transactional(readOnly = true)
@@ -230,6 +281,9 @@ public class OrdemServicoService {
                 existingOrdemServico.setDataFechamento(LocalDateTime.now());
             } else if (!isFinalStatus) {
                 existingOrdemServico.setDataFechamento(null);
+                existingOrdemServico.setLembreteAtivo(false);
+                existingOrdemServico.setLembreteDiasAposFechamento(null);
+                existingOrdemServico.setLembreteDataAlvo(null);
             }
         }
 
@@ -260,8 +314,10 @@ public class OrdemServicoService {
 
         ordemServico.setStatus(novoStatus);
 
-        if (novoStatus == StatusOS.CONCLUIDA) {
-            ordemServico.setDataFechamento(LocalDateTime.now());
+        if (novoStatus == StatusOS.CONCLUIDA || novoStatus == StatusOS.ENCERRADA) {
+            if (ordemServico.getDataFechamento() == null) {
+                ordemServico.setDataFechamento(LocalDateTime.now());
+            }
         }
 
         ordemServicoRepository.save(ordemServico);
@@ -290,6 +346,9 @@ public class OrdemServicoService {
         dto.setDataFechamento(ordemServico.getDataFechamento());
         dto.setDataHoraEmissao(ordemServico.getDataHoraEmissao());
         dto.setPrioridade(ordemServico.getPrioridade());
+        dto.setLembreteAtivo(ordemServico.isLembreteAtivo());
+        dto.setLembreteDiasAposFechamento(ordemServico.getLembreteDiasAposFechamento());
+        dto.setLembreteDataAlvo(ordemServico.getLembreteDataAlvo());
 
         // Mapeamento do Cliente (já estava correto)
         if (ordemServico.getCliente() != null) {
