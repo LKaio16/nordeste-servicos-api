@@ -2,6 +2,8 @@ package com.codagis.nordeste_servicos.controller;
 
 import com.codagis.nordeste_servicos.dto.OrcamentoRequestDTO;
 import com.codagis.nordeste_servicos.dto.OrcamentoResponseDTO;
+import com.codagis.nordeste_servicos.dto.OrcamentoDashboardStatsDTO;
+import com.codagis.nordeste_servicos.dto.OrcamentoPageResponseDTO;
 import com.codagis.nordeste_servicos.model.StatusOrcamento;
 import com.codagis.nordeste_servicos.service.OrcamentoService;
 import com.codagis.nordeste_servicos.service.PdfGenerationService;
@@ -37,6 +39,24 @@ public class OrcamentoController {
             @RequestParam(required = false) String searchTerm) {
         List<OrcamentoResponseDTO> orçamentos = orçamentoService.findAllOrcamentos(clienteId, status, ordemServicoOrigemId, searchTerm);
         return ResponseEntity.ok(orçamentos);
+    }
+
+    @GetMapping("/paged")
+    public ResponseEntity<OrcamentoPageResponseDTO> getOrcamentosPage(
+            @RequestParam(required = false) Long clienteId,
+            @RequestParam(required = false) StatusOrcamento status,
+            @RequestParam(required = false) Long ordemServicoOrigemId,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        OrcamentoPageResponseDTO response = orcamentoService.findOrcamentosPage(clienteId, status, ordemServicoOrigemId, searchTerm, page, size);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/dashboard/stats")
+    public ResponseEntity<OrcamentoDashboardStatsDTO> getDashboardStats() {
+        OrcamentoDashboardStatsDTO stats = orcamentoService.getDashboardStats();
+        return ResponseEntity.ok(stats);
     }
 
     @GetMapping("/{id}")

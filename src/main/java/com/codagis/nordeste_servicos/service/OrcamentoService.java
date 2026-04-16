@@ -2,6 +2,9 @@ package com.codagis.nordeste_servicos.service;
 
 import com.codagis.nordeste_servicos.dto.OrcamentoRequestDTO;
 import com.codagis.nordeste_servicos.dto.OrcamentoResponseDTO;
+import com.codagis.nordeste_servicos.dto.OrcamentoDashboardStatsDTO;
+import com.codagis.nordeste_servicos.dto.OrcamentoListItemDTO;
+import com.codagis.nordeste_servicos.dto.OrcamentoPageResponseDTO;
 import com.codagis.nordeste_servicos.exception.ResourceNotFoundException;
 import com.codagis.nordeste_servicos.model.*;
 import com.codagis.nordeste_servicos.repository.ClienteRepository;
@@ -40,6 +43,23 @@ public class OrcamentoService {
         return orçamentos.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public OrcamentoPageResponseDTO findOrcamentosPage(Long clienteId, StatusOrcamento status, Long ordemServicoOrigemId, String searchTerm, int page, int size) {
+        List<OrcamentoListItemDTO> content = orcamentoRepository.findListItemsByFilters(clienteId, status, ordemServicoOrigemId, searchTerm, page, size);
+        long totalElements = orcamentoRepository.countByFilters(clienteId, status, ordemServicoOrigemId, searchTerm);
+        int totalPages = size > 0 ? (int) Math.ceil((double) totalElements / size) : 0;
+        boolean hasNext = (page + 1) < totalPages;
+        return new OrcamentoPageResponseDTO(content, page, size, totalElements, totalPages, hasNext);
+    }
+
+    @Transactional(readOnly = true)
+    public OrcamentoDashboardStatsDTO getDashboardStats() {
+        long totalOrcamentos = orcamentoRepository.count();
+        long orcamentosAprovados = orcamentoRepository.countByStatus(StatusOrcamento.APROVADO);
+        long orcamentosRejeitados = orcamentoRepository.countByStatus(StatusOrcamento.REJEITADO);
+        return new OrcamentoDashboardStatsDTO(totalOrcamentos, orcamentosAprovados, orcamentosRejeitados);
     }
 
     /**

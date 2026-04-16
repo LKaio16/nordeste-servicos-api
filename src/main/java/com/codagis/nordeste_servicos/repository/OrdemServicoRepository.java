@@ -27,4 +27,14 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Long
     long count();
     long countByStatus(StatusOS status);
     List<OrdemServico> findTop5ByOrderByDataAberturaDesc();
+
+    @Query("""
+            SELECT o.tecnicoAtribuido.id,
+                   COUNT(o),
+                   SUM(CASE WHEN o.status = :concluidaStatus THEN 1 ELSE 0 END)
+            FROM OrdemServico o
+            WHERE o.tecnicoAtribuido.id IN :tecnicoIds
+            GROUP BY o.tecnicoAtribuido.id
+            """)
+    List<Object[]> getTecnicoPerformanceCounts(@Param("tecnicoIds") List<Long> tecnicoIds, @Param("concluidaStatus") StatusOS concluidaStatus);
 }

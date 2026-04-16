@@ -20,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -170,15 +172,29 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public List<DesempenhoTecnicoDTO> getDesempenhoTecnicos() {
         List<Usuario> tecnicos = usuarioRepository.findByPerfil(PerfilUsuario.TECNICO);
+        if (tecnicos.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> tecnicoIds = tecnicos.stream().map(Usuario::getId).collect(Collectors.toList());
+        List<Object[]> rows = ordemServicoRepository.getTecnicoPerformanceCounts(tecnicoIds, StatusOS.CONCLUIDA);
+        Map<Long, int[]> metricsByTecnico = new HashMap<>();
+        for (Object[] row : rows) {
+            Long tecnicoId = (Long) row[0];
+            int total = row[1] != null ? ((Long) row[1]).intValue() : 0;
+            int concluidas = row[2] != null ? ((Long) row[2]).intValue() : 0;
+            metricsByTecnico.put(tecnicoId, new int[]{total, concluidas});
+        }
 
         return tecnicos.stream()
-                .map(this::convertToDesempenhoDTO)
+                .map(tecnico -> convertToDesempenhoDTO(tecnico, metricsByTecnico))
                 .collect(Collectors.toList());
     }
 
-    private DesempenhoTecnicoDTO convertToDesempenhoDTO(Usuario tecnico) {
-        int totalOS = ordemServicoRepository.countByTecnicoAtribuidoId(tecnico.getId());
-        int osConcluidas = ordemServicoRepository.countByTecnicoAtribuidoIdAndStatus(tecnico.getId(), StatusOS.CONCLUIDA);
+    private DesempenhoTecnicoDTO convertToDesempenhoDTO(Usuario tecnico, Map<Long, int[]> metricsByTecnico) {
+        int[] metrics = metricsByTecnico.getOrDefault(tecnico.getId(), new int[]{0, 0});
+        int totalOS = metrics[0];
+        int osConcluidas = metrics[1];
         double desempenho = (totalOS > 0) ? ((double) osConcluidas / totalOS) : 0.0;
 
         return new DesempenhoTecnicoDTO(
