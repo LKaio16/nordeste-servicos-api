@@ -2,6 +2,7 @@ package com.codagis.nordeste_servicos.controller;
 
 import com.codagis.nordeste_servicos.dto.NotaFiscalRequestDTO;
 import com.codagis.nordeste_servicos.dto.NotaFiscalResponseDTO;
+import com.codagis.nordeste_servicos.dto.NotaFiscalPageResponseDTO;
 import com.codagis.nordeste_servicos.service.NotaFiscalService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,17 @@ public class NotaFiscalController {
             @RequestParam(required = false) Long clienteId,
             @RequestParam(required = false) String tipo) {
         return ResponseEntity.ok(notaFiscalService.findAll(fornecedorId, clienteId, tipo));
+    }
+
+    @GetMapping("/paged")
+    public ResponseEntity<NotaFiscalPageResponseDTO> getPage(
+            @RequestParam(required = false) Long fornecedorId,
+            @RequestParam(required = false) Long clienteId,
+            @RequestParam(required = false) String tipo,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok(notaFiscalService.findPage(fornecedorId, clienteId, tipo, searchTerm, page, size));
     }
 
     @GetMapping("/{id}")

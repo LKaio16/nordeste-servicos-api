@@ -2,6 +2,8 @@ package com.codagis.nordeste_servicos.service;
 
 import com.codagis.nordeste_servicos.dto.ContaRequestDTO;
 import com.codagis.nordeste_servicos.dto.ContaResponseDTO;
+import com.codagis.nordeste_servicos.dto.ContaListItemDTO;
+import com.codagis.nordeste_servicos.dto.ContaPageResponseDTO;
 import com.codagis.nordeste_servicos.exception.ResourceNotFoundException;
 import com.codagis.nordeste_servicos.model.*;
 import com.codagis.nordeste_servicos.repository.ClienteRepository;
@@ -62,6 +64,29 @@ public class ContaService {
             list = contaRepository.findAll();
         }
         return list.stream().map(this::toResponse).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public ContaPageResponseDTO findPage(Long clienteId, Long fornecedorId, String tipo, String status, int page, int size) {
+        TipoConta tipoConta = null;
+        if (tipo != null && !tipo.isBlank()) {
+            try {
+                tipoConta = TipoConta.valueOf(tipo);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        StatusConta statusConta = null;
+        if (status != null && !status.isBlank()) {
+            try {
+                statusConta = StatusConta.valueOf(status);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        List<ContaListItemDTO> content = contaRepository.findListItemsByFilters(clienteId, fornecedorId, tipoConta, statusConta, page, size);
+        long totalElements = contaRepository.countByFilters(clienteId, fornecedorId, tipoConta, statusConta);
+        int totalPages = size > 0 ? (int) Math.ceil((double) totalElements / size) : 0;
+        boolean hasNext = (page + 1) < totalPages;
+        return new ContaPageResponseDTO(content, page, size, totalElements, totalPages, hasNext);
     }
 
     @Transactional(readOnly = true)

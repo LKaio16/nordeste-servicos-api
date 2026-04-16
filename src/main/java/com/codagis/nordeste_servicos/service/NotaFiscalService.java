@@ -2,6 +2,8 @@ package com.codagis.nordeste_servicos.service;
 
 import com.codagis.nordeste_servicos.dto.NotaFiscalRequestDTO;
 import com.codagis.nordeste_servicos.dto.NotaFiscalResponseDTO;
+import com.codagis.nordeste_servicos.dto.NotaFiscalListItemDTO;
+import com.codagis.nordeste_servicos.dto.NotaFiscalPageResponseDTO;
 import com.codagis.nordeste_servicos.exception.BusinessException;
 import com.codagis.nordeste_servicos.exception.ResourceNotFoundException;
 import com.codagis.nordeste_servicos.model.*;
@@ -42,6 +44,22 @@ public class NotaFiscalService {
             list = notaFiscalRepository.findAll();
         }
         return list.stream().map(this::toResponse).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public NotaFiscalPageResponseDTO findPage(Long fornecedorId, Long clienteId, String tipo, String searchTerm, int page, int size) {
+        TipoNotaFiscal tipoNotaFiscal = null;
+        if (tipo != null && !tipo.isBlank()) {
+            try {
+                tipoNotaFiscal = TipoNotaFiscal.valueOf(tipo);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        List<NotaFiscalListItemDTO> content = notaFiscalRepository.findListItemsByFilters(fornecedorId, clienteId, tipoNotaFiscal, searchTerm, page, size);
+        long totalElements = notaFiscalRepository.countByFilters(fornecedorId, clienteId, tipoNotaFiscal, searchTerm);
+        int totalPages = size > 0 ? (int) Math.ceil((double) totalElements / size) : 0;
+        boolean hasNext = (page + 1) < totalPages;
+        return new NotaFiscalPageResponseDTO(content, page, size, totalElements, totalPages, hasNext);
     }
 
     @Transactional(readOnly = true)

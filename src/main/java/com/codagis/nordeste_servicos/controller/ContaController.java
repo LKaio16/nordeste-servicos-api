@@ -2,6 +2,7 @@ package com.codagis.nordeste_servicos.controller;
 
 import com.codagis.nordeste_servicos.dto.ContaRequestDTO;
 import com.codagis.nordeste_servicos.dto.ContaResponseDTO;
+import com.codagis.nordeste_servicos.dto.ContaPageResponseDTO;
 import com.codagis.nordeste_servicos.service.ContaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,17 @@ public class ContaController {
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) String status) {
         return ResponseEntity.ok(contaService.findAll(clienteId, fornecedorId, tipo, status));
+    }
+
+    @GetMapping("/paged")
+    public ResponseEntity<ContaPageResponseDTO> getPage(
+            @RequestParam(required = false) Long clienteId,
+            @RequestParam(required = false) Long fornecedorId,
+            @RequestParam(required = false) String tipo,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok(contaService.findPage(clienteId, fornecedorId, tipo, status, page, size));
     }
 
     @GetMapping("/{id}")

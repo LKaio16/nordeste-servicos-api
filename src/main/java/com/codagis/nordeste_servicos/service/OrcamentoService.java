@@ -66,12 +66,9 @@ public class OrcamentoService {
      * MÉTODO MODIFICADO
      * Agora, ele recalcula o valor total ANTES de retornar os dados.
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public OrcamentoResponseDTO findOrcamentoById(Long id) {
-        // 1. Recalcula e salva o valor total no banco de dados.
-        recalcularEAtualizarValorTotal(id);
-
-        // 2. Busca o orçamento (agora com o valor atualizado) para retornar.
+        // Busca somente leitura para evitar write/flush desnecessário em cada carregamento da tela.
         Orcamento orçamento = orcamentoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Orçamento não encontrado com ID: " + id));
 

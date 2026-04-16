@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface ContaRepository extends JpaRepository<Conta, Long> {
+public interface ContaRepository extends JpaRepository<Conta, Long>, ContaRepositoryCustom {
 
     List<Conta> findByTipo(TipoConta tipo);
 

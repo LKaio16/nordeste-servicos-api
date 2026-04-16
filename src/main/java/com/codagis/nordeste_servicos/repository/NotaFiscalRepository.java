@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface NotaFiscalRepository extends JpaRepository<NotaFiscal, Long> {
+public interface NotaFiscalRepository extends JpaRepository<NotaFiscal, Long>, NotaFiscalRepositoryCustom {
 
     Optional<NotaFiscal> findByNumeroNota(String numeroNota);
 
