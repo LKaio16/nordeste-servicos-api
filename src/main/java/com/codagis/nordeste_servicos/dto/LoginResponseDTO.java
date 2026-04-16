@@ -14,7 +14,8 @@ public class LoginResponseDTO {
     private String cracha;
     private String email;
     private PerfilUsuario perfil;
-    private String token;
+    private String accessToken;
+    private String refreshToken;
     private String fotoPerfil;
     private String fotoUrl;
 }

@@ -170,6 +170,11 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<Usuario> findByIdEntity(Long id) {
+        return usuarioRepository.findById(id);
+    }
+
+    @Transactional(readOnly = true)
     public List<DesempenhoTecnicoDTO> getDesempenhoTecnicos() {
         List<Usuario> tecnicos = usuarioRepository.findByPerfil(PerfilUsuario.TECNICO);
         if (tecnicos.isEmpty()) {
