@@ -31,14 +31,13 @@ public class RegistroTempo {
 
     @ManyToOne
     @JoinColumn(name = "tecnico_id", nullable = false)
-    private Usuario tecnico; // O técnico que registrou o tempo
+    private Usuario tecnico;
 
     @Column(nullable = false)
     private LocalDateTime horaInicio;
 
-    private LocalDateTime horaTermino; // Pode ser null se o timer estiver ativo
+    private LocalDateTime horaTermino;
 
-    private Double horasTrabalhadas; // Calculado com base em inicio e termino
+    private Double horasTrabalhadas;
 
-    // O Lombok cuida de Getters e Setters, etc.
 }

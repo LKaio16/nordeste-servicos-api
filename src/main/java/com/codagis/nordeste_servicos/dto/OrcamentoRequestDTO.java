@@ -11,11 +11,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class OrcamentoRequestDTO {
 
-    // Opcional: String numeroOrcamento; // Se permitir definir manualmente (geralmente auto)
     private Long clienteId;
-    private Long ordemServicoOrigemId; // Opcional
+    private Long ordemServicoOrigemId;
     private LocalDate dataValidade;
     private String observacoesCondicoes;
-    private StatusOrcamento status; // Pode ser definido na criação ou atualizado
-    // O valorTotal será calculado no serviço, e os ItemOrcamento gerenciados em endpoints separados
+    private StatusOrcamento status;
+
 }

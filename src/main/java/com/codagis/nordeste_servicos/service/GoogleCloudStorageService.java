@@ -23,10 +23,6 @@ public class GoogleCloudStorageService {
         this.bucketName = bucketName;
     }
 
-    /**
-     * Faz upload de bytes (imagem) para o bucket GCS e retorna a URL pública.
-     * Organiza em pastas por ID da OS: fotos-os/{osId}/arquivo.jpg
-     */
     public String uploadImage(Long ordemServicoId, byte[] imageBytes, String contentType, String originalFilename) {
         String extension = "jpg";
         if (originalFilename != null && originalFilename.contains(".")) {
@@ -47,10 +43,6 @@ public class GoogleCloudStorageService {
         return "https://storage.googleapis.com/" + bucketName + "/" + objectName;
     }
 
-    /**
-     * Faz upload da foto de perfil do usuário para o bucket GCS.
-     * Organiza em pastas: fotos-usuarios/{usuarioId}/avatar.ext
-     */
     public String uploadImageForUsuario(Long usuarioId, byte[] imageBytes, String contentType, String originalFilename) {
         String extension = "jpg";
         if (originalFilename != null && originalFilename.contains(".")) {
@@ -71,10 +63,6 @@ public class GoogleCloudStorageService {
         return "https://storage.googleapis.com/" + bucketName + "/" + objectName;
     }
 
-    /**
-     * Remove a imagem do GCS a partir da URL pública.
-     * URL esperada: https://storage.googleapis.com/[bucket]/[object-path]
-     */
     public void deleteImage(String fotoUrl) {
         if (fotoUrl == null || !fotoUrl.startsWith("https://storage.googleapis.com/")) {
             return;

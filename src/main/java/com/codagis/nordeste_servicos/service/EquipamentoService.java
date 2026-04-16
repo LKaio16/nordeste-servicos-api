@@ -23,7 +23,7 @@ public class EquipamentoService {
     private EquipamentoRepository equipamentoRepository;
 
     @Autowired
-    private ClienteRepository clienteRepository; // Precisamos do repositório de Cliente
+    private ClienteRepository clienteRepository;
 
     public List<EquipamentoResponseDTO> findAllEquipamentos(Long clienteId, String searchTerm) {
         List<Equipamento> equipamentos = equipamentoRepository.findAllWithFilters(clienteId, searchTerm);
@@ -32,7 +32,6 @@ public class EquipamentoService {
                            .collect(Collectors.toList());
     }
 
-    // Método para listar equipamentos de um cliente específico
     public List<EquipamentoResponseDTO> findEquipamentosByClienteId(Long clienteId) {
          if (!clienteRepository.existsById(clienteId)) {
              throw new ResourceNotFoundException("Cliente não encontrado com ID: " + clienteId);
@@ -43,7 +42,6 @@ public class EquipamentoService {
                            .collect(Collectors.toList());
     }
 
-
     public EquipamentoResponseDTO findEquipamentoById(Long id) {
         Equipamento equipamento = equipamentoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipamento não encontrado com ID: " + id));
@@ -51,12 +49,12 @@ public class EquipamentoService {
     }
 
     public EquipamentoResponseDTO createEquipamento(EquipamentoRequestDTO equipamentoRequestDTO) {
-        // Verifica se o cliente associado existe
+
         Cliente cliente = clienteRepository.findById(equipamentoRequestDTO.getClienteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + equipamentoRequestDTO.getClienteId()));
 
         Equipamento equipamento = convertToEntity(equipamentoRequestDTO);
-        equipamento.setCliente(cliente); // Associa o cliente encontrado
+        equipamento.setCliente(cliente);
 
         Equipamento savedEquipamento = equipamentoRepository.save(equipamento);
         return convertToDTO(savedEquipamento);
@@ -66,16 +64,14 @@ public class EquipamentoService {
         Equipamento existingEquipamento = equipamentoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Equipamento não encontrado com ID: " + id));
 
-        // Verifica se o novo cliente associado (se mudou) existe
          Cliente cliente = clienteRepository.findById(equipamentoRequestDTO.getClienteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado com ID: " + equipamentoRequestDTO.getClienteId()));
-
 
         existingEquipamento.setTipo(equipamentoRequestDTO.getTipo());
         existingEquipamento.setMarcaModelo(equipamentoRequestDTO.getMarcaModelo());
         existingEquipamento.setNumeroSerieChassi(equipamentoRequestDTO.getNumeroSerieChassi());
         existingEquipamento.setHorimetro(equipamentoRequestDTO.getHorimetro());
-        existingEquipamento.setCliente(cliente); // Atualiza o cliente associado
+        existingEquipamento.setCliente(cliente);
 
         Equipamento updatedEquipamento = equipamentoRepository.save(existingEquipamento);
         return convertToDTO(updatedEquipamento);
@@ -94,7 +90,6 @@ public class EquipamentoService {
         }
     }
 
-    // Método utilitário para converter Entidade para DTO
     private EquipamentoResponseDTO convertToDTO(Equipamento equipamento) {
         EquipamentoResponseDTO dto = new EquipamentoResponseDTO();
         dto.setId(equipamento.getId());
@@ -102,18 +97,17 @@ public class EquipamentoService {
         dto.setMarcaModelo(equipamento.getMarcaModelo());
         dto.setNumeroSerieChassi(equipamento.getNumeroSerieChassi());
         dto.setHorimetro(equipamento.getHorimetro());
-        dto.setClienteId(equipamento.getCliente().getId()); // Inclui o ID do cliente
+        dto.setClienteId(equipamento.getCliente().getId());
         return dto;
     }
 
-    // Método utilitário para converter DTO para Entidade
     private Equipamento convertToEntity(EquipamentoRequestDTO equipamentoRequestDTO) {
         Equipamento equipamento = new Equipamento();
         equipamento.setTipo(equipamentoRequestDTO.getTipo());
         equipamento.setMarcaModelo(equipamentoRequestDTO.getMarcaModelo());
         equipamento.setNumeroSerieChassi(equipamentoRequestDTO.getNumeroSerieChassi());
         equipamento.setHorimetro(equipamentoRequestDTO.getHorimetro());
-        // O Cliente em si é definido no serviço após buscar pelo ID
+
         return equipamento;
     }
 }

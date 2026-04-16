@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface EquipamentoRepository extends JpaRepository<Equipamento, Long>, JpaSpecificationExecutor<Equipamento> {
-    // Método para encontrar equipamentos por cliente
+
     List<Equipamento> findByClienteId(Long clienteId);
 
     default List<Equipamento> findAllWithFilters(Long clienteId, String searchTerm) {

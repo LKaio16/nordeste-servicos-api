@@ -4,5 +4,5 @@ public enum PrioridadeOS {
     BAIXA,
     MEDIA,
     ALTA,
-    URGENTE // Exemplo de níveis de prioridade
+    URGENTE
 }

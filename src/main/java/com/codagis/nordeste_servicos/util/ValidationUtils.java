@@ -14,7 +14,6 @@ public class ValidationUtils {
         return email.trim().toLowerCase();
     }
 
-    // Validação simples (já existe @Email no DTO, mas isso ajuda em regras de negócio e consistência)
     public static boolean isValidEmail(String email) {
         if (email == null) return false;
         String e = email.trim();
@@ -30,10 +29,9 @@ public class ValidationUtils {
         return false;
     }
 
-    // CPF
     private static boolean isValidCPF(String cpf) {
         if (cpf == null || cpf.length() != 11) return false;
-        if (cpf.chars().distinct().count() == 1) return false; // 00000000000, etc.
+        if (cpf.chars().distinct().count() == 1) return false;
 
         int d1 = calcCPFDigit(cpf, 9);
         int d2 = calcCPFDigit(cpf, 10);
@@ -52,7 +50,6 @@ public class ValidationUtils {
         return (mod == 10) ? 0 : mod;
     }
 
-    // CNPJ
     private static boolean isValidCNPJ(String cnpj) {
         if (cnpj == null || cnpj.length() != 14) return false;
         if (cnpj.chars().distinct().count() == 1) return false;
@@ -76,4 +73,3 @@ public class ValidationUtils {
         return (mod < 2) ? 0 : (11 - mod);
     }
 }
-

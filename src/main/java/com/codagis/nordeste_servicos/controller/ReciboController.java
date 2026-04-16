@@ -37,7 +37,7 @@ public class ReciboController {
 
     @PostMapping
     public ResponseEntity<ReciboResponseDTO> createRecibo(@RequestBody ReciboRequestDTO reciboRequestDTO) {
-        // Validar dados
+
         if (reciboRequestDTO.getValor() == null || reciboRequestDTO.getValor() <= 0) {
             return ResponseEntity.badRequest().build();
         }
@@ -55,7 +55,7 @@ public class ReciboController {
     @PostMapping("/pdf")
     public ResponseEntity<byte[]> generateReciboPdf(@RequestBody ReciboRequestDTO reciboRequestDTO) {
         try {
-            // Validar dados
+
             if (reciboRequestDTO.getValor() == null || reciboRequestDTO.getValor() <= 0) {
                 return ResponseEntity.badRequest().build();
             }
@@ -66,10 +66,8 @@ public class ReciboController {
                 return ResponseEntity.badRequest().build();
             }
 
-            // Gerar o PDF usando o serviço
             byte[] pdfBytes = pdfGenerationService.generateReciboPdf(reciboRequestDTO);
 
-            // Configurar os cabeçalhos da resposta para download de PDF
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("filename", "Recibo_" + System.currentTimeMillis() + ".pdf");
@@ -87,7 +85,7 @@ public class ReciboController {
     public ResponseEntity<byte[]> generateReciboPdfById(@PathVariable Long id) {
         try {
             ReciboResponseDTO recibo = reciboService.findReciboById(id);
-            
+
             ReciboRequestDTO reciboRequestDTO = new ReciboRequestDTO();
             reciboRequestDTO.setValor(recibo.getValor());
             reciboRequestDTO.setCliente(recibo.getCliente());
@@ -118,4 +116,3 @@ public class ReciboController {
         }
     }
 }
-

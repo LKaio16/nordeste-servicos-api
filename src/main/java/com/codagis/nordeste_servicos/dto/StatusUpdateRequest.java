@@ -6,4 +6,4 @@ import lombok.Data;
 @Data
 public class StatusUpdateRequest {
     private StatusOS status;
-} 
+}

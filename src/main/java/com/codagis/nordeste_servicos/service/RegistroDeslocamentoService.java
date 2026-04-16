@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.time.LocalDate; // Importar LocalDate
+import java.time.LocalDate;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,9 +46,8 @@ public class RegistroDeslocamentoService {
         OrdemServico ordemServico = ordemServicoRepository.findById(registroDeslocamentoRequestDTO.getOrdemServicoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Ordem de Serviço não encontrada com ID: " + registroDeslocamentoRequestDTO.getOrdemServicoId()));
 
-        Usuario tecnico = usuarioRepository.findById(registroDeslocamentoRequestDTO.getTecnicoId()) // CORRIGIDO AQUI
+        Usuario tecnico = usuarioRepository.findById(registroDeslocamentoRequestDTO.getTecnicoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Técnico não encontrado com ID: " + registroDeslocamentoRequestDTO.getTecnicoId()));
-        // TODO: Validar se o usuário é um TÉCNICO
 
         RegistroDeslocamento novoRegistro = convertToEntity(registroDeslocamentoRequestDTO);
         novoRegistro.setOrdemServico(ordemServico);
@@ -66,9 +65,8 @@ public class RegistroDeslocamentoService {
         OrdemServico ordemServico = ordemServicoRepository.findById(registroDeslocamentoRequestDTO.getOrdemServicoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Ordem de Serviço não encontrada com ID: " + registroDeslocamentoRequestDTO.getOrdemServicoId()));
 
-        Usuario tecnico = usuarioRepository.findById(registroDeslocamentoRequestDTO.getTecnicoId()) // CORRIGIDO AQUI
+        Usuario tecnico = usuarioRepository.findById(registroDeslocamentoRequestDTO.getTecnicoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Técnico não encontrado com ID: " + registroDeslocamentoRequestDTO.getTecnicoId()));
-        // TODO: Validar se o usuário é um TÉCNICO
 
         existingRegistro.setOrdemServico(ordemServico);
         existingRegistro.setTecnico(tecnico);
@@ -89,7 +87,7 @@ public class RegistroDeslocamentoService {
             return null;
         }
         if (kmFinal < kmInicial) {
-            // TODO: Lançar BusinessException se KM Final for menor que Inicial
+
             return 0.0;
         }
         return kmFinal - kmInicial;

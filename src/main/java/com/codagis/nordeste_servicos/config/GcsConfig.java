@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 @Configuration
-@Profile("!test")  // compat: mantém fora do profile test
+@Profile("!test")
 @ConditionalOnProperty(name = "gcloud.enabled", havingValue = "true", matchIfMissing = true)
 public class GcsConfig {
 
@@ -59,7 +59,7 @@ public class GcsConfig {
                         "GCLOUD_CREDENTIALS_B64 deve ser o JSON da conta de serviço em Base64. Erro: " + e.getMessage(), e);
             }
         } else {
-            // Usa JSON inline só se parecer um JSON válido (evita parse de caminho ou valor inválido)
+
             String json = (credentialsJson != null && !credentialsJson.isBlank()) ? credentialsJson.trim() : null;
             if (json != null && json.startsWith("{")) {
                 try {
@@ -84,7 +84,7 @@ public class GcsConfig {
     }
 
     private static GoogleCredentials credentialsFromServiceAccountJson(String json) throws IOException {
-        // Em variável de ambiente, \n na chave privada pode vir como literal backslash-n; normaliza para newline
+
         String normalized = json.replace("\\n", "\n");
         return GoogleCredentials.fromStream(
                 new ByteArrayInputStream(normalized.getBytes(StandardCharsets.UTF_8)));

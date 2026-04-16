@@ -6,9 +6,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-/**
- * Nota fiscal de entrada ou saída - apenas campos livres, sem vínculo com itens/estoque.
- */
 @Entity
 @Table(name = "nota_fiscal",
        indexes = {

@@ -11,6 +11,5 @@ public class TipoServicoResponseDTO {
 
     private Long id;
     private String descricao;
-    // Opcional: Incluir precoPadrao se adicionado na entidade
-    // private Double precoPadrao;
+
 }

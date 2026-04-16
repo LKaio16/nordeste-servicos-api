@@ -13,5 +13,5 @@ public class EquipamentoRequestDTO {
     private String marcaModelo;
     private String numeroSerieChassi;
     private Double horimetro;
-    private Long clienteId; // Para associar ao Cliente
+    private Long clienteId;
 }

@@ -10,6 +10,5 @@ import lombok.NoArgsConstructor;
 public class TipoServicoRequestDTO {
 
     private String descricao;
-    // Opcional: Incluir precoPadrao se adicionado na entidade
-    // private Double precoPadrao;
+
 }

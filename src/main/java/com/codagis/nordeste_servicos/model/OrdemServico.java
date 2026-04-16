@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List; // Para coleções de entidades relacionadas
+import java.util.List;
 
 @Entity
 @Table(name = "ordem_servico", indexes = {
@@ -36,40 +36,39 @@ public class OrdemServico {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String numeroOS; // Número automático da OS
+    private String numeroOS;
 
-    @Enumerated(EnumType.STRING) // Armazena o enum como String
-    private StatusOS status; // Enum para representar os status da OS
+    @Enumerated(EnumType.STRING)
+    private StatusOS status;
 
     private LocalDateTime dataAbertura;
-    private LocalDateTime dataAgendamento; // Opcional
+    private LocalDateTime dataAgendamento;
     @Column(name = "data_fechamento")
-    private LocalDateTime dataFechamento; // Preenchido ao encerrar
+    private LocalDateTime dataFechamento;
     @Column(name = "data_hora_emissao")
-    private LocalDateTime dataHoraEmissao; // Data/Hora de emissão do relatório (pode ser gerado na hora de emitir o PDF)
+    private LocalDateTime dataHoraEmissao;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Cliente
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Equipamento
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "equipamento_id", nullable = false)
     private Equipamento equipamento;
 
-    @ManyToOne(fetch = FetchType.LAZY) // O técnico que está atribuído a esta OS
-    @JoinColumn(name = "tecnico_id") // Pode ser null se a OS ainda não foi atribuída
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tecnico_id")
     private Usuario tecnicoAtribuido;
 
-    @Column(columnDefinition = "TEXT") // Usar TEXT para textos longos
+    @Column(columnDefinition = "TEXT")
     private String problemaRelatado;
 
     @Column(columnDefinition = "TEXT")
-    private String analiseFalha; // Preenchido pelo técnico
+    private String analiseFalha;
 
     @Column(columnDefinition = "TEXT")
-    private String solucaoAplicada; // Preenchido pelo técnico
+    private String solucaoAplicada;
 
-    // Relacionamentos com entidades de detalhes - DESCOMENTADOS E CONFIGURADOS
     @OneToMany(mappedBy = "ordemServico", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<RegistroTempo> registrosTempo;
 
@@ -85,9 +84,7 @@ public class OrdemServico {
     @OneToOne(mappedBy = "ordemServico", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private AssinaturaOS assinatura;
 
-    // Campo Opcional: Prioridade - DESCOMENTADO
     @Enumerated(EnumType.STRING)
     private PrioridadeOS prioridade;
 
-    // O Lombok cuida de Getters e Setters, etc.
 }

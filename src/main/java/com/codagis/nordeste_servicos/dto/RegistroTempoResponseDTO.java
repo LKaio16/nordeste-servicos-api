@@ -13,7 +13,7 @@ public class RegistroTempoResponseDTO {
     private Long id;
     private Long ordemServicoId;
     private Long tecnicoId;
-    private String nomeTecnico; // Opcional
+    private String nomeTecnico;
     private LocalDateTime horaInicio;
     private LocalDateTime horaTermino;
     private Double horasTrabalhadas;

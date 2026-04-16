@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ItemOSUtilizadoRequestDTO {
 
-    private Long ordemServicoId; // Será preenchido pela URL no controller
+    private Long ordemServicoId;
     private Long pecaMaterialId;
-    private Integer quantidadeRequisitada; // Opcional
-    private Integer quantidadeUtilizada; // Obrigatório
-    private Integer quantidadeDevolvida; // Opcional
+    private Integer quantidadeRequisitada;
+    private Integer quantidadeUtilizada;
+    private Integer quantidadeDevolvida;
 }

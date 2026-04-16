@@ -70,4 +70,3 @@ public class ReciboResponseDTO {
         this.numeroRecibo = numeroRecibo;
     }
 }
-

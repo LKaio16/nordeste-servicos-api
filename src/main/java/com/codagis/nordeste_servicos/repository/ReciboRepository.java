@@ -10,4 +10,3 @@ import java.util.List;
 public interface ReciboRepository extends JpaRepository<Recibo, Long> {
     List<Recibo> findAllByOrderByDataCriacaoDesc();
 }
-

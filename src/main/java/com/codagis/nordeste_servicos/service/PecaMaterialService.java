@@ -35,10 +35,6 @@ public class PecaMaterialService {
     }
 
     public PecaMaterialResponseDTO createPecaMaterial(PecaMaterialRequestDTO pecaMaterialRequestDTO) {
-        // Opcional: Verificar se o código já existe antes de salvar para dar um erro mais específico
-        // if (pecaMaterialRepository.findByCodigo(pecaMaterialRequestDTO.getCodigo()).isPresent()) {
-        //     throw new BusinessException("Código da peça/material já existe."); // Precisaria criar BusinessException
-        // }
 
         PecaMaterial pecaMaterial = convertToEntity(pecaMaterialRequestDTO);
         PecaMaterial savedPecaMaterial = pecaMaterialRepository.save(pecaMaterial);
@@ -48,13 +44,6 @@ public class PecaMaterialService {
     public PecaMaterialResponseDTO updatePecaMaterial(Long id, PecaMaterialRequestDTO pecaMaterialRequestDTO) {
         PecaMaterial existingPecaMaterial = pecaMaterialRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Peça/Material não encontrado com ID: " + id));
-
-        // Opcional: Verificar se o novo código já existe em outra peça
-        // Optional<PecaMaterial> pecaComMesmoCodigo = pecaMaterialRepository.findByCodigo(pecaMaterialRequestDTO.getCodigo());
-        // if (pecaComMesmoCodigo.isPresent() && !pecaComMesmoCodigo.get().getId().equals(id)) {
-        //     throw new BusinessException("Código da peça/material já existe em outro item.");
-        // }
-
 
         existingPecaMaterial.setCodigo(pecaMaterialRequestDTO.getCodigo());
         existingPecaMaterial.setDescricao(pecaMaterialRequestDTO.getDescricao());

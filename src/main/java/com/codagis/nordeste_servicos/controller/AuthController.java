@@ -1,10 +1,10 @@
-// src/main/java/com/codagis/nordeste_servicos/controller/AuthController.java
+
 package com.codagis.nordeste_servicos.controller;
 
 import com.codagis.nordeste_servicos.dto.LoginRequestDTO;
 import com.codagis.nordeste_servicos.dto.LoginResponseDTO;
 import com.codagis.nordeste_servicos.model.Usuario;
-import com.codagis.nordeste_servicos.service.UsuarioService; // Alterado
+import com.codagis.nordeste_servicos.service.UsuarioService;
 import com.codagis.nordeste_servicos.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ import java.util.Optional;
 public class AuthController {
 
     @Autowired
-    private UsuarioService usuarioService; // <-- ALTERADO para injetar o serviço
+    private UsuarioService usuarioService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -32,7 +32,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
-        // Agora chamamos o serviço, que é transacional
+
         Optional<Usuario> usuarioOptional = usuarioService.findByEmail(loginRequestDTO.getEmail());
 
         if (usuarioOptional.isPresent()) {

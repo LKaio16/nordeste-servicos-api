@@ -5,8 +5,8 @@ public enum StatusOS {
     ATRIBUIDA,
     EM_ANDAMENTO,
     PENDENTE_PECAS,
-    AGUARDANDO_APROVACAO, // Se houver fluxo de aprovação
+    AGUARDANDO_APROVACAO,
     CONCLUIDA,
-    ENCERRADA, // Finalizada e processada
+    ENCERRADA,
     CANCELADA
 }

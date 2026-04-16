@@ -10,4 +10,4 @@ import lombok.NoArgsConstructor;
 public class OrdemServicoInfoDTO {
     private Long id;
     private String numeroOS;
-} 
+}

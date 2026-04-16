@@ -22,7 +22,7 @@ public class ClienteRequestDTO {
     private String nomeCompleto;
 
     @NotBlank(message = "CPF/CNPJ não pode ser vazio")
-    // Adicionar validação específica para CPF/CNPJ se necessário (ex: @CPF ou @CNPJ)
+
     private String cpfCnpj;
 
     @NotBlank(message = "Email não pode ser vazio")
@@ -32,7 +32,7 @@ public class ClienteRequestDTO {
     @NotBlank(message = "Telefone principal não pode ser vazio")
     private String telefonePrincipal;
 
-    private String telefoneAdicional; // Opcional
+    private String telefoneAdicional;
 
     @NotBlank(message = "CEP não pode ser vazio")
     private String cep;
@@ -43,7 +43,7 @@ public class ClienteRequestDTO {
     @NotBlank(message = "Número não pode ser vazio")
     private String numero;
 
-    private String complemento; // Opcional
+    private String complemento;
 
     @NotBlank(message = "Bairro não pode ser vazio")
     private String bairro;
@@ -55,4 +55,3 @@ public class ClienteRequestDTO {
     @Size(min = 2, max = 2, message = "Estado deve ter 2 caracteres (ex: CE)")
     private String estado;
 }
-

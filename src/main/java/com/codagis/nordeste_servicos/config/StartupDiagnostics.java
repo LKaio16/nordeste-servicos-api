@@ -45,4 +45,3 @@ public class StartupDiagnostics implements ApplicationRunner {
         log.info("Startup: Storage bean count={}", storageBeans);
     }
 }
-

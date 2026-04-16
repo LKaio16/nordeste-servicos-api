@@ -5,9 +5,9 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List; // Para a lista de itens do orçamento
+import java.util.List;
 
-import com.codagis.nordeste_servicos.model.ItemOrcamento; // <-- ADICIONE ESTA LINHA
+import com.codagis.nordeste_servicos.model.ItemOrcamento;
 
 @Entity
 @Table(name = "orcamento", indexes = {
@@ -34,7 +34,7 @@ public class Orcamento {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String numeroOrcamento; // Número automático do orçamento
+    private String numeroOrcamento;
 
     @Column(nullable = false)
     private LocalDate dataCriacao;
@@ -43,28 +43,25 @@ public class Orcamento {
     private LocalDate dataValidade;
 
     @Column(name = "data_hora_emissao")
-    private LocalDateTime dataHoraEmissao; // Data/Hora de emissão do PDF (atualizada toda vez que o PDF é gerado)
+    private LocalDateTime dataHoraEmissao;
 
-    @Enumerated(EnumType.STRING) // Armazena o enum como String
-    private StatusOrcamento status; // Enum para representar os status do orçamento
+    @Enumerated(EnumType.STRING)
+    private StatusOrcamento status;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
-    @OneToOne // Opcional: Se um orçamento foi gerado a partir de uma OS
-    @JoinColumn(name = "ordem_servico_id") // Pode ser null
+    @OneToOne
+    @JoinColumn(name = "ordem_servico_id")
     private OrdemServico ordemServicoOrigem;
 
     @Column(columnDefinition = "TEXT")
-    private String observacoesCondicoes; // Observações e condições do orçamento
+    private String observacoesCondicoes;
 
-    private Double valorTotal; // Calculado com base nos itens do orçamento
+    private Double valorTotal;
 
-    // Relacionamento com os itens do orçamento
     @OneToMany(mappedBy = "orcamento", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemOrcamento> itensOrcamento;
 
-
-    // O Lombok cuida de Getters e Setters, etc.
 }

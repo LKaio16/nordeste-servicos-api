@@ -27,12 +27,12 @@ public class Usuario {
     private String cracha;
 
     @Column(unique = true)
-    private String email; // Usado para login/identificação
+    private String email;
 
     private String senha;
 
-    @Enumerated(EnumType.STRING) // Armazena o enum como String no banco
-    private PerfilUsuario perfil; // Enum para ADMIN, TECNICO
+    @Enumerated(EnumType.STRING)
+    private PerfilUsuario perfil;
 
     @Lob
     @Column(name = "foto_perfil", columnDefinition = "TEXT")

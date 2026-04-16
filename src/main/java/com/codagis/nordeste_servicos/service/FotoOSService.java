@@ -107,7 +107,7 @@ public class FotoOSService {
     }
 
     private FotoOSResponseDTO convertToDTO(FotoOS fotoOS, boolean includeBase64) {
-        // Listagem: não retorna base64 (evita payload gigante). Use GET /fotos/{id} para base64 de legado
+
         String base64 = includeBase64 ? fotoOS.getFotoBase64() : null;
         return new FotoOSResponseDTO(
                 fotoOS.getId(),

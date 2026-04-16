@@ -12,25 +12,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class OrdemServicoRequestDTO {
 
-    // --- CAMPOS AJUSTADOS PARA RECEBER OBJETOS ANINHADOS ---
+    private EntidadeIdDTO cliente;
 
-    // Antes: private Long clienteId;
-    private EntidadeIdDTO cliente; // <<< AJUSTADO
+    private EntidadeIdDTO equipamento;
 
-    // Antes: private Long equipamentoId;
-    private EntidadeIdDTO equipamento; // <<< AJUSTADO
-
-    // O seu campo de técnico já estava como um DTO, o que é ótimo.
-    // Para consistência, você pode usar EntidadeIdDTO aqui também
-    // se o TecnicoDTO só tiver o ID. Se tiver mais campos, mantenha TecnicoDTO.
-    private EntidadeIdDTO tecnicoAtribuido; // <<< AJUSTADO PARA CONSISTÊNCIA
-
+    private EntidadeIdDTO tecnicoAtribuido;
 
     private String problemaRelatado;
-    private LocalDateTime dataAgendamento; // Opcional
+    private LocalDateTime dataAgendamento;
     private PrioridadeOS prioridade;
 
-    // Campos de execução/atualização (Técnico/Admin)
     private StatusOS status;
     private String analiseFalha;
     private String solucaoAplicada;

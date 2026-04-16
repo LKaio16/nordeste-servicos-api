@@ -18,11 +18,7 @@ public class TipoServico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true) // Descrição do serviço deve ser única e obrigatória
+    @Column(nullable = false, unique = true)
     private String descricao;
 
-    // Opcional: Adicionar campo para preço padrão do serviço, se houver
-    // private Double precoPadrao;
-
-    // O Lombok cuida de Getters e Setters, etc.
 }

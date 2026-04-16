@@ -34,21 +34,20 @@ public class RegistroDeslocamento {
 
     @ManyToOne
     @JoinColumn(name = "tecnico_id", nullable = false)
-    private Usuario tecnico; // O técnico que realizou o deslocamento
+    private Usuario tecnico;
 
     @Column(nullable = false)
     private LocalDate data;
 
     @Column(nullable = false)
-    private String placaVeiculo; // Placa do veículo utilizado
+    private String placaVeiculo;
 
-    private Double kmInicial; // Pode ser null se não houver KM
-    private Double kmFinal; // Pode ser null se não houver KM
+    private Double kmInicial;
+    private Double kmFinal;
 
-    private Double totalKm; // Calculado (kmFinal - kmInicial)
+    private Double totalKm;
 
-    private String saidaDe; // Local de saída
-    private String chegadaEm; // Local de chegada
+    private String saidaDe;
+    private String chegadaEm;
 
-    // O Lombok cuida de Getters e Setters, etc.
 }

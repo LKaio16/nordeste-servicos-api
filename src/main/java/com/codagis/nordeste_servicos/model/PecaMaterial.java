@@ -21,15 +21,14 @@ public class PecaMaterial {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false) // Código da peça/material deve ser único e obrigatório
+    @Column(unique = true, nullable = false)
     private String codigo;
 
     @Column(nullable = false)
     private String descricao;
 
-    private Double preco; // Preço unitário da peça/material
+    private Double preco;
 
-    private Integer estoque; // Quantidade em estoque (opcional, pode ser null)
-
+    private Integer estoque;
 
 }

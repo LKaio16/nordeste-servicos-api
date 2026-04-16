@@ -38,4 +38,3 @@ public class ReciboRequestDTO {
         this.referenteA = referenteA;
     }
 }
-

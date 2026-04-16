@@ -25,14 +25,13 @@ public class Equipamento {
     private String tipo;
     private String marcaModelo;
 
-    @Column(unique = true) // Chassi/Número de Série geralmente é único
+    @Column(unique = true)
     private String numeroSerieChassi;
 
-    private Double horimetro; // Pode ser null se não aplicável
+    private Double horimetro;
 
-    @ManyToOne // Muitos Equipamentos para Um Cliente
-    @JoinColumn(name = "cliente_id", nullable = false) // Coluna na tabela Equipamento que referencia Cliente
+    @ManyToOne
+    @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
-    // O Lombok cuida de Getters e Setters, etc.
 }

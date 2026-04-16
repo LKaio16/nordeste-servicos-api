@@ -16,16 +16,14 @@ public class OrcamentoResponseDTO {
     private String numeroOrcamento;
     private LocalDate dataCriacao;
     private LocalDate dataValidade;
-    private LocalDateTime dataHoraEmissao; // Data/Hora de emissão do PDF
+    private LocalDateTime dataHoraEmissao;
     private StatusOrcamento status;
 
     private Long clienteId;
-    private String nomeCliente; // Opcional
-    private Long ordemServicoOrigemId; // ID da OS de origem, se houver
+    private String nomeCliente;
+    private Long ordemServicoOrigemId;
 
     private String observacoesCondicoes;
     private Double valorTotal;
 
-    // Não incluiremos a lista de ItemOrcamento neste DTO principal
-    // Para obter os itens, haverá um endpoint específico (ex: GET /api/orcamentos/{id}/itens)
 }

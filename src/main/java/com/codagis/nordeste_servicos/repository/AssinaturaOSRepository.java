@@ -8,6 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface AssinaturaOSRepository extends JpaRepository<AssinaturaOS, Long> {
-    // Método para encontrar a assinatura associada a uma OS
+
     Optional<AssinaturaOS> findByOrdemServicoId(Long ordemServicoId);
 }

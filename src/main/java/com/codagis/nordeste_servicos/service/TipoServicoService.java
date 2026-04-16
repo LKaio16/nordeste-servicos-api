@@ -34,10 +34,6 @@ public class TipoServicoService {
     }
 
     public TipoServicoResponseDTO createTipoServico(TipoServicoRequestDTO tipoServicoRequestDTO) {
-        // Opcional: Verificar se a descrição já existe
-        // if (tipoServicoRepository.findByDescricao(tipoServicoRequestDTO.getDescricao()).isPresent()) {
-        //     throw new BusinessException("Descrição do tipo de serviço já existe.");
-        // }
 
         TipoServico tipoServico = convertToEntity(tipoServicoRequestDTO);
         TipoServico savedTipoServico = tipoServicoRepository.save(tipoServico);
@@ -48,14 +44,7 @@ public class TipoServicoService {
         TipoServico existingTipoServico = tipoServicoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de Serviço não encontrado com ID: " + id));
 
-        // Opcional: Verificar se a nova descrição já existe em outro tipo
-        // Optional<TipoServico> tipoComMesmaDescricao = tipoServicoRepository.findByDescricao(tipoServicoRequestDTO.getDescricao());
-        // if (tipoComMesmaDescricao.isPresent() && !tipoComMesmaDescricao.get().getId().equals(id)) {
-        //     throw new BusinessException("Descrição do tipo de serviço já existe em outro item.");
-        // }
-
         existingTipoServico.setDescricao(tipoServicoRequestDTO.getDescricao());
-        // Opcional: Atualizar precoPadrao
 
         TipoServico updatedTipoServico = tipoServicoRepository.save(existingTipoServico);
         return convertToDTO(updatedTipoServico);
@@ -63,14 +52,14 @@ public class TipoServicoService {
 
     @Transactional
     public void deleteTipoServico(Long id) {
-        // Busca a entidade primeiro para garantir que ela existe
+
         TipoServico tipoServico = tipoServicoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de Serviço não encontrado com ID: " + id));
         try {
             tipoServicoRepository.delete(tipoServico);
             tipoServicoRepository.flush();
         } catch (DataIntegrityViolationException e) {
-            // Captura a exceção de violação de integridade e lança uma exceção de negócio
+
             throw new BusinessException("Não é possível excluir este Tipo de Serviço, pois ele já está em uso em um Orçamento ou Ordem de Serviço.");
         }
     }
@@ -79,14 +68,14 @@ public class TipoServicoService {
         TipoServicoResponseDTO dto = new TipoServicoResponseDTO();
         dto.setId(tipoServico.getId());
         dto.setDescricao(tipoServico.getDescricao());
-        // Opcional: Incluir precoPadrao
+
         return dto;
     }
 
     private TipoServico convertToEntity(TipoServicoRequestDTO tipoServicoRequestDTO) {
         TipoServico tipoServico = new TipoServico();
         tipoServico.setDescricao(tipoServicoRequestDTO.getDescricao());
-        // Opcional: Incluir precoPadrao
+
         return tipoServico;
     }
 }

@@ -1,6 +1,5 @@
 package com.codagis.nordeste_servicos.controller;
 
-
 import com.codagis.nordeste_servicos.dto.ClienteRequestDTO;
 import com.codagis.nordeste_servicos.dto.ClienteResponseDTO;
 import com.codagis.nordeste_servicos.service.ClienteService;
@@ -43,7 +42,7 @@ public class ClienteController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ClienteResponseDTO> getClienteById(@PathVariable Long id) {
-        ClienteResponseDTO cliente = clienteService.findClienteById(id); // O serviço já lança a exceção 404
+        ClienteResponseDTO cliente = clienteService.findClienteById(id);
         return ResponseEntity.ok(cliente);
     }
 
@@ -55,13 +54,13 @@ public class ClienteController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ClienteResponseDTO> updateCliente(@PathVariable Long id, @RequestBody ClienteRequestDTO clienteRequestDTO) {
-        ClienteResponseDTO updatedCliente = clienteService.updateCliente(id, clienteRequestDTO); // O serviço já trata o 404
+        ClienteResponseDTO updatedCliente = clienteService.updateCliente(id, clienteRequestDTO);
         return ResponseEntity.ok(updatedCliente);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCliente(@PathVariable Long id) {
-        clienteService.deleteCliente(id); // O serviço já trata o 404
+        clienteService.deleteCliente(id);
         return ResponseEntity.noContent().build();
     }
 }

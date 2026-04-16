@@ -7,4 +7,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SenhaUpdateRequestDTO {
     private String novaSenha;
-} 
+}

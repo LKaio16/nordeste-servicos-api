@@ -18,5 +18,5 @@ public class RegistroDeslocamentoRequestDTO {
     private Double kmFinal;
     private String saidaDe;
     private String chegadaEm;
-    // O campo totalKm será calculado no serviço
+
 }

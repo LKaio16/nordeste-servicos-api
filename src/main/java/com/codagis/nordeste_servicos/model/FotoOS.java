@@ -35,9 +35,9 @@ public class FotoOS {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "foto_base64", columnDefinition = "TEXT")
-    private String fotoBase64; // Legado - LAZY: carregado apenas quando getFotoBase64() for chamado
+    private String fotoBase64;
 
-    private String descricao; // Descrição da foto
+    private String descricao;
 
     private String nomeArquivoOriginal;
     private String tipoConteudo;
@@ -47,5 +47,5 @@ public class FotoOS {
     private String caminhoTemporario;
 
     @Column(name = "foto_url")
-    private String fotoUrl; // URL da imagem no Google Cloud Storage
+    private String fotoUrl;
 }

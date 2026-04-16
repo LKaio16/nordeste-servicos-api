@@ -37,7 +37,7 @@ public class FotoOSController {
 
     @DeleteMapping("/{fotoId}")
     public ResponseEntity<Void> deleteFoto(@PathVariable Long osId, @PathVariable Long fotoId) {
-        // A verificação se a foto pertence à OS pode ser feita no serviço, se necessário.
+
         fotoOSService.deleteFoto(fotoId);
         return ResponseEntity.noContent().build();
     }

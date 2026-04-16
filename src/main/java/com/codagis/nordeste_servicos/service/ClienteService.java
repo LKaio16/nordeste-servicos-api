@@ -18,7 +18,6 @@ import com.codagis.nordeste_servicos.util.ExcelHelper;
 import com.codagis.nordeste_servicos.util.ValidationUtils;
 import java.io.ByteArrayInputStream;
 
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +42,7 @@ public class ClienteService {
     public List<ClienteResponseDTO> findAllClientes(String searchTerm, String tipoCliente) {
         List<Cliente> clientes = clienteRepository.findAllWithFilters(searchTerm, tipoCliente);
         return clientes.stream()
-                .map(this::convertToDTO) // Mapeia cada Cliente para ClienteResponseDTO
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
@@ -54,7 +53,7 @@ public class ClienteService {
     }
 
     public ClienteResponseDTO createCliente(ClienteRequestDTO clienteRequestDTO) {
-        // Normalizações
+
         final String cpfCnpj = ValidationUtils.onlyDigits(clienteRequestDTO.getCpfCnpj());
         final String email = ValidationUtils.normalizeEmail(clienteRequestDTO.getEmail());
 
@@ -109,7 +108,6 @@ public class ClienteService {
         clienteRequestDTO.setCpfCnpj(cpfCnpj);
         clienteRequestDTO.setEmail(email);
 
-        // *** CORREÇÃO: Atualiza todos os campos do cliente existente com os dados do DTO ***
         existingCliente.setTipoCliente(clienteRequestDTO.getTipoCliente());
         existingCliente.setNomeCompleto(clienteRequestDTO.getNomeCompleto());
         existingCliente.setCpfCnpj(clienteRequestDTO.getCpfCnpj());
@@ -141,7 +139,6 @@ public class ClienteService {
         }
     }
 
-    // *** CORREÇÃO: Atualiza convertToDTO para incluir todos os campos ***
     private ClienteResponseDTO convertToDTO(Cliente cliente) {
         ClienteResponseDTO dto = new ClienteResponseDTO();
         dto.setId(cliente.getId());
@@ -161,7 +158,6 @@ public class ClienteService {
         return dto;
     }
 
-    // *** CORREÇÃO: Atualiza convertToEntity para incluir todos os campos ***
     private Cliente convertToEntity(ClienteRequestDTO clienteRequestDTO) {
         Cliente cliente = new Cliente();
         cliente.setTipoCliente(clienteRequestDTO.getTipoCliente());
@@ -180,4 +176,3 @@ public class ClienteService {
         return cliente;
     }
 }
-

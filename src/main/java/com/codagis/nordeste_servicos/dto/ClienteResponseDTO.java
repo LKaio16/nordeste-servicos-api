@@ -16,14 +16,13 @@ public class ClienteResponseDTO {
     private String cpfCnpj;
     private String email;
     private String telefonePrincipal;
-    private String telefoneAdicional; // Incluir mesmo se for nulo
+    private String telefoneAdicional;
     private String cep;
     private String rua;
     private String numero;
-    private String complemento; // Incluir mesmo se for nulo
+    private String complemento;
     private String bairro;
     private String cidade;
     private String estado;
 
 }
-

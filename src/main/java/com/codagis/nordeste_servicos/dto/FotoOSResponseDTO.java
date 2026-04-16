@@ -12,12 +12,12 @@ public class FotoOSResponseDTO {
 
     private Long id;
     private Long ordemServicoId;
-    private String fotoBase64; // Retornado apenas para registros antigos (quando fotoUrl é null)
+    private String fotoBase64;
     private String descricao;
     private String nomeArquivoOriginal;
     private String tipoConteudo;
     private Long tamanhoArquivo;
     private LocalDateTime dataUpload;
     private String caminhoTemporario;
-    private String fotoUrl; // URL da imagem no Google Cloud Storage
+    private String fotoUrl;
 }

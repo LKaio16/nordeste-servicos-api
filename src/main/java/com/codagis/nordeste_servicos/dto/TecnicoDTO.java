@@ -1,4 +1,3 @@
-// com/codagis/nordeste_servicos/dto/UsuarioRequestDTO.java
 
 package com.codagis.nordeste_servicos.dto;
 

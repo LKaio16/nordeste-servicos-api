@@ -10,6 +10,4 @@ import java.util.List;
 public interface ItemOSUtilizadoRepository extends JpaRepository<ItemOSUtilizado, Long> {
     List<ItemOSUtilizado> findByOrdemServicoId(Long ordemServicoId);
 
-    // Opcional: Método para encontrar um item específico de uma OS por peça
-    // Optional<ItemOSUtilizado> findByOrdemServicoIdAndPecaMaterialId(Long ordemServicoId, Long pecaMaterialId);
 }

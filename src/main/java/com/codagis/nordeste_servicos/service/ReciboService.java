@@ -55,10 +55,10 @@ public class ReciboService {
     }
 
     private String generateNumeroRecibo() {
-        // Busca o último recibo para pegar o número mais alto
+
         List<Recibo> allRecibos = reciboRepository.findAll();
         long maxNumber = 0;
-        
+
         for (Recibo recibo : allRecibos) {
             if (recibo.getNumeroRecibo() != null && recibo.getNumeroRecibo().startsWith("REC-")) {
                 try {
@@ -68,11 +68,11 @@ public class ReciboService {
                         maxNumber = number;
                     }
                 } catch (NumberFormatException e) {
-                    // Ignora números inválidos
+
                 }
             }
         }
-        
+
         return "REC-" + String.format("%06d", maxNumber + 1);
     }
 
@@ -87,4 +87,3 @@ public class ReciboService {
         return dto;
     }
 }
-

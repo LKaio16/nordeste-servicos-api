@@ -22,19 +22,16 @@ public class OrdemServicoResponseDTO {
     private LocalDateTime dataFechamento;
     private LocalDateTime dataHoraEmissao;
 
-    // --- CAMPO DO CLIENTE AGORA É UM OBJETO ANINHADO ---
     private ClienteResponseDTO cliente;
 
     private EquipamentoResponseDTO equipamento;
 
-    // --- CAMPO DO TÉCNICO ATRIBUÍDO AGORA É UM USUARIORESPONSEDTO ---
     private UsuarioResponseDTO tecnicoAtribuido;
 
     private String problemaRelatado;
     private String analiseFalha;
     private String solucaoAplicada;
 
-    // DTOs aninhados existentes
     private List<RegistroTempoResponseDTO> registrosTempo;
     private List<RegistroDeslocamentoResponseDTO> registrosDeslocamento;
     private List<ItemOSUtilizadoResponseDTO> itensUtilizados;

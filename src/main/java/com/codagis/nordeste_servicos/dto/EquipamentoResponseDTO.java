@@ -14,6 +14,6 @@ public class EquipamentoResponseDTO {
     private String marcaModelo;
     private String numeroSerieChassi;
     private Double horimetro;
-    private Long clienteId; // ID do Cliente associado
-    // Poderíamos adicionar ClienteResponseDTO cliente; aqui se quiséssemos mais detalhes do cliente
+    private Long clienteId;
+
 }

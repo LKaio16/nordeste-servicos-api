@@ -10,4 +10,4 @@ public class HealthController {
     public String home() {
         return "Nordeste Serviços API - Running!";
     }
-} 
+}

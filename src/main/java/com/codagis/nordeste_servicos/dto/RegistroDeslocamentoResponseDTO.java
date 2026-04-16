@@ -13,7 +13,7 @@ public class RegistroDeslocamentoResponseDTO {
     private Long id;
     private Long ordemServicoId;
     private Long tecnicoId;
-    private String nomeTecnico; // Opcional
+    private String nomeTecnico;
     private LocalDate data;
     private String placaVeiculo;
     private Double kmInicial;

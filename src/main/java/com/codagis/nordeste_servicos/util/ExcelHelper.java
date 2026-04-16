@@ -27,13 +27,11 @@ public class ExcelHelper {
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
             Sheet sheet = workbook.createSheet(SHEET);
 
-            // Header Font
             Font headerFont = workbook.createFont();
             headerFont.setBold(true);
             headerFont.setFontHeightInPoints((short) 12);
             headerFont.setColor(IndexedColors.WHITE.getIndex());
 
-            // Header Cell Style
             CellStyle headerCellStyle = workbook.createCellStyle();
             headerCellStyle.setFont(headerFont);
             headerCellStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
@@ -41,19 +39,15 @@ public class ExcelHelper {
             headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
             headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 
-
-            // Header
             Row headerRow = sheet.createRow(0);
             for (int col = 0; col < HEADERS.length; col++) {
                 Cell cell = headerRow.createCell(col);
                 cell.setCellValue(HEADERS[col]);
                 cell.setCellStyle(headerCellStyle);
             }
-            // Set header row height
+
             headerRow.setHeightInPoints((float) 25);
 
-
-            // Data Cell Style
             CellStyle dataCellStyle = workbook.createCellStyle();
             dataCellStyle.setAlignment(HorizontalAlignment.CENTER);
             dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -77,7 +71,6 @@ public class ExcelHelper {
                 }
             }
 
-            // Auto-size columns and add padding
             for (int col = 0; col < HEADERS.length; col++) {
                 sheet.autoSizeColumn(col);
                 sheet.setColumnWidth(col, sheet.getColumnWidth(col) + 1200);
@@ -89,4 +82,4 @@ public class ExcelHelper {
             throw new RuntimeException("fail to import data to Excel file: " + e.getMessage());
         }
     }
-} 
+}

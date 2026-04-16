@@ -12,12 +12,11 @@ public class ItemOSUtilizadoResponseDTO {
     private Long id;
     private Long ordemServicoId;
     private Long pecaMaterialId;
-    private String codigoPecaMaterial; // Opcional: Incluir código para facilitar
-    private String descricaoPecaMaterial; // Opcional: Incluir descrição
-    private Double precoUnitarioPecaMaterial; // Opcional: Incluir preço unitário
+    private String codigoPecaMaterial;
+    private String descricaoPecaMaterial;
+    private Double precoUnitarioPecaMaterial;
     private Integer quantidadeRequisitada;
     private Integer quantidadeUtilizada;
     private Integer quantidadeDevolvida;
-    // Opcional: Calcular Subtotal (quantidadeUtilizada * precoUnitario) no serviço e adicionar aqui
-    // private Double subtotal;
+
 }

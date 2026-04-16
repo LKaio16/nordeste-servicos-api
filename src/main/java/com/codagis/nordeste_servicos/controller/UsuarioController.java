@@ -57,7 +57,7 @@ public class UsuarioController {
 
     @PatchMapping("/{id}/senha")
     public ResponseEntity<Void> updatePassword(@PathVariable Long id, @RequestBody SenhaUpdateRequestDTO request) {
-        // TODO: Adicionar validação de segurança para garantir que apenas um ADMIN pode fazer isso.
+
         usuarioService.updatePassword(id, request.getNovaSenha());
         return ResponseEntity.ok().build();
     }

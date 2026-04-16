@@ -35,7 +35,7 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long>, JpaSpec
                 TipoCliente tipoCliente = TipoCliente.valueOf(tipoClienteStr.toUpperCase());
                 spec = spec.and((root, query, cb) -> cb.equal(root.get("tipoCliente"), tipoCliente));
             } catch (IllegalArgumentException e) {
-                // Tipo de cliente inválido, pode logar um aviso se quiser
+
             }
         }
 

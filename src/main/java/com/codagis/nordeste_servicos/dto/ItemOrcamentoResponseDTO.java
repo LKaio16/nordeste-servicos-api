@@ -12,10 +12,10 @@ public class ItemOrcamentoResponseDTO {
     private Long id;
     private Long orcamentoId;
     private Long pecaMaterialId;
-    private String codigoPecaMaterial; // Opcional
-    private String descricaoPecaMaterial; // Opcional
+    private String codigoPecaMaterial;
+    private String descricaoPecaMaterial;
     private Long tipoServicoId;
-    private String descricaoTipoServico; // Opcional
+    private String descricaoTipoServico;
     private String descricao;
     private Double quantidade;
     private Double valorUnitario;

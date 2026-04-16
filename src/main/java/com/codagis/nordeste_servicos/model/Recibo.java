@@ -37,6 +37,5 @@ public class Recibo {
     private LocalDateTime dataCriacao;
 
     @Column(nullable = false)
-    private String numeroRecibo; // Número único do recibo
+    private String numeroRecibo;
 }
-

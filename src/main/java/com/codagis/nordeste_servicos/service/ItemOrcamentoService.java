@@ -144,39 +144,32 @@ public class ItemOrcamentoService {
     }
 
     private void recalcularESalvarTotalOrcamento(Long orcamentoId) {
-        // Log inicial para garantir que o método foi chamado
+
         System.out.println("[LOG PASSO 1/5] Iniciando recalculo para Orçamento ID: " + orcamentoId);
 
-        // Busca os itens do orçamento no banco de dados
         List<ItemOrcamento> itens = itemOrcamentoRepository.findByOrcamentoId(orcamentoId);
         System.out.println("[LOG PASSO 2/5] Encontrados " + itens.size() + " itens para o orçamento.");
 
-        // Calcula o novo valor total somando os subtotais de cada item
         double total = 0.0;
         for(ItemOrcamento item : itens) {
-            // Garante que subtotais nulos não quebrem o cálculo
+
             double subtotal = item.getSubtotal() != null ? item.getSubtotal() : 0.0;
             total += subtotal;
             System.out.println("    -> Somando subtotal do Item ID " + item.getId() + ": " + subtotal + " (Total parcial: " + total + ")");
         }
         System.out.println("[LOG PASSO 3/5] Valor total calculado: " + total);
 
-        // Busca a entidade Orçamento que será atualizada
         Orcamento orcamentoParaAtualizar = orcamentoRepository.findById(orcamentoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Falha no recalculo: Orçamento com ID " + orcamentoId + " não encontrado."));
 
-        // Atribui o novo valor
         orcamentoParaAtualizar.setValorTotal(total);
 
-        // Salva e força a sincronização com o banco de dados (IMPORTANTE!)
         orcamentoRepository.saveAndFlush(orcamentoParaAtualizar);
         System.out.println("[LOG PASSO 4/5] Orçamento salvo no banco com o novo valor total.");
 
-        // Opcional: Verifica o valor buscando o orçamento novamente para confirmar
         Orcamento orcamentoVerificacao = orcamentoRepository.findById(orcamentoId).get();
         System.out.println("[LOG PASSO 5/5] Verificação final. Valor no banco (pós-flush): " + orcamentoVerificacao.getValorTotal());
     }
-
 
     private ItemOrcamentoResponseDTO convertToDTO(ItemOrcamento itemOrcamento) {
         ItemOrcamentoResponseDTO dto = new ItemOrcamentoResponseDTO();
