@@ -118,7 +118,7 @@ public class OrdemServicoService {
     @Transactional(readOnly = true)
     public List<OrdemServicoResponseDTO> listarLembretesAtivos() {
         return ordemServicoRepository.findAllLembretesAtivosOrderByDataAlvo().stream()
-                .map(this::convertToDTO)
+                .map(o -> convertToDTO(o, false))
                 .collect(Collectors.toList());
     }
 
@@ -335,8 +335,14 @@ public class OrdemServicoService {
         return "OS-" + getNextOsNumber();
     }
 
-    @Transactional(readOnly = true)
     private OrdemServicoResponseDTO convertToDTO(OrdemServico ordemServico) {
+        return convertToDTO(ordemServico, true);
+    }
+
+    /**
+     * @param includeRegistrosTempo se false, não acessa a coleção lazy (evita centenas de queries na listagem de lembretes).
+     */
+    private OrdemServicoResponseDTO convertToDTO(OrdemServico ordemServico, boolean includeRegistrosTempo) {
         OrdemServicoResponseDTO dto = new OrdemServicoResponseDTO();
         dto.setId(ordemServico.getId());
         dto.setNumeroOS(ordemServico.getNumeroOS());
@@ -405,7 +411,9 @@ public class OrdemServicoService {
             dto.setTecnicoAtribuido(null);
         }
 
-        if (ordemServico.getRegistrosTempo() != null && !ordemServico.getRegistrosTempo().isEmpty()) {
+        if (includeRegistrosTempo
+                && ordemServico.getRegistrosTempo() != null
+                && !ordemServico.getRegistrosTempo().isEmpty()) {
             dto.setRegistrosTempo(
                     ordemServico.getRegistrosTempo().stream()
                             .map(this::convertRegistroTempoToDTO) // Usa um novo método auxiliar

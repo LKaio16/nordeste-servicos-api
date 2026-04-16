@@ -23,7 +23,9 @@ import java.util.List;
     @Index(name = "idx_os_analise_falha", columnList = "analise_falha"),
     @Index(name = "idx_os_solucao_aplicada", columnList = "solucao_aplicada"),
     @Index(name = "idx_os_cliente_status", columnList = "cliente_id, status"),
-    @Index(name = "idx_os_tecnico_status", columnList = "tecnico_id, status")
+    @Index(name = "idx_os_tecnico_status", columnList = "tecnico_id, status"),
+    @Index(name = "idx_os_lembrete_ativo", columnList = "lembrete_ativo"),
+    @Index(name = "idx_os_lembrete_data_alvo", columnList = "lembrete_data_alvo")
 })
 @Data
 @NoArgsConstructor

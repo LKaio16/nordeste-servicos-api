@@ -53,8 +53,15 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Long
             """)
     long countLembretesAtivosAtrasados(@Param("hoje") LocalDate hoje);
 
+    /**
+     * Lista OS com lembrete ativo. JOIN FETCH evita N+1 em cliente, equipamento (e cliente do equipamento) e técnico.
+     */
     @Query("""
-            SELECT o FROM OrdemServico o
+            SELECT DISTINCT o FROM OrdemServico o
+            LEFT JOIN FETCH o.cliente
+            LEFT JOIN FETCH o.equipamento e
+            LEFT JOIN FETCH e.cliente
+            LEFT JOIN FETCH o.tecnicoAtribuido
             WHERE o.lembreteAtivo = true AND o.lembreteDataAlvo IS NOT NULL
             ORDER BY o.lembreteDataAlvo ASC, o.id ASC
             """)
