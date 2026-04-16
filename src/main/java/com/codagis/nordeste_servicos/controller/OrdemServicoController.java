@@ -52,6 +52,19 @@ public class OrdemServicoController {
         return ResponseEntity.ok(ordens);
     }
 
+    @GetMapping("/paged")
+    public ResponseEntity<OrdemServicoPageResponseDTO> getOrdensServicoPage(
+            @RequestParam(required = false) Long tecnicoId,
+            @RequestParam(required = false) Long clienteId,
+            @RequestParam(required = false) StatusOS status,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        OrdemServicoPageResponseDTO response = ordemServicoService.findOrdensServicoPage(tecnicoId, clienteId, status, searchTerm, page, size);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/dashboard/stats")
     public ResponseEntity<OsDashboardStatsDTO> getDashboardStats() {
         OsDashboardStatsDTO stats = ordemServicoService.getDashboardStats();

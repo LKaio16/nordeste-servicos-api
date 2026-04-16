@@ -62,6 +62,16 @@ public class OrdemServicoService {
     }
 
     @Transactional(readOnly = true)
+    public OrdemServicoPageResponseDTO findOrdensServicoPage(Long tecnicoId, Long clienteId, StatusOS status, String searchTerm, int page, int size) {
+        List<OrdemServicoListItemDTO> content = ordemServicoRepository.findListItemsByFilters(tecnicoId, clienteId, status, searchTerm, page, size);
+        long totalElements = ordemServicoRepository.countByFilters(tecnicoId, clienteId, status, searchTerm);
+        int totalPages = size > 0 ? (int) Math.ceil((double) totalElements / size) : 0;
+        boolean hasNext = (page + 1) < totalPages;
+
+        return new OrdemServicoPageResponseDTO(content, page, size, totalElements, totalPages, hasNext);
+    }
+
+    @Transactional(readOnly = true)
     public OsDashboardStatsDTO getDashboardStats() {
         long totalOs = ordemServicoRepository.count();
         long osEmAndamento = ordemServicoRepository.countByStatus(StatusOS.EM_ANDAMENTO);
