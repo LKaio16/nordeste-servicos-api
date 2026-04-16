@@ -26,4 +26,5 @@ public interface OrdemServicoRepository extends JpaRepository<OrdemServico, Long
     // Métodos para estatísticas do dashboard (sem buscar todas as OS)
     long count();
     long countByStatus(StatusOS status);
+    List<OrdemServico> findTop5ByOrderByDataAberturaDesc();
 }

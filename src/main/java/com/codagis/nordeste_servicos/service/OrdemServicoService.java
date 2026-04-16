@@ -11,6 +11,7 @@ import com.codagis.nordeste_servicos.model.Equipamento;
 import com.codagis.nordeste_servicos.model.FotoOS;
 import com.codagis.nordeste_servicos.model.ItemOSUtilizado;
 import com.codagis.nordeste_servicos.model.OrdemServico;
+import com.codagis.nordeste_servicos.model.PerfilUsuario;
 import com.codagis.nordeste_servicos.model.PrioridadeOS;
 import com.codagis.nordeste_servicos.model.RegistroDeslocamento;
 import com.codagis.nordeste_servicos.model.RegistroTempo;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Optional;
@@ -66,8 +68,34 @@ public class OrdemServicoService {
         long osPendentes = ordemServicoRepository.countByStatus(StatusOS.AGUARDANDO_APROVACAO);
         long osAbertas = ordemServicoRepository.countByStatus(StatusOS.EM_ABERTO);
         long osConcluidas = ordemServicoRepository.countByStatus(StatusOS.CONCLUIDA);
-        
-        return new OsDashboardStatsDTO(totalOs, osEmAndamento, osPendentes, osAbertas, osConcluidas);
+        long totalClientes = clienteRepository.count();
+        long totalEquipamentos = equipamentoRepository.count();
+
+        List<DashboardTecnicoStatsDTO> osPorTecnico = usuarioRepository.findByPerfil(PerfilUsuario.TECNICO)
+                .stream()
+                .map(tecnico -> new DashboardTecnicoStatsDTO(
+                        tecnico.getNome().split(" ")[0],
+                        (long) ordemServicoRepository.countByTecnicoAtribuidoId(tecnico.getId())
+                ))
+                .sorted(Comparator.comparing(DashboardTecnicoStatsDTO::getOrdensAtribuidas).reversed())
+                .collect(Collectors.toList());
+
+        List<OrdemServicoResponseDTO> ordensRecentes = ordemServicoRepository.findTop5ByOrderByDataAberturaDesc()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        return new OsDashboardStatsDTO(
+                totalOs,
+                osEmAndamento,
+                osPendentes,
+                osAbertas,
+                osConcluidas,
+                totalClientes,
+                totalEquipamentos,
+                osPorTecnico,
+                ordensRecentes
+        );
     }
 
     @Transactional(readOnly = true)
