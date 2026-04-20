@@ -31,7 +31,16 @@ public class OrdemServicoRepositoryImpl implements OrdemServicoRepositoryCustom 
 
         List<Predicate> predicates = buildPredicates(cb, os, clienteJoin, tecnicoJoin, tecnicoId, clienteId, status, searchTerm);
         query.where(cb.and(predicates.toArray(new Predicate[0])));
-        query.orderBy(cb.desc(os.get("id")));
+        if (tecnicoId != null && status == null) {
+            query.orderBy(
+                    cb.asc(buildStatusPriorityOrder(cb, os)),
+                    cb.desc(os.get("dataAgendamento")),
+                    cb.desc(os.get("dataAbertura")),
+                    cb.desc(os.get("id"))
+            );
+        } else {
+            query.orderBy(cb.desc(os.get("id")));
+        }
 
         // Aplica paginação
         return entityManager.createQuery(query)
@@ -60,7 +69,16 @@ public class OrdemServicoRepositoryImpl implements OrdemServicoRepositoryCustom 
                 tecnicoJoin.get("nome")
         ));
         query.where(cb.and(predicates.toArray(new Predicate[0])));
-        query.orderBy(cb.desc(os.get("id")));
+        if (tecnicoId != null && status == null) {
+            query.orderBy(
+                    cb.asc(buildStatusPriorityOrder(cb, os)),
+                    cb.desc(os.get("dataAgendamento")),
+                    cb.desc(os.get("dataAbertura")),
+                    cb.desc(os.get("id"))
+            );
+        } else {
+            query.orderBy(cb.desc(os.get("id")));
+        }
 
         return entityManager.createQuery(query)
                 .setFirstResult(page * size)
@@ -115,5 +133,19 @@ public class OrdemServicoRepositoryImpl implements OrdemServicoRepositoryCustom 
         }
 
         return predicates;
+    }
+
+    private Expression<Integer> buildStatusPriorityOrder(CriteriaBuilder cb, Root<OrdemServico> os) {
+        Path<StatusOS> statusPath = os.get("status");
+        return cb.<Integer>selectCase()
+                .when(cb.equal(statusPath, StatusOS.EM_ANDAMENTO), 0)
+                .when(cb.equal(statusPath, StatusOS.EM_ABERTO), 1)
+                .when(cb.equal(statusPath, StatusOS.AGUARDANDO_APROVACAO), 2)
+                .when(cb.equal(statusPath, StatusOS.ATRIBUIDA), 3)
+                .when(cb.equal(statusPath, StatusOS.PENDENTE_PECAS), 4)
+                .when(cb.equal(statusPath, StatusOS.CANCELADA), 5)
+                .when(cb.equal(statusPath, StatusOS.CONCLUIDA), 6)
+                .when(cb.equal(statusPath, StatusOS.ENCERRADA), 7)
+                .otherwise(9);
     }
 } 
