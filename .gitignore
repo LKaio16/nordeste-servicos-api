@@ -50,6 +50,8 @@ Thumbs.db
 application-local.properties
 application-dev.properties
 *.env
+.env
+.env.*
 
 # Logs
 logs/

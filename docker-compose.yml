@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgres:16
+    container_name: nordeste-servicos-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-nordeste_servicos}
+      POSTGRES_USER: ${DATABASE_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?defina DATABASE_PASSWORD no .env}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      # Exponha para fora só se precisar acessar o banco de fora da VPS.
+      # Se não precisar, remova este bloco por segurança.
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME:-postgres} -d ${DATABASE_NAME:-nordeste_servicos}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nordeste-servicos-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DATABASE_URL: jdbc:postgresql://db:5432/${DATABASE_NAME:-nordeste_servicos}
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-postgres}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?defina DATABASE_PASSWORD no .env}
+      JWT_SECRET: ${JWT_SECRET:?defina JWT_SECRET no .env}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+      PORT: 8080
+      JAVA_OPTS: "-Xmx256m -Xms128m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication"
+      GCLOUD_BUCKET: ${GCLOUD_BUCKET:-}
+      GCLOUD_CREDENTIALS_B64: ${GCLOUD_CREDENTIALS_B64:-}
+      GCLOUD_CREDENTIALS_JSON: ${GCLOUD_CREDENTIALS_JSON:-}
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:
