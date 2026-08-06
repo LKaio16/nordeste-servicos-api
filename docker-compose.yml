@@ -41,7 +41,8 @@ services:
       GCLOUD_CREDENTIALS_B64: ${GCLOUD_CREDENTIALS_B64:-}
       GCLOUD_CREDENTIALS_JSON: ${GCLOUD_CREDENTIALS_JSON:-}
     ports:
-      - "8080:8080"
+      # Só acessível de dentro da própria VPS — o Nginx é quem expõe pra internet via HTTPS.
+      - "127.0.0.1:8080:8080"
 
 volumes:
   db_data:
