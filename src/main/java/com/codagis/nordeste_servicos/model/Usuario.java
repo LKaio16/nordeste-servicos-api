@@ -34,7 +34,6 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     private PerfilUsuario perfil;
 
-    @Lob
     @Column(name = "foto_perfil", columnDefinition = "TEXT")
     private String fotoPerfil;
 
