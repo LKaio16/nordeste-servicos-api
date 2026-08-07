@@ -32,6 +32,7 @@ public class FotoOS {
     private OrdemServico ordemServico;
 
     @Deprecated
+    @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "foto_base64", columnDefinition = "TEXT")
     private String fotoBase64;

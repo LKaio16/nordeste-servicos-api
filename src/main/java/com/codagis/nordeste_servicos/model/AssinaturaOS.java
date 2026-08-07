@@ -28,12 +28,14 @@ public class AssinaturaOS {
     @JoinColumn(name = "ordem_servico_id", nullable = false, unique = true)
     private OrdemServico ordemServico;
 
+    @Lob
     @Column(columnDefinition = "TEXT")
     private String assinaturaClienteBase64;
 
     private String nomeClienteResponsavel;
     private String documentoClienteResponsavel;
 
+    @Lob
     @Column(columnDefinition = "TEXT")
     private String assinaturaTecnicoBase64;
 

@@ -37,6 +37,7 @@ public class Usuario {
     @Column(name = "foto_perfil", columnDefinition = "TEXT")
     private String fotoPerfil;
 
+    @Lob
     @Column(name = "foto_url", length = 512)
     private String fotoUrl;
 }
