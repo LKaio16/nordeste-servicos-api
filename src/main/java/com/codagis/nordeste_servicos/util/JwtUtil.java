@@ -25,7 +25,7 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secretString;
 
-    @Value("${jwt.access-token-validity-ms:900000}")
+    @Value("${jwt.access-token-validity-ms:3600000}")
     private long accessTokenValidityMs;
 
     private Key secretKey;
