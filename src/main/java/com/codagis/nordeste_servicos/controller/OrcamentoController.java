@@ -87,7 +87,6 @@ public class OrcamentoController {
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> generateOrcamentoPdf(@PathVariable Long id) {
         try {
-            orcamentoService.updateDataHoraEmissao(id);
             OrcamentoResponseDTO orcamentoData = orcamentoService.findOrcamentoById(id);
             if (orcamentoData == null) {
                 return ResponseEntity.notFound().build();

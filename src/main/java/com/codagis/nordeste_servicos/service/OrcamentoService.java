@@ -88,6 +88,10 @@ public class OrcamentoService {
         Orcamento orçamento = convertToEntity(orçamentoRequestDTO);
         orçamento.setNumeroOrcamento(generateNumeroOrcamento());
         orçamento.setDataCriacao(LocalDate.now());
+        orçamento.setDataHoraEmissao(
+                orçamentoRequestDTO.getDataHoraEmissao() != null
+                        ? orçamentoRequestDTO.getDataHoraEmissao()
+                        : LocalDateTime.now());
         orçamento.setCliente(cliente);
         orçamento.setOrdemServicoOrigem(ordemServicoOrigem);
         orçamento.setValorTotal(0.0); // O valor inicial é 0.0
@@ -112,6 +116,9 @@ public class OrcamentoService {
         existingOrcamento.setCliente(cliente);
         existingOrcamento.setOrdemServicoOrigem(ordemServicoOrigem);
         existingOrcamento.setDataValidade(orçamentoRequestDTO.getDataValidade());
+        if (orçamentoRequestDTO.getDataHoraEmissao() != null) {
+            existingOrcamento.setDataHoraEmissao(orçamentoRequestDTO.getDataHoraEmissao());
+        }
         existingOrcamento.setObservacoesCondicoes(orçamentoRequestDTO.getObservacoesCondicoes());
         existingOrcamento.setStatus(orçamentoRequestDTO.getStatus());
         
@@ -145,18 +152,6 @@ public class OrcamentoService {
         orcamento.setValorTotal(novoTotal);
 
         orcamentoRepository.saveAndFlush(orcamento);
-    }
-
-    /**
-     * Atualiza a data/hora de emissão do orçamento para o momento atual.
-     * Este método é chamado toda vez que o PDF do orçamento é gerado.
-     */
-    @Transactional
-    public void updateDataHoraEmissao(Long id) {
-        Orcamento orcamento = orcamentoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Orçamento não encontrado com ID: " + id));
-        orcamento.setDataHoraEmissao(java.time.LocalDateTime.now());
-        orcamentoRepository.saveAndFlush(orcamento); // Usa saveAndFlush para garantir que a atualização seja persistida imediatamente
     }
 
     private String generateNumeroOrcamento() {
